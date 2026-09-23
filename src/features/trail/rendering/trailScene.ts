@@ -31,6 +31,8 @@ export interface CreateTrailSceneOptions {
   /** Da frente para trás; fixa durante toda a execução (R02). */
   order: CharacterId[];
   walkers: WalkerVisualSpec[];
+  /** Chamado quando a seleção muda por um clique no próprio canvas (frente 3 da evolução pedagógica). */
+  onSelect?: (characterId: CharacterId | null) => void;
 }
 
 const TRACK_COLOR = 0xe7d7b9;
@@ -142,6 +144,7 @@ export class TrailScene {
   private widthPx = 0;
   private heightPx = 0;
   private selectedId: CharacterId | null = null;
+  private readonly onSelect?: (characterId: CharacterId | null) => void;
   private destroyed = false;
 
   // Interpolação visual (§7.5: "Animação interpola estados; não cria novos
@@ -160,6 +163,7 @@ export class TrailScene {
     this.distanceM = options.distanceM;
     this.order = [...options.order];
     this.laneOffsetPx = laneOffsetForCount(this.order.length);
+    this.onSelect = options.onSelect;
 
     this.app.stage.addChild(this.trackLayer);
     this.app.stage.addChild(this.walkersLayer);
@@ -332,9 +336,19 @@ export class TrailScene {
 
     container.on('pointertap', () => {
       this.selectedId = this.selectedId === spec.id ? null : spec.id;
+      this.onSelect?.(this.selectedId);
     });
 
     return { spec, container, ring, body, label, labelSelected: false };
+  }
+
+  /**
+   * Sincroniza a seleção vinda de fora (a tabela, por exemplo) — a mesma
+   * seleção vale nos dois lugares (frente 3 da evolução pedagógica). Não
+   * chama `onSelect` de volta: quem originou a mudança já sabe.
+   */
+  setSelected(characterId: CharacterId | null): void {
+    this.selectedId = characterId;
   }
 
   private layoutWalkers(): void {

@@ -847,3 +847,431 @@ qualquer interação (a preparação deixou de ser a tela de entrada) e para nã
 supor mais que um personagem específico nunca está na frente da fila — a
 ordem inicial de uma expedição sorteada é embaralhada, diferente da ordem
 fixa dos cenários A e B.
+
+---
+
+## 2026-09-22 — Ajustes do teste de navegação (21/09/2026)
+
+Quatro ajustes pontuais identificados num teste de navegação com seis
+participantes, sem alterar fórmulas, seeds, geração de cenários ou métricas.
+
+### D45 — Etapas 2 e 3 exigem concluir a etapa 1 desta expedição, não só gerá-la
+
+**Problema reproduzido:** gerar uma expedição → clicar em "2 — Reorganizar"
+antes de qualquer caminhada → mover um personagem. Os controles da etapa 1
+estavam desabilitados, mas `setStage` trocava de etapa sem checar se a
+primeira caminhada tinha sido concluída — a trava valia para os controles de
+edição dentro de uma etapa, não para o próprio acesso à etapa seguinte.
+
+A correção foi localizada: o histórico existente (`useAttemptsStore`) já
+identifica uma conclusão da etapa 1 desta expedição específica sem precisar
+de estado novo. `hasCompletedFirstStage(attempts, scenarioId)`
+(`attemptsStore.ts`) verifica `outcome === 'completed' && guidedStage === 1 &&
+scenario.id === scenarioId` sobre o histórico gravado mais a pendente
+(`allKnownAttempts` — uma conclusão que ainda não coube no histórico de 20 já
+conta, não precisa esperar espaço). `canAccessStage(stage, expedition,
+history, pendingAttempt)` (`preparationStore.ts`) usa isso para decidir se a
+etapa pode ser alcançada; a etapa 1 é sempre acessível.
+
+Duas camadas, como as outras permissões de etapa já estabelecidas
+(`canReorder`/`canRedistribute`): `setStage` na store recusa a troca (a
+garantia de verdade — contornar o `disabled` da UI não abre uma segunda
+porta), e `Preparation.tsx` desabilita os botões "2 — Reorganizar" / "3 —
+Redistribuir" e mostra "Conclua a primeira caminhada para liberar as
+próximas etapas." enquanto isso não acontecer. Pausa, abandono e timeout não
+produzem uma entrada de conclusão (`recordAttempt` só é chamado ao concluir),
+então não liberam; uma conclusão de OUTRA expedição tem outro `scenario.id`,
+então também não libera esta. Como a checagem deriva do histórico, e não de
+um campo novo persistido, a liberação sobrevive a um recarregamento de graça
+— sem precisar de nenhuma migração de sessões salvas antes desta mudança.
+
+`restoreDraft`/`reuseAttemptConfig` continuam sem passar por `setStage`
+(restauram um estado já validamente alcançado antes, não uma transição nova),
+então não são re-checados por este guard — comportamento já existente,
+preservado.
+
+**Resultado:** corrigido, sem precisar de máquina de estados nova nem migração
+de histórico — a condição já era derivável do que existia.
+
+### D46 — Nome do participante como identificação principal, id do personagem como secundário
+
+Fila, mochilas, tabela de execução, histórico e comparação mostravam
+"Caminhante N" mesmo quando um nome de participante já existia — só o canvas
+(`trailScene.ts`, já preexistente) priorizava o nome. Centralizado em
+`components/characterLabel.ts`: `characterLabel(config, characterId)` lê
+`config.scenario`/`config.participantByCharacter` do PRÓPRIO `AttemptConfig`
+recebido (nunca de outra fonte) e retorna `"Nome · Caminhante N"` quando há
+nome, ou só `"Caminhante N"` sem ele — o mesmo fallback que sessões antigas,
+salvas antes de existir nome de participante, sempre tiveram. Nomes
+repetidos continuam distinguíveis pelo identificador secundário, sempre
+presente.
+
+Como cada superfície já recebe um `AttemptConfig` (o rascunho vivo na
+preparação, ou `attempt.config` — o snapshot gravado — no histórico e na
+comparação), usar o `config` de cada uma automaticamente resolve "tentativa
+concluída usa o nome salvo no snapshot, não o nome editado agora na
+preparação" — sem lógica condicional extra para isso: é só uma consequência
+de nunca ler de outra fonte que não o `config` recebido.
+
+`domain/validation.ts` (mensagem "X está com N kg, acima do limite") foi
+deliberadamente deixado com `character.displayName` sozinho: mudar isso
+exigiria ou importar de `components/` dentro de `domain/` (inverte a
+camada — domínio não conhece nada acima dele) ou duplicar a lógica de rótulo
+dentro do domínio para um único texto de mensagem, fora do escopo pedido.
+
+### D47 — Coluna e comentário da comparação identificados pela posição cronológica real, não pela ordem de seleção
+
+**Problema reproduzido:** selecionar tentativas no histórico fora da ordem em
+que aconteceram (histórico mostra a mais recente primeiro) fazia a
+comparação rotular as colunas "Base", "#2", "#3" pela ordem de clique — no
+teste, a redistribuição (3ª a acontecer) apareceu como "#2", antes da
+reorganização (2ª a acontecer). A numeração não identificava a tentativa, só
+a posição na seleção.
+
+Extraído `application/comparisonOrdering.ts` (lógica pura, testável sem
+renderizar nada — mesma razão de existir de `feedback.ts`):
+`orderAttemptsForComparison` mantém a referência selecionada sempre primeira
+quando fizer parte da seleção (regra de sempre, §4.1; sem ela, a primeira
+tentativa clicada continua sendo a base — também preservado), mas ordena as
+demais pela posição real no histórico (`history.findIndex`), não pela ordem
+de clique. `attemptLabel` gera `"Tentativa N · Etapa[ — Referência]"`, N
+sendo essa posição cronológica (1 = mais antiga) — o mesmo texto no cabeçalho
+da tabela e no comentário abaixo dela, substituindo "#2 em relação à base".
+`ComparisonPanel.tsx` ficou só com a renderização; a ordenação e a rotulagem
+são testadas diretamente em `tests/application/comparisonOrdering.test.ts`,
+incluindo o cenário exato do relatório (seleção fora de ordem não deve ditar
+a numeração). Detecção de comparabilidade e cálculos (`compareAttempts`)
+não mudaram — só a ordem de exibição e o rótulo.
+
+### D48 — Placeholder da hipótese não sugeria mais a resposta
+
+"Ex.: tirando peso de quem está sobrecarregado, o grupo todo chega antes."
+descrevia a própria solução (redistribuir) antes de qualquer caminhada.
+Trocado por "O que vocês esperam observar nesta caminhada? Por quê?" — uma
+pergunta, não uma dica. Campo, limite (500 caracteres) e comportamento
+continuam os mesmos.
+
+### Verificações desta entrega
+
+`npx tsc --noEmit`, `npx eslint .`, `npx vitest run` (301 testes — 23 novos:
+`hasCompletedFirstStage`/`allKnownAttempts` em `attemptsStore.test.ts`, o
+bloco de travamento entre etapas em `preparation.test.ts`,
+`comparisonOrdering.test.ts` e `characterLabel.test.ts`) e `npx playwright
+test` (9 specs — `flow-d-expedition-setup.spec.ts` ganhou o caso de
+liberação após concluir a primeira caminhada e de sobrevivência a um
+recarregamento; `flow-a-full-cycle.spec.ts` teve as asserções de cabeçalho
+da comparação atualizadas para o novo formato) e `npm run build` passam. Não
+foi necessário rodar a calibração de novo — nenhuma fórmula, seed ou regra de
+geração mudou.
+
+---
+
+## 2026-09-22 — Evolução pedagógica, frentes 1–4
+
+Diagnóstico da restrição, experimento de variabilidade, observação/recuperação
+dos espaços e calibração estendida. A frente 5 (energia/fadiga) fica para
+depois — o próprio documento manda concluir e validar estas quatro antes.
+
+### D49 — Diagnóstico de capacidade: uma fórmula, um lugar, tolerância de 1% centralizada
+
+`domain/diagnosis.ts` (novo) só combina duas peças que já existiam —
+`kmhToMps` e `loadFactor`, do próprio motor — para calcular "ritmo de
+referência com a carga": sem variabilidade, antes da fila, só a fórmula que
+já valia. `diagnoseCapacity(config)` não olha `order` — reordenar sem
+redistribuir não muda o diagnóstico por construção, não por um caso especial.
+`CAPACITY_CANDIDATE_TOLERANCE = 0.01` (1% acima do mínimo ainda conta como
+candidata) é uma decisão de apresentação, não da física do motor — como o
+documento pede, registrada aqui e em um único lugar no código.
+
+O painel (`CapacityDiagnosisPanel`) fica recolhido atrás de "Ver diagnóstico"
+até a primeira caminhada da expedição concluir, e reaproveita exatamente a
+condição que já libera as etapas 2 e 3 (`canAccessStage`/
+`hasCompletedFirstStage`, do ajuste de navegação anterior) — a mesma
+pergunta, "esta expedição já teve sua primeira caminhada concluída?", decide
+as duas coisas, sem duplicar a checagem.
+
+### D50 — `variabilityMode` é um parâmetro do motor, não um cenário paralelo
+
+O experimento "com e sem variabilidade" (frente 2) precisa rodar a mesma
+configuração duas vezes, mudando só a flutuação. A tentação seria zerar
+`character.variability` numa cópia do cenário — mas isso alteraria o dado
+que o operador vê, e o documento explicitamente proíbe ("não zerar
+permanentemente `variability` no cenário original"). Em vez disso,
+`AttemptConfig` ganhou `variabilityMode: 'standard' | 'disabled'`; em modo
+`disabled`, `availableSpeedMps` usa fator 1 em vez de chamar
+`variationFactor` — o RNG nunca é consultado, a fórmula de carga e a
+atualização de posições não mudam uma linha. Com `variabilityMode` ausente
+(configs antigas) ou `'standard'`, o comportamento é bit a bit idêntico ao de
+sempre — condição necessária para `attemptCoherenceIssues` (schema.ts)
+continuar recomputando e comparando tentativas antigas sem diferença.
+
+`compareAttempts` (comparação comum) passou a rejeitar pares com
+`variabilityMode` diferente (`variability_mode`, novo `ComparabilityIssue`)
+— "a comparação comum continua exigindo condições de variabilidade iguais".
+
+### D51 — Experimento de variabilidade reaproveita `TrailRun`/histórico inteiros; não duplica a condição "com"
+
+`application/variabilityExperiment.ts` só constrói a condição nova ("sem
+variabilidade": mesmo snapshot, `variabilityMode: 'disabled'`,
+`experimentOf: {originAttemptId, kind: 'variability'}`) e valida o par
+depois. A condição "com variabilidade" nunca é re-executada nem duplicada no
+histórico — é a própria tentativa de origem, já gravada (§4.1: "reutilizá-lo
+na comparação; não duplicá-lo desnecessariamente"). "Reproduzir
+sequencialmente no canvas" (§4.1) foi interpretado como: o operador já viu a
+condição "com" rodar quando a gravou originalmente; só a condição "sem" —
+genuinamente nova — precisa ser assistida agora, pelo `TrailRun` normal, sem
+nenhum modo de replay novo no canvas. Registrado aqui porque é uma leitura
+deliberada do "pode exigir executar novamente o motor", não a única possível.
+
+A tentativa experimental usa o `TrailRun`/`recordAttempt` normais — conta
+para os 20 do histórico, aparece com um selo "Experimento" em
+`HistoryPanel`. Duas exclusões pontuais garantem que ela nunca vira a
+referência nem libera etapas por conta própria (`!attempt.config.experimentOf`
+em `commitToHistory` e em `hasCompletedFirstStage`) — o documento pede as
+duas coisas explicitamente (§4.2, §7.3, EV06).
+
+`VariabilityComparisonPanel` resolve as duas pontas por `experimentOf`, lidas
+do histórico (`useAttemptsStore`), não de estado local — sobrevive a um
+recarregamento de graça, e é reencontrável por qualquer tentativa experimental
+no histórico ("Ver comparação de variabilidade"), não só logo após concluir.
+
+### D52 — `CharacterState.isLimited` é estado por tick, não um default seguro — schema sobe para v3 com rejeição, não migração
+
+A frente 3 pede que "limitado pela fila" venha "da condição já calculada
+pelo motor" — `step()` já computava isso a cada tick (`isLimited`), só nunca
+expunha. Diferente de `variabilityMode` (D50), que tem um valor implícito
+óbvio para todo dado antigo (o único modo que sempre existiu), `isLimited`
+é um resultado físico por tick que sessões antigas nunca calcularam — um
+`.default(false)` seria simplesmente errado para quem esteve de fato
+limitado. Como `attemptCoherenceIssues` recomputa e compara bit a bit,
+aceitar sessões v2 produziria falsos alarmes de adulteração. `SCHEMA_VERSION`
+subiu para 3; uma sessão de formato diferente (não só a v2 imediatamente
+anterior — qualquer uma) é rejeitada com mensagem clara, e a checagem de
+"formato antigo" generalizou de "é exatamente a versão anterior" para
+"é qualquer versão diferente da atual", já prevendo a próxima subida (frente
+5) sem precisar reescrever essa checagem nesta entrega e na próxima.
+
+### D53 — Amostras compactas por ref, publicação de gráfico por state — dois jeitos de respeitar as regras de render diferentes
+
+O gráfico de 120 s (§5.2) precisa de uma amostra por TICK simulado, não por
+quadro — coletar isso como `useState` custaria um render por tick, contra
+tudo que `TrailRun` já protege (HUD publicado no máximo a 10 Hz). Solução:
+`speedHistoryRef` (uma ref, todos os personagens, 120 amostras cada) é escrita
+dentro de `advanceTicks` — uma função imperativa chamada por clique ou por
+`requestAnimationFrame`, nunca pelo corpo de um render ou efeito, então
+escrever nela não viola `react-hooks/refs` (a régua deste projeto contra ler
+OU escrever refs durante o render, mais estrita que a recomendação oficial
+do React, que só proíbe escrita). Só a fatia do personagem selecionado vira
+`useState` (`selectedHistorySnapshot`), publicada no mesmo instante que
+`setHudState` — o gráfico redesenha na mesma cadência do resto do HUD, sem
+o componente ler a ref durante o render.
+
+Selecionar alguém PAUSADO expôs a costura certa para isto: sem nenhum tick
+rodando depois do clique, o `useState` só seria atualizado no próximo
+`advanceTicks` — que pode nunca vir. `selectCharacter` (usada tanto pelo
+clique na tabela quanto pelo `onSelect` do canvas) sincroniza a foto
+imediatamente, no próprio handler de clique — coberto por um caso dedicado em
+`flow-b-pause-resume.spec.ts`, que pausa antes de selecionar.
+
+`isLimited` (D52) teve prioridade sobre a tendência de espaço em
+`observedState` — "limitado" explica PORQUE o espaço não está mudando,
+quando os dois coincidem; "sem predecessor" e "chegou" vêm antes de tudo, na
+ordem que o documento lista.
+
+### D54 — Calibração: sem exigir excesso melhor que o início; três expedições geradas por tamanho; pares com/sem variabilidade reaproveitando execuções
+
+`evaluateGeneratedScenario` (gerador) exigia excesso pior que o equilíbrio E
+melhor que a configuração inicial — o documento pede remover a segunda
+exigência (§6.1). Removida; a suíte de 48 testes do gerador continua
+passando sem alteração (a relaxação só amplia o aceito, nunca reduz).
+
+`scripts/calibrate.ts`: `GENERATED_EXPEDITIONS_PER_SIZE = 3` (era 1), cada
+uma com sua própria seed de geração (`generatedScenarioSeed(size, index)`) —
+"pelo menos três expedições geradas independentemente" por tamanho (§6.3),
+sem confundir seed de geração (qual expedição) com seed de simulação
+(quais flutuações, a lista fixa de 24 já existente).
+
+Pares com/sem variabilidade (`evaluateVariabilityPair`) reaproveitam as
+execuções COM variabilidade que `evaluateStrategy` já calculou (24 seeds,
+estratégias "inicial" e "carga") — só a condição SEM roda de novo, e apenas
+uma vez (o resultado independe de seed): "uma condição sem variação repetida
+com seeds diferentes não constitui observações independentes" (§6.3). O
+relatório traz a distribuição das diferenças individuais `com − sem`
+(mediana/mín/máx), não só a diferença entre medianas.
+
+Os quatro fenômenos do §6.2 (heterogeneidade sem variabilidade, flutuação com
+capacidades próximas, recuperação, mudança de candidata) viraram fixtures
+dedicadas em `runPedagogicalChecks()` — não substituem nenhuma expedição real,
+só isolam o mecanismo. A fixture de recuperação busca, entre as 24 seeds já
+fixas, a primeira que abre e depois reduz o espaço de verdade (não um mínimo
+instantâneo) — achou na primeira tentativa (`calib-001`); se nenhuma
+mostrasse o efeito, o script reportaria isso como atenção, não faria a
+verificação passar silenciosamente.
+
+Bug encontrado e corrigido no caminho: `formatSeconds` (script de
+calibração) produzia `"-1:-32"` para diferenças negativas — o sinal do
+resto de uma divisão inteira negativa em JavaScript se somava ao sinal dos
+minutos. Corrigido tirando o valor absoluto antes de calcular minutos e
+segundos, e aplicando o sinal uma vez só, na frente. Coberto por
+`tests/scripts/stats.test.ts` (novo — nenhum teste cobria este script antes).
+
+### Verificações desta entrega
+
+`npx tsc --noEmit`, `npx eslint .`, `npx vitest run` (350 testes — 48 novos:
+`diagnosis.test.ts`, `observation.test.ts`, `variabilityExperiment.test.ts`,
+`stats.test.ts`, mais os casos de `isLimited`/`variabilityMode` em
+`engine.test.ts`, o novo `variability_mode` em `metrics.test.ts` e a rejeição
+de sessão v2 em `schema.test.ts`), `npx playwright test` (10 specs —
+`flow-e-variability-experiment.spec.ts`, novo, cobre o fluxo completo do §9:
+concluir → revelar diagnóstico → criar experimento → concluir condição
+complementar → comparar → recarregar → recuperar → nova tentativa em modo
+padrão; `flow-b-pause-resume.spec.ts` ganhou a seleção de participante
+pausado), `npm run build` e `npm run calibrate` (relatório completo em
+`docs/calibration/calibration-1.0.0.json`, incluindo os pares com/sem
+variabilidade e os quatro fenômenos separados) passam.
+
+## 2026-09-22 — Evolução pedagógica, frente 5 (energia/fadiga)
+
+Reserva de energia única, fadiga como efeito derivado de velocidade,
+experimento "com e sem fadiga", diagnóstico ao vivo de restrição por
+capacidade e calibração estendida com fixtures dedicadas.
+
+### D55 — Energia é um terceiro efeito no mesmo `step()`, calculado depois do movimento, nunca antes
+
+`domain/fatigue.ts` (novo) isola o modelo: `FATIGUE_MODEL_VERSION =
+'fatigue-1'`, `DEFAULT_FATIGUE_PARAMS` (`drainPerSec=1/10800`,
+`loadDrainCoefficient=0.5`, `minFatigueFactor=0.6`),
+`fatigueFactor(energy, minFatigueFactor)` e `validateFatigueParams`. O motor
+ganhou uma terceira fase dentro do mesmo `step()`, não um novo laço: Fase 1
+(velocidades de referência, sem fadiga, guardadas num `Map` por tick) →
+Fase 2 (posições, usando o fator de fadiga da energia ANTERIOR) → dentro do
+mesmo loop por personagem, após resolver o avanço, a energia é atualizada
+com o avanço REAL já cortado pelo destino. Quem já chegou preserva a energia
+por espalhamento de objeto (`...previous`), nunca por um caso especial na
+fórmula — "sem avanço, sem desgaste" sai de graça da ordem das fases, não de
+uma condição extra.
+
+Com `fatigueMode !== 'enabled'`, a fase de energia nem roda — `energy` fica
+em 1 e o multiplicador em exatamente 1, preservando bit a bit o
+comportamento anterior (mesma garantia que `variabilityMode: 'standard'`
+já tinha em D50, agora estendida a um segundo eixo independente).
+
+### D56 — `fatigueMode`/`fatigueParams`/`energy` são aditivos puros — sem subir `SCHEMA_VERSION`, ao contrário de `isLimited` (D52)
+
+D52 subiu o schema para v3 porque `isLimited` é um resultado físico por tick
+que sessões antigas genuinamente calcularam de outro jeito (ou não
+calcularam) — nenhum default reconstrói o que de fato aconteceu. `energy` é
+diferente: antes desta entrega a fadiga simplesmente não existia, então
+`energy` só podia ter sido 1 o tempo inteiro, para qualquer personagem, em
+qualquer tick, de qualquer sessão antiga — não é uma suposição, é a única física
+possível retroativamente. Por isso `fatigueMode`/`fatigueParams` no
+schema (`AttemptConfigSchema` e `PreparationSnapshotSchema`, diferente de
+`variabilityMode`, que não aparecia em rascunhos de preparação) e
+`energy: z.number().min(0).max(1).default(1)` em `CharacterStateSchema` usam
+`.default()` sem mexer em `SCHEMA_VERSION` (permanece 3) — e
+`attemptCoherenceIssues` continua recomputando e comparando sessões antigas
+sem falso alarme, porque o valor reconstruído é garantidamente correto, não
+só plausível. Raciocínio comentado no próprio `schema.ts` para a próxima
+entrega decidir com o mesmo critério.
+
+### D57 — `fatigueExperiment.ts` espelha `variabilityExperiment.ts`, mas o par é seed a seed, não uma condição reaproveitada
+
+Estrutura idêntica a D51 (`canStartFatigueExperiment`,
+`buildWithFatigueConfig`, `validateFatiguePair`) — a condição "com fadiga"
+nunca é re-executada como origem; só a condição nova entra no histórico,
+selada com `experimentOf: {originAttemptId, kind: 'fatigue'}`. A diferença
+que impede copiar D51 literalmente: a condição "sem fadiga" de um par de
+variabilidade independe de seed (é sempre a mesma execução), mas a condição
+"sem fadiga" de um par de fadiga NÃO é seed-invariante em relação à condição
+"com" — as duas herdam a mesma variabilidade por flutuação — então o
+comparador de calibração (`evaluateFatiguePair`, `scripts/calibrate.ts`)
+roda as 24 seeds "com fadiga" de novo e pareia seed a seed contra as 24
+"sem" já calculadas, produzindo uma distribuição de diferenças pareadas por
+seed, não só uma comparação única.
+
+`canStartFatigueExperiment`/`validateFatiguePair` rejeitam a origem se ela
+já tiver `fatigueMode: 'enabled'` (o experimento só nasce de uma tentativa
+"sem fadiga", igual o documento exige) e `variabilityExperiment.ts` ganhou a
+checagem simétrica — nenhum dos dois experimentos aceita o outro modelo
+ativo do lado oposto.
+
+### D58 — Diagnóstico ao vivo de capacidade não persiste eventos; recomputa deterministicamente, com histerese de 30 s só na notificação
+
+`diagnoseCurrentCapacity` (novo em `domain/diagnosis.ts`) reaproveita
+`currentCapacityKmh` — a mesma fórmula de referência × fator de fadiga que
+já existe no motor, chamada de fora, sem duplicar a física. É lido
+diretamente do `hudState` (estado React já publicado a 10 Hz no máximo, não
+uma ref) dentro do corpo de `TrailRun`, satisfazendo a mesma régua
+`react-hooks/refs` que D53 já havia navegado — nenhum padrão novo, só reuso.
+
+Os eventos "mudança sustentada de candidata" (`fatigueDiagnosisEvents.ts`,
+novo) não persistem por tick: `computeFatigueDiagnosisEvents` resimula do
+zero a partir de `createInitialState` sempre que é preciso (uma vez, via
+`useMemo`, ao concluir a tentativa em `TrailRun`; de novo, independentemente,
+no script de calibração) — o documento permite explicitamente recomputar
+durante a reprodução, e o projeto já confiava nesse padrão desde a checagem
+de coerência de sessão (D52/D54). A janela de 30 s consecutivos
+(`SUSTAINED_CHANGE_WINDOW_SEC`) filtra só o REGISTRO do evento — o cálculo
+físico e os valores exibidos ao vivo nunca esperam a janela; uma chegada que
+muda quem está ativo é identificada como chegada, não como migração por
+fadiga, comparando sempre o mesmo conjunto de participantes ainda ativos
+entre os dois lados do intervalo. Registro limitado a 100 eventos por
+tentativa, com sinalização de truncamento — nenhuma calibração ou execução
+real chegou perto do limite.
+
+### D59 — Calibração da frente 5: reaproveita cenários e seeds da frente 4; impacto assimétrico entre "inicial" e "redistribuir" é o resultado, não um bug
+
+`evaluateFatiguePair` roda sobre os mesmos cenários e as mesmas 24 seeds já
+fixas da frente 4 (§7.5: "reutilizar seus cenários e pelo menos 20 seeds") —
+nenhum cenário novo foi inventado só para a fadiga. Resultado real (6 pares
+cenário×estratégia, `docs/calibration/calibration-1.0.0.json`,
+`fatiguePairs`):
+
+- Estratégia "inicial" (sem redistribuir carga): tempo total sobe entre
+  ~623 s e ~785 s de mediana por cenário (todas as 24 seeds, sem nenhum
+  timeout), energia final mediana entre 70% e 78%, **nenhuma mudança
+  sustentada de candidata em nenhuma das 24 seeds** de nenhum cenário — a
+  fadiga aqui afeta o tempo total sem trocar quem restringe o grupo.
+- Estratégia "redistribuir" (mesma carga total, distribuída): tempo total
+  sobe bem menos, entre ~168 s e ~202 s de mediana, mas **todas as 24 seeds
+  de todos os 6 cenários registraram ao menos uma mudança sustentada de
+  candidata** — o modelo ativo muda a composição de quem restringe, não só
+  o tempo, exatamente o comportamento que o documento antecipa em §7.4
+  ("a conclusão sem fadiga não deve ser imposta a esta extensão").
+
+`energyZeroOccurrences` ficou em 0 em todas as 864 amostras finais de
+energia (144 ou 96 por par, conforme o tamanho do grupo) — com os parâmetros
+padrão, ninguém chega à degradação máxima do modelo nestes cenários; nenhum
+timeout novo apareceu. Como o efeito é claramente perceptível (não
+imperceptível) e não satura em zero, os parâmetros padrão não precisaram de
+revisão nesta entrega — decisão registrada aqui como evidência, não como
+recalibração seed a seed (o documento proíbe explicitamente ajustar
+parâmetro por seed individual).
+
+Quatro fixtures novas em `runFatigueFixtures()` (mecanismo isolado, sem
+substituir as expedições reais): esforço livre perde ~4× mais energia que
+esforço limitado na mesma janela (`freeEnergyLoss ≈ 0.0001389` vs.
+`limitedEnergyLoss ≈ 0.0000347` — proporção exata prevista pela fórmula,
+`relativeEffort²`); carga relativa maior drena mais sob o mesmo esforço
+relativo (`heavyEnergyLoss > lightEnergyLoss`, ambas mesmo `relativeEffort`);
+saturação a zero é alcançável (`reachedZero: true`,
+`availableAtZeroKmh = referenceKmh × minFatigueFactor`, confirmando o piso
+de 60%); e a fixture de migração (`migrationOverTime`) prova, com as
+equações comuns do motor — sem injetar perda de energia artificial — que uma
+mudança de candidata sustentada realmente ocorre numa seed de laboratório
+(`lab-calib-migracao`, aos 172 s simulados).
+
+### Verificações desta entrega
+
+`npx tsc --noEmit`, `npx eslint .`, `npx vitest run` (386 testes — 36 novos:
+bloco "energia e fadiga" em `engine.test.ts`, `fatigueDiagnosisEvents.test.ts`
+e `fatigueExperiment.test.ts` novos, mais os casos de `currentCapacityKmh`/
+`diagnoseCurrentCapacity` em `diagnosis.test.ts`, `fatigue_mode` em
+`metrics.test.ts` e o roundtrip/retrocompatibilidade de fadiga em
+`schema.test.ts`), `npx playwright test` (11 specs —
+`flow-f-fatigue-experiment.spec.ts`, novo, cobre o segundo fluxo exigido pelo
+§9: referência sem fadiga → experimento ativo → energia observável e
+comparação → recarregar → recuperar → nova tentativa com fadiga desligada),
+`npm run build` e `npm run calibrate` (relatório com as seções `fatiguePairs`
+e `fatigueFixtures` em `docs/calibration/calibration-1.0.0.json`, resultados
+reais resumidos em D59) passam.

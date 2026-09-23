@@ -8,7 +8,7 @@
  */
 
 import { useState } from 'react';
-import { CopyPlus, Scale, Star, StarOff, Trash2 } from 'lucide-react';
+import { BatteryWarning, CopyPlus, FlaskConical, Scale, Star, StarOff, Trash2 } from 'lucide-react';
 
 import {
   MAX_COMPARISON_SELECTION,
@@ -16,18 +16,36 @@ import {
   useAttemptsStore,
 } from '../application/attemptsStore';
 import { getStage } from '../application/stages';
+import { canStartFatigueExperiment } from '../application/fatigueExperiment';
 import { reuseAttemptConfig } from '../application/sessionSync';
+import { canStartVariabilityExperiment } from '../application/variabilityExperiment';
 import { scenarioDisplayLabel } from '../scenarios';
 import type { AttemptResult } from '../domain/types';
+import { characterLabel } from './characterLabel';
 import { formatClock, formatDateTime } from './format';
 
 interface HistoryPanelProps {
   onCompare: () => void;
   /** Chamado depois que reutilizar uma configuração aplica com sucesso. */
   onReused: () => void;
+  /** Inicia o experimento "com e sem variabilidade" a partir desta tentativa. */
+  onStartVariabilityExperiment: (attempt: AttemptResult) => void;
+  /** Abre a comparação específica de variabilidade para esta tentativa experimental. */
+  onViewVariabilityComparison: (experimentalAttemptId: string) => void;
+  /** Inicia o experimento "com e sem fadiga" a partir desta tentativa. */
+  onStartFatigueExperiment: (attempt: AttemptResult) => void;
+  /** Abre a comparação específica de fadiga para esta tentativa experimental. */
+  onViewFatigueComparison: (experimentalAttemptId: string) => void;
 }
 
-export function HistoryPanel({ onCompare, onReused }: HistoryPanelProps) {
+export function HistoryPanel({
+  onCompare,
+  onReused,
+  onStartVariabilityExperiment,
+  onViewVariabilityComparison,
+  onStartFatigueExperiment,
+  onViewFatigueComparison,
+}: HistoryPanelProps) {
   const history = useAttemptsStore((state) => state.history);
   const referenceAttemptId = useAttemptsStore((state) => state.referenceAttemptId);
   const selectedForComparison = useAttemptsStore((state) => state.selectedForComparison);
@@ -106,6 +124,10 @@ export function HistoryPanel({ onCompare, onReused }: HistoryPanelProps) {
             onSetReference={() => setReferenceAttempt(attempt.id)}
             onRemove={() => removeAttempt(attempt.id)}
             onReuse={() => handleReuse(attempt)}
+            onStartVariabilityExperiment={() => onStartVariabilityExperiment(attempt)}
+            onViewVariabilityComparison={() => onViewVariabilityComparison(attempt.id)}
+            onStartFatigueExperiment={() => onStartFatigueExperiment(attempt)}
+            onViewFatigueComparison={() => onViewFatigueComparison(attempt.id)}
           />
         ))}
       </ul>
@@ -121,6 +143,10 @@ interface HistoryRowProps {
   onSetReference: () => void;
   onRemove: () => void;
   onReuse: () => void;
+  onStartVariabilityExperiment: () => void;
+  onViewVariabilityComparison: () => void;
+  onStartFatigueExperiment: () => void;
+  onViewFatigueComparison: () => void;
 }
 
 function HistoryRow({
@@ -131,11 +157,17 @@ function HistoryRow({
   onSetReference,
   onRemove,
   onReuse,
+  onStartVariabilityExperiment,
+  onViewVariabilityComparison,
+  onStartFatigueExperiment,
+  onViewFatigueComparison,
 }: HistoryRowProps) {
   const definition = getStage(attempt.config.guidedStage);
-  const orderNames = attempt.config.order
-    .map((id) => attempt.config.scenario.characters.find((c) => c.id === id)?.displayName ?? id)
-    .join(' → ');
+  const orderNames = attempt.config.order.map((id) => characterLabel(attempt.config, id)).join(' → ');
+  const isVariabilityExperiment = attempt.config.experimentOf?.kind === 'variability';
+  const isFatigueExperiment = attempt.config.experimentOf?.kind === 'fatigue';
+  const variabilityEligibility = canStartVariabilityExperiment(attempt);
+  const fatigueEligibility = canStartFatigueExperiment(attempt);
 
   return (
     <li
@@ -161,6 +193,18 @@ function HistoryRow({
             <span className="inline-flex items-center gap-1 rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-900">
               <Star className="size-3" aria-hidden="true" />
               Referência inicial
+            </span>
+          )}
+          {isVariabilityExperiment && (
+            <span className="inline-flex items-center gap-1 rounded-md bg-sky-100 px-1.5 py-0.5 text-xs font-medium text-sky-900">
+              <FlaskConical className="size-3" aria-hidden="true" />
+              Experimento: sem variabilidade
+            </span>
+          )}
+          {isFatigueExperiment && (
+            <span className="inline-flex items-center gap-1 rounded-md bg-orange-100 px-1.5 py-0.5 text-xs font-medium text-orange-900">
+              <BatteryWarning className="size-3" aria-hidden="true" />
+              Experimento: com fadiga
             </span>
           )}
           <span className="text-xs text-muted-foreground">{formatDateTime(attempt.createdAt)}</span>
@@ -190,6 +234,52 @@ function HistoryRow({
       </div>
 
       <div className="flex shrink-0 gap-1">
+        {isVariabilityExperiment ? (
+          <button
+            type="button"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-accent"
+            title="Ver comparação de variabilidade"
+            aria-label={`Ver comparação de variabilidade da tentativa de ${formatDateTime(attempt.createdAt)}`}
+            onClick={onViewVariabilityComparison}
+          >
+            <Scale className="size-4" />
+          </button>
+        ) : (
+          variabilityEligibility.ok && (
+            <button
+              type="button"
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-accent"
+              title="Comparar com e sem variabilidade"
+              aria-label={`Comparar com e sem variabilidade a partir da tentativa de ${formatDateTime(attempt.createdAt)}`}
+              onClick={onStartVariabilityExperiment}
+            >
+              <FlaskConical className="size-4" />
+            </button>
+          )
+        )}
+        {isFatigueExperiment ? (
+          <button
+            type="button"
+            className="rounded-md p-1.5 text-muted-foreground hover:bg-accent"
+            title="Ver comparação de fadiga"
+            aria-label={`Ver comparação de fadiga da tentativa de ${formatDateTime(attempt.createdAt)}`}
+            onClick={onViewFatigueComparison}
+          >
+            <BatteryWarning className="size-4" />
+          </button>
+        ) : (
+          fatigueEligibility.ok && (
+            <button
+              type="button"
+              className="rounded-md p-1.5 text-muted-foreground hover:bg-accent"
+              title="Experimentar com fadiga"
+              aria-label={`Experimentar com fadiga a partir da tentativa de ${formatDateTime(attempt.createdAt)}`}
+              onClick={onStartFatigueExperiment}
+            >
+              <BatteryWarning className="size-4" />
+            </button>
+          )
+        )}
         <button
           type="button"
           className="rounded-md p-1.5 text-muted-foreground hover:bg-accent"

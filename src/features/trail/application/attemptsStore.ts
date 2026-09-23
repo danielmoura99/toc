@@ -24,6 +24,38 @@ import type { AttemptConfig, AttemptResult, SimulationState } from '../domain/ty
 export const MAX_HISTORY_SIZE = 20;
 export const MAX_COMPARISON_SELECTION = 3;
 
+/**
+ * Tentativas conhecidas nesta sessão: o histórico gravado mais a pendente
+ * (concluída, mas ainda sem espaço no histórico), se houver. Usado por
+ * verificações que não devem esperar o histórico ter espaço — uma conclusão
+ * real já vale, esteja ela gravada ou só aguardando (ajuste de navegação,
+ * 22/09/2026).
+ */
+export function allKnownAttempts(history: AttemptResult[], pendingAttempt: AttemptResult | null): AttemptResult[] {
+  return pendingAttempt ? [...history, pendingAttempt] : history;
+}
+
+/**
+ * Verdadeiro se alguma tentativa conhecida é uma conclusão da etapa 1 desta
+ * expedição específica (mesmo `scenario.id`) — a condição que libera as
+ * etapas 2 e 3 (ajuste de navegação, 22/09/2026: mudar de etapa antes de
+ * concluir a primeira caminhada destravava a edição indevidamente). Pausa,
+ * abandono e timeout nunca produzem uma entrada aqui — `recordAttempt` só é
+ * chamado ao concluir —, e uma tentativa de outra expedição tem outro
+ * `scenario.id`, então nenhum dos dois libera por engano.
+ */
+export function hasCompletedFirstStage(attempts: AttemptResult[], scenarioId: string): boolean {
+  return attempts.some(
+    (attempt) =>
+      attempt.outcome === 'completed' &&
+      attempt.config.guidedStage === 1 &&
+      attempt.config.scenario.id === scenarioId &&
+      // Uma tentativa experimental (evolução pedagógica, frentes 2 e 5) não
+      // desbloqueia etapas por conta própria — só a caminhada real da etapa 1.
+      !attempt.config.experimentOf,
+  );
+}
+
 function createAttemptId(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
     return crypto.randomUUID();
@@ -49,8 +81,13 @@ function commitToHistory(
   referenceAttemptId: string | null,
   attempt: AttemptResult,
 ): CommitOutcome {
+  // Uma tentativa experimental (evolução pedagógica, frentes 2 e 5) nunca vira a
+  // referência inicial por conta própria — só uma caminhada normal da etapa 1.
   const becameReference =
-    referenceAttemptId === null && attempt.config.guidedStage === 1 && attempt.outcome === 'completed';
+    referenceAttemptId === null &&
+    attempt.config.guidedStage === 1 &&
+    attempt.outcome === 'completed' &&
+    !attempt.config.experimentOf;
 
   return {
     history: [...history, attempt],

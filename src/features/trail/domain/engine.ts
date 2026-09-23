@@ -15,9 +15,13 @@ import type {
   CharacterDefinition,
   CharacterId,
   CharacterState,
+  FatigueMode,
+  FatigueParams,
   SimulationState,
+  VariabilityMode,
 } from './types';
 import { EPSILON_M, LOAD_PENALTY_COEFFICIENT } from './types';
+import { fatigueFactor } from './fatigue';
 import { blockIndexForTime, variationFactor } from './random';
 
 /** Converte km/h em m/s. */
@@ -51,8 +55,35 @@ export function loadFactor(loadKg: number, referenceLoadKg: number): number {
 }
 
 /**
+ * Velocidade de referência: capacidade base com a penalidade de carga, SEM
+ * variabilidade nem fadiga — a mesma grandeza que o diagnóstico de
+ * capacidade usa (`domain/diagnosis.ts`) e o denominador do esforço relativo
+ * do modelo de fadiga (§7.2: "não usar velocidade já reduzida como
+ * denominador"). Sempre positiva, pelas validações de `baseSpeedKmh` e
+ * `referenceLoadKg` já existentes.
+ */
+export function referenceSpeedMps(character: CharacterDefinition, loadKg: number): number {
+  return kmhToMps(character.baseSpeedKmh) * loadFactor(loadKg, character.referenceLoadKg);
+}
+
+/** Entradas do modelo de fadiga para um personagem num tick — energia do INÍCIO do tick (§7.2). */
+export interface FatigueInputs {
+  energy: number;
+  fatigueMode: FatigueMode;
+  fatigueParams: FatigueParams;
+}
+
+/**
  * Velocidade disponível do personagem no início do tick, em m/s.
- * Depende de capacidade base, carga e variação do bloco — nunca da posição na fila.
+ * Depende de capacidade base, carga, variação do bloco e fadiga — nunca da
+ * posição na fila.
+ *
+ * `variabilityMode: 'disabled'` (experimento da evolução pedagógica, frente 2)
+ * usa fator 1 em vez do sorteio: não chama `variationFactor`, não toca no RNG
+ * nem em `character.variability` — só a aplicação do fator muda. O mesmo
+ * princípio vale para `fatigue` (frente 5): com `fatigueMode: 'disabled'` ou
+ * omitido, o multiplicador é exatamente 1, preservando o comportamento de
+ * antes desta frente byte a byte.
  */
 export function availableSpeedMps(
   character: CharacterDefinition,
@@ -60,15 +91,20 @@ export function availableSpeedMps(
   seed: string,
   elapsedSec: number,
   blockSec: number,
+  variabilityMode: VariabilityMode = 'standard',
+  fatigue?: FatigueInputs,
 ): number {
-  const variation = variationFactor(
-    seed,
-    character.id,
-    blockIndexForTime(elapsedSec, blockSec),
-    character.variability,
-  );
+  const variation =
+    variabilityMode === 'disabled'
+      ? 1
+      : variationFactor(seed, character.id, blockIndexForTime(elapsedSec, blockSec), character.variability);
 
-  return kmhToMps(character.baseSpeedKmh) * loadFactor(loadKg, character.referenceLoadKg) * variation;
+  const fatigueMultiplier =
+    fatigue && fatigue.fatigueMode === 'enabled'
+      ? fatigueFactor(fatigue.energy, fatigue.fatigueParams.minFatigueFactor)
+      : 1;
+
+  return referenceSpeedMps(character, loadKg) * variation * fatigueMultiplier;
 }
 
 export function createInitialState(config: AttemptConfig): SimulationState {
@@ -81,9 +117,11 @@ export function createInitialState(config: AttemptConfig): SimulationState {
       availableSpeedMps: 0,
       actualSpeedMps: 0,
       arrivalTimeSec: null,
+      isLimited: false,
       limitedTimeSec: 0,
       stoppedByQueueTimeSec: 0,
       equivalentLostTimeSec: 0,
+      energy: 1,
     };
   }
 
@@ -117,20 +155,32 @@ export function step(config: AttemptConfig, state: SimulationState): SimulationS
   const characterById = new Map<CharacterId, CharacterDefinition>(
     config.scenario.characters.map((character) => [character.id, character]),
   );
+  const fatigueMode = config.fatigueMode;
+  const fatigueParams = config.fatigueParams;
 
-  // Fase 1: capacidade de cada um, a partir do estado anterior.
+  // Fase 1: capacidade de cada um, a partir do estado anterior — inclui a
+  // velocidade de referência (sem variabilidade nem fadiga), guardada à
+  // parte para o denominador do esforço relativo na fase de energia, mais
+  // abaixo (§7.2: "não usar velocidade já reduzida como denominador").
   const available = new Map<CharacterId, number>();
+  const referenceSpeeds = new Map<CharacterId, number>();
   for (const characterId of config.order) {
     const definition = characterById.get(characterId);
     if (!definition) continue;
+    const loadKg = loadByCharacter[characterId] ?? 0;
+    const previous = state.characters[characterId];
+
+    referenceSpeeds.set(characterId, referenceSpeedMps(definition, loadKg));
     available.set(
       characterId,
       availableSpeedMps(
         definition,
-        loadByCharacter[characterId] ?? 0,
+        loadKg,
         config.seed,
         state.elapsedSec,
         variabilityBlockSec,
+        config.variabilityMode,
+        { energy: previous.energy, fatigueMode, fatigueParams },
       ),
     );
   }
@@ -144,12 +194,15 @@ export function step(config: AttemptConfig, state: SimulationState): SimulationS
     const previous = state.characters[characterId];
     const speed = available.get(characterId) ?? 0;
 
-    // Quem já chegou permanece no destino e deixa de acumular limitação.
+    // Quem já chegou permanece no destino, deixa de acumular limitação e não
+    // acumula desgaste — `energy` vem do spread de `previous`, sem mudar
+    // (§7.2: "quem estava no destino antes do tick não acumula desgaste").
     if (previous.arrivalTimeSec !== null) {
       nextCharacters[characterId] = {
         ...previous,
         availableSpeedMps: speed,
         actualSpeedMps: 0,
+        isLimited: false,
       };
       positionAhead = previous.positionM;
       continue;
@@ -170,16 +223,34 @@ export function step(config: AttemptConfig, state: SimulationState): SimulationS
     const equivalentLost = isLimited && speed > 0 ? (freeTarget - newPosition) / speed : 0;
 
     const hasArrived = newPosition >= distanceM - EPSILON_M;
+    const actualSpeedMpsValue = advance / dt;
+
+    // Energia atualizada DEPOIS de resolver o movimento deste tick, nunca
+    // antes (§7.2) — usa o avanço já cortado pelo destino (`advance`, dentro
+    // de `actualSpeedMpsValue`) e a velocidade de referência (não a
+    // disponível, já reduzida por variabilidade/fadiga) como denominador do
+    // esforço relativo. Sem avanço, o esforço relativo é 0 e o desgaste
+    // desta versão também é — a mesma fórmula, sem caso especial.
+    let energy = previous.energy;
+    if (fatigueMode === 'enabled') {
+      const loadRatio = (loadByCharacter[characterId] ?? 0) / characterById.get(characterId)!.referenceLoadKg;
+      const relativeEffort = actualSpeedMpsValue / referenceSpeeds.get(characterId)!;
+      const energyLoss =
+        fatigueParams.drainPerSec * (1 + fatigueParams.loadDrainCoefficient * loadRatio) * relativeEffort ** 2 * dt;
+      energy = Math.max(0, previous.energy - energyLoss);
+    }
 
     nextCharacters[characterId] = {
       id: characterId,
       positionM: newPosition,
       availableSpeedMps: speed,
-      actualSpeedMps: advance / dt,
+      actualSpeedMps: actualSpeedMpsValue,
       arrivalTimeSec: hasArrived ? elapsedAfter : null,
+      isLimited,
       limitedTimeSec: previous.limitedTimeSec + (isLimited ? dt : 0),
       stoppedByQueueTimeSec: previous.stoppedByQueueTimeSec + (isStopped ? dt : 0),
       equivalentLostTimeSec: previous.equivalentLostTimeSec + equivalentLost,
+      energy,
     };
 
     positionAhead = newPosition;

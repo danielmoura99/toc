@@ -2,8 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useAttemptsStore } from '@/features/trail/application/attemptsStore';
 import { usePreparationStore } from '@/features/trail/application/preparationStore';
-import { itemsOwnedBy } from '@/features/trail/domain/attempt';
+import { createAttemptConfig, itemsOwnedBy } from '@/features/trail/domain/attempt';
 import { runToEnd } from '@/features/trail/domain/engine';
+import { finalizeResult } from '@/features/trail/domain/metrics';
 import {
   applySessionPayload,
   currentSessionPayload,
@@ -14,8 +15,39 @@ import {
   validateImportedRaw,
 } from '@/features/trail/application/sessionSync';
 import { ENGINE_VERSION } from '@/features/trail/domain/types';
+import type { AttemptResult, Scenario } from '@/features/trail/domain/types';
+import { SCENARIO_A } from '@/features/trail/scenarios';
 import { downloadSessionPayload } from '@/features/trail/persistence/importExport';
 import { STORAGE_KEY } from '@/features/trail/persistence/schema';
+
+function completedFirstStageAttempt(scenario: Scenario): AttemptResult {
+  const config = createAttemptConfig(scenario, { guidedStage: 1 });
+  const finalState = runToEnd(config);
+  const metrics = finalizeResult(config, finalState);
+
+  return {
+    id: `seed-etapa1-${scenario.id}`,
+    createdAt: new Date().toISOString(),
+    config,
+    outcome: metrics.outcome,
+    finalState,
+    totalTimeSec: metrics.totalTimeSec,
+    meanSpreadM: metrics.meanSpreadM,
+    metrics,
+  };
+}
+
+/**
+ * Etapas 2 e 3 exigem uma conclusão da etapa 1 desta expedição no histórico
+ * (ajuste de navegação, 22/09/2026) — semeia essa conclusão para testes que
+ * exercitam comportamento das etapas 2/3 sem que a própria conclusão seja o
+ * que está sob teste.
+ */
+function unlockStages23(scenario: Scenario = SCENARIO_A): AttemptResult {
+  const attempt = completedFirstStageAttempt(scenario);
+  useAttemptsStore.getState().hydrateHistory([attempt], attempt.id);
+  return attempt;
+}
 
 function createFakeLocalStorage(): Storage {
   const store = new Map<string, string>();
@@ -77,7 +109,7 @@ describe('currentSessionPayload / saveCurrentSession', () => {
 
     const raw = (window as unknown as { localStorage: Storage }).localStorage.getItem(STORAGE_KEY);
     expect(raw).toBeTruthy();
-    expect(JSON.parse(raw!).schemaVersion).toBe(2);
+    expect(JSON.parse(raw!).schemaVersion).toBe(3);
   });
 
   it('reporta indisponibilidade sem lançar quando não há window', () => {
@@ -89,14 +121,20 @@ describe('currentSessionPayload / saveCurrentSession', () => {
 
 describe('fluxo completo: preparar → concluir → recarregar → recuperar (§13.2)', () => {
   it('restaura preparação e histórico após um "recarregamento" simulado', () => {
-    // Preparar.
+    // Etapas 2 e 3 exigem ter concluído a etapa 1 desta expedição primeiro —
+    // completa essa primeira caminhada de verdade, pelo motor.
+    const firstConfig = usePreparationStore.getState().draft;
+    const firstRecorded = useAttemptsStore.getState().recordAttempt(firstConfig, runToEnd(firstConfig));
+    expect(firstRecorded.ok).toBe(true);
+
+    // Preparar a segunda tentativa, na etapa 3 (agora liberada).
     usePreparationStore.getState().setStage(3);
     const draft = usePreparationStore.getState().draft;
     const moved = itemsOwnedBy(draft, 'p5').slice(0, 6);
     usePreparationStore.getState().moveItems(moved, 'p3');
     usePreparationStore.getState().setHypothesis('Redistribuir ajuda.');
 
-    // Registrar uma tentativa concluída via fluxo real do motor.
+    // Registrar essa segunda tentativa concluída via fluxo real do motor.
     const attemptConfig = usePreparationStore.getState().draft;
     const finalState = runToEnd(attemptConfig);
     const recorded = useAttemptsStore.getState().recordAttempt(attemptConfig, finalState);
@@ -117,11 +155,13 @@ describe('fluxo completo: preparar → concluir → recarregar → recuperar (§
 
     applySessionPayload(restored.payload);
 
-    expect(useAttemptsStore.getState().history).toHaveLength(1);
+    expect(useAttemptsStore.getState().history).toHaveLength(2);
     expect(usePreparationStore.getState().draft.hypothesis).toBe('Redistribuir ajuda.');
     expect(usePreparationStore.getState().stage).toBe(3);
-    if (!recorded.ok) return;
-    expect(useAttemptsStore.getState().referenceAttemptId).toBe(recorded.becameReference ? recorded.attempt.id : null);
+    if (!firstRecorded.ok) return;
+    expect(useAttemptsStore.getState().referenceAttemptId).toBe(
+      firstRecorded.becameReference ? firstRecorded.attempt.id : null,
+    );
   });
 
   it('uma tentativa pendente (histórico cheio) sobrevive a salvar e recarregar', () => {
@@ -267,6 +307,7 @@ describe('validateImportedRaw — permissões de etapa na preparação salva', (
   });
 
   it('rejeita preparação de etapa 2 com mochilas redistribuídas', () => {
+    unlockStages23();
     usePreparationStore.getState().setStage(2);
     const draft = usePreparationStore.getState().draft;
     const moved = itemsOwnedBy(draft, 'p5').slice(0, 3);
@@ -280,6 +321,7 @@ describe('validateImportedRaw — permissões de etapa na preparação salva', (
   });
 
   it('aceita preparação de etapa 3 com mochilas redistribuídas (permitido nessa etapa)', () => {
+    unlockStages23();
     usePreparationStore.getState().setStage(3);
     const draft = usePreparationStore.getState().draft;
     const moved = itemsOwnedBy(draft, 'p5').slice(0, 6);
@@ -314,6 +356,7 @@ describe('exportCurrentSession', () => {
 
 describe('reuseAttemptConfig', () => {
   it('aplica a ordem e as mochilas da tentativa na preparação', () => {
+    unlockStages23();
     usePreparationStore.getState().setStage(3);
     const moved = itemsOwnedBy(usePreparationStore.getState().draft, 'p5').slice(0, 6);
     usePreparationStore.getState().moveItems(moved, 'p3');

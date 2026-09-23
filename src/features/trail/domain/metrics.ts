@@ -85,7 +85,9 @@ export type ComparabilityIssue =
   | 'items'
   | 'distance'
   | 'tick'
-  | 'variability_block';
+  | 'variability_block'
+  | 'variability_mode'
+  | 'fatigue_mode';
 
 export interface ComparisonResult {
   comparable: boolean;
@@ -104,7 +106,8 @@ export interface ComparisonResult {
   maxSpreadDeltaM: number | null;
 }
 
-function sameCast(a: AttemptConfig, b: AttemptConfig): boolean {
+/** Mesmo elenco (ids e atributos) — exportado para o validador do experimento de variabilidade reaproveitar, em vez de duplicar. */
+export function sameCast(a: AttemptConfig, b: AttemptConfig): boolean {
   const castA = [...a.scenario.characters].sort((x, y) => x.id.localeCompare(y.id));
   const castB = [...b.scenario.characters].sort((x, y) => x.id.localeCompare(y.id));
 
@@ -122,7 +125,8 @@ function sameCast(a: AttemptConfig, b: AttemptConfig): boolean {
   });
 }
 
-function sameItems(a: AttemptConfig, b: AttemptConfig): boolean {
+/** Mesmos itens (id e peso) — exportado pelo mesmo motivo de `sameCast`. */
+export function sameItems(a: AttemptConfig, b: AttemptConfig): boolean {
   const idsA = a.scenario.items.map((item) => `${item.id}:${item.weightKg}`).sort();
   const idsB = b.scenario.items.map((item) => `${item.id}:${item.weightKg}`).sort();
   return idsA.length === idsB.length && idsA.every((value, index) => value === idsB[index]);
@@ -150,6 +154,25 @@ export function compareAttempts(
   if (a.tickSec !== b.tickSec) issues.push('tick');
   if (a.scenario.variabilityBlockSec !== b.scenario.variabilityBlockSec) {
     issues.push('variability_block');
+  }
+  // Comparação comum exige o mesmo modo de variabilidade (§4.3 da evolução
+  // pedagógica) — o experimento específico de variabilidade tem seu próprio
+  // validador (`validateVariabilityPair`), que exige exatamente o contrário
+  // (modos diferentes, tudo o mais igual).
+  if (a.variabilityMode !== b.variabilityMode) issues.push('variability_mode');
+  // Mesma exigência para fadiga (§7.3: "a comparação comum de estratégias
+  // exige o mesmo modo e os mesmos parâmetros de fadiga") — comparar
+  // redistribuições com fadiga ativa é permitido, desde que os dois lados
+  // tenham o mesmo modo E os mesmos coeficientes. `validateFatiguePair` (o
+  // experimento específico) exige o oposto: modos diferentes, mesmo o resto.
+  if (
+    a.fatigueMode !== b.fatigueMode ||
+    a.fatigueParams.version !== b.fatigueParams.version ||
+    a.fatigueParams.drainPerSec !== b.fatigueParams.drainPerSec ||
+    a.fatigueParams.loadDrainCoefficient !== b.fatigueParams.loadDrainCoefficient ||
+    a.fatigueParams.minFatigueFactor !== b.fatigueParams.minFatigueFactor
+  ) {
+    issues.push('fatigue_mode');
   }
 
   const comparable = issues.length === 0;

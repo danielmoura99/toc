@@ -11,28 +11,40 @@
 import { z } from 'zod';
 
 import { runToEnd } from '../domain/engine';
+import { DEFAULT_FATIGUE_PARAMS } from '../domain/fatigue';
 import { finalizeResult } from '../domain/metrics';
 import { ENGINE_VERSION } from '../domain/types';
 import { validateConfig } from '../domain/validation';
 
 /**
- * Versão do formato do payload. Mudar exige uma rotina de migração explícita.
+ * Versão do formato do payload. Mudar exige uma rotina de migração explícita
+ * — este MVP não migra automaticamente entre formatos; uma sessão de versão
+ * diferente é rejeitada com mensagem clara (ver `oldFormatIssue`) em vez de
+ * aplicada quebrada ou apagada.
  *
  * v2 (expedições geradas): `preparation` passou a carregar o próprio
  * `scenario` em vez de depender de `guidedStage` apontar para um cenário fixo
  * — uma expedição sorteada não tem um `scenarioId` conhecido de antemão para
- * a etapa procurar. Uma sessão v1 salva antes desta mudança é rejeitada com
- * mensagem específica (ver `OLD_FORMAT_ISSUE`) em vez de aplicada quebrada ou
- * apagada — nenhuma migração automática existe para essa troca de formato.
+ * a etapa procurar.
+ *
+ * v3 (evolução pedagógica, frente 3): `CharacterState` ganhou `isLimited`
+ * (condição de limitação NESTE tick, não só o acumulado em `limitedTimeSec`)
+ * — como ele participa da recomputação de coerência (`attemptCoherenceIssues`
+ * recalcula e compara bit a bit), um payload v2 recomputado não bateria com
+ * o gravado (ele nunca teve esse campo, então não é um "default óbvio" como
+ * `variabilityMode` foi na v2→v3 anterior da mesma frente — é estado físico
+ * por tick que nunca foi registrado). Por isso a rejeição, não um valor
+ * assumido.
  */
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
-const PREVIOUS_SCHEMA_VERSION = 1;
-
-export const OLD_FORMAT_ISSUE =
-  `Esta sessão foi salva num formato anterior (schemaVersion ${PREVIOUS_SCHEMA_VERSION}), de antes da ` +
-  'expedição gerada — este MVP não migra automaticamente entre formatos. Exporte-a antes de atualizar, ' +
-  'se quiser guardá-la; ela continua no navegador, intacta, até você decidir descartá-la.';
+function oldFormatIssue(foundVersion: number): string {
+  return (
+    `Esta sessão foi salva num formato anterior (schemaVersion ${foundVersion}) — este MVP não migra ` +
+    'automaticamente entre formatos. Exporte-a antes de atualizar, se quiser guardá-la; ela continua no ' +
+    'navegador, intacta, até você decidir descartá-la.'
+  );
+}
 
 /** Chave sugerida pelo guia, já versionada no próprio nome. */
 export const STORAGE_KEY = 'trail-mvp:session:v1';
@@ -73,6 +85,45 @@ const ScenarioSchema = z.object({
 
 const GuidedStageSchema = z.union([z.literal(1), z.literal(2), z.literal(3)]);
 
+/**
+ * Aditivo, não uma quebra de formato: sessões salvas antes da frente 2 da
+ * evolução pedagógica não têm este campo. `.default('standard')` reproduz
+ * exatamente o que elas sempre significaram (o único modo que existia) — só
+ * por isso não precisou empurrar `SCHEMA_VERSION` além de 2 na época. A
+ * frente 3, na mesma entrega, acabou subindo para 3 de qualquer forma, por
+ * causa de `isLimited` (ver o comentário de `SCHEMA_VERSION`), então esta
+ * checagem de compatibilidade nunca chega a valer a pena na prática — mas
+ * continua aqui por defesa, caso algum dia um campo realmente aditivo
+ * apareça sem outro subir a versão junto.
+ */
+const VariabilityModeSchema = z.enum(['standard', 'disabled']).default('standard');
+
+/**
+ * Aditivo de verdade, ao contrário de `isLimited` (v3): sessões de antes da
+ * frente 5 nunca tiveram fadiga, então `energy` só pôde ter sido 1 o tempo
+ * inteiro, em todo tick, para todo mundo — não é uma suposição, é uma
+ * garantia do próprio motor (energia só muda com `fatigueMode: 'enabled'`).
+ * `.default(1)`/`.default('disabled')` reproduzem exatamente isso; a
+ * recomputação de coerência bate porque o motor atual, com `fatigueMode`
+ * também assumido `disabled`, chega ao mesmo 1 sempre. Por isso nenhuma
+ * subida de `SCHEMA_VERSION` foi necessária aqui.
+ */
+const FatigueModeSchema = z.enum(['enabled', 'disabled']).default('disabled');
+
+const FatigueParamsSchema = z
+  .object({
+    version: z.string(),
+    drainPerSec: z.number(),
+    loadDrainCoefficient: z.number(),
+    minFatigueFactor: z.number(),
+  })
+  .default(DEFAULT_FATIGUE_PARAMS);
+
+const ExperimentLinkSchema = z.object({
+  originAttemptId: z.string().min(1),
+  kind: z.enum(['variability', 'fatigue']),
+});
+
 const AttemptConfigSchema = z.object({
   engineVersion: z.string(),
   scenario: ScenarioSchema,
@@ -82,6 +133,10 @@ const AttemptConfigSchema = z.object({
   // Opcional por valor: espelha Partial<Record<CharacterId, string>> do domínio.
   participantByCharacter: z.record(CharacterIdSchema, z.string().optional()),
   hypothesis: z.string(),
+  variabilityMode: VariabilityModeSchema,
+  fatigueMode: FatigueModeSchema,
+  fatigueParams: FatigueParamsSchema,
+  experimentOf: ExperimentLinkSchema.optional(),
   guidedStage: GuidedStageSchema,
   tickSec: z.literal(1),
 });
@@ -92,9 +147,11 @@ const CharacterStateSchema = z.object({
   availableSpeedMps: z.number(),
   actualSpeedMps: z.number(),
   arrivalTimeSec: z.number().nullable(),
+  isLimited: z.boolean(),
   limitedTimeSec: z.number(),
   stoppedByQueueTimeSec: z.number(),
   equivalentLostTimeSec: z.number(),
+  energy: z.number().min(0).max(1).default(1),
 });
 
 const SimulationStatusSchema = z.enum(['running', 'completed', 'timed_out']);
@@ -145,6 +202,12 @@ const PreparationSnapshotSchema = z.object({
   // Opcional por valor: espelha Partial<Record<CharacterId, string>> do domínio.
   participantByCharacter: z.record(CharacterIdSchema, z.string().optional()),
   hypothesis: z.string(),
+  // Ao contrário de `variabilityMode` (nunca ativado fora do experimento),
+  // fadiga pode ser ativada numa preparação normal, depois da 1ª conclusão
+  // (§7.3) — o rascunho precisa carregar o modo escolhido para sobreviver a
+  // um recarregamento antes de iniciar a tentativa.
+  fatigueMode: FatigueModeSchema,
+  fatigueParams: FatigueParamsSchema,
 });
 
 export const SessionPayloadSchema = z.object({
@@ -267,18 +330,20 @@ function attemptCoherenceIssues(attempt: z.infer<typeof AttemptResultSchema>): s
 }
 
 export function validateSessionPayload(raw: unknown): PayloadValidation {
-  // Checagem explícita antes do Zod: um payload v1 tem forma válida para a
-  // v1, mas `SessionPayloadSchema` (v2) o rejeitaria com um erro genérico de
-  // "literal inválido" em vez de dizer o que realmente aconteceu. Sinalizar
-  // isso primeiro, com mensagem específica, é a "mudança de formato tratada
-  // explicitamente" — não uma migração automática, que este MVP não faz.
+  // Checagem explícita antes do Zod: um payload de QUALQUER versão anterior
+  // tem forma válida para a versão em que foi salvo, mas `SessionPayloadSchema`
+  // (a versão atual) o rejeitaria com um erro genérico de "literal inválido"
+  // em vez de dizer o que realmente aconteceu. Sinalizar isso primeiro, com
+  // mensagem específica, é a "mudança de formato tratada explicitamente" —
+  // não uma migração automática, que este MVP não faz.
   if (
     typeof raw === 'object' &&
     raw !== null &&
     'schemaVersion' in raw &&
-    (raw as { schemaVersion?: unknown }).schemaVersion === PREVIOUS_SCHEMA_VERSION
+    typeof (raw as { schemaVersion?: unknown }).schemaVersion === 'number' &&
+    (raw as { schemaVersion: number }).schemaVersion !== SCHEMA_VERSION
   ) {
-    return { ok: false, payload: null, issues: [OLD_FORMAT_ISSUE] };
+    return { ok: false, payload: null, issues: [oldFormatIssue((raw as { schemaVersion: number }).schemaVersion)] };
   }
 
   const parsed = SessionPayloadSchema.safeParse(raw);

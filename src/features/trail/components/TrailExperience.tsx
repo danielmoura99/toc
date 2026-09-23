@@ -21,11 +21,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { History, ListChecks } from 'lucide-react';
 
-import type { AttemptConfig } from '../domain/types';
+import type { AttemptConfig, AttemptResult } from '../domain/types';
 import { useAttemptsStore } from '../application/attemptsStore';
 import { usePreparationStore } from '../application/preparationStore';
 import { usePersistenceStatusStore } from '../application/persistenceStatusStore';
 import { restoreSessionFromStorage, applySessionPayload, saveCurrentSession } from '../application/sessionSync';
+import { buildWithoutVariabilityConfig } from '../application/variabilityExperiment';
+import { buildWithFatigueConfig } from '../application/fatigueExperiment';
 import {
   clearActiveAttemptMarker,
   consumeInterruptedAttemptMarker,
@@ -33,14 +35,23 @@ import {
 } from '../persistence/localStorageAdapter';
 import { ComparisonPanel } from './ComparisonPanel';
 import { ExpeditionSetup } from './ExpeditionSetup';
+import { FatigueComparisonPanel } from './FatigueComparisonPanel';
 import { HistoryPanel } from './HistoryPanel';
 import { PendingAttemptBanner } from './PendingAttemptBanner';
 import { PersistenceBanner } from './PersistenceBanner';
 import { Preparation } from './Preparation';
 import { SessionMenu } from './SessionMenu';
 import { TrailRun } from './TrailRun';
+import { VariabilityComparisonPanel } from './VariabilityComparisonPanel';
 
-type View = 'setup' | 'preparation' | 'running' | 'history' | 'comparison';
+type View =
+  | 'setup'
+  | 'preparation'
+  | 'running'
+  | 'history'
+  | 'comparison'
+  | 'variability-comparison'
+  | 'fatigue-comparison';
 
 const VIEW_TITLES: Record<View, string> = {
   setup: 'Nova expedição',
@@ -48,6 +59,8 @@ const VIEW_TITLES: Record<View, string> = {
   running: 'Caminhada do grupo',
   history: 'Histórico de tentativas',
   comparison: 'Comparação de tentativas',
+  'variability-comparison': 'Efeito da variabilidade',
+  'fatigue-comparison': 'Efeito da fadiga',
 };
 
 /** Tempo de espera após a última mudança confirmada antes de salvar (§12: nunca a cada frame). */
@@ -140,6 +153,51 @@ export function TrailExperience() {
   const goToHistory = () => setView('history');
   const goToSetup = () => setView('setup');
 
+  // Experimento "com e sem variabilidade" (evolução pedagógica, frente 2): a
+  // condição "sem variabilidade" roda pelo mesmo `TrailRun`/`start` de
+  // qualquer tentativa — reaproveita registro, salvamento e histórico sem
+  // nenhum caminho novo. A comparação lê as duas pontas pelo `experimentOf`
+  // já salvo no histórico, não por estado local — sobrevive a um
+  // recarregamento de graça (`variabilityComparisonId` guarda só o id).
+  const [variabilityComparisonId, setVariabilityComparisonId] = useState<string | null>(null);
+  // Id da tentativa "sem variabilidade" recém-registrada — só existe depois
+  // que `TrailRun` a grava; é o que o botão "Comparar efeito da
+  // variabilidade" (dentro da própria execução) precisa para navegar.
+  const [recordedVariabilityExperimentId, setRecordedVariabilityExperimentId] = useState<string | null>(null);
+
+  const startVariabilityExperiment = (origin: AttemptResult) => {
+    setRecordedVariabilityExperimentId(null);
+    start(buildWithoutVariabilityConfig(origin));
+  };
+
+  // Mesmo padrão para o experimento "com e sem fadiga" (frente 5).
+  const [fatigueComparisonId, setFatigueComparisonId] = useState<string | null>(null);
+  const [recordedFatigueExperimentId, setRecordedFatigueExperimentId] = useState<string | null>(null);
+
+  const startFatigueExperiment = (origin: AttemptResult) => {
+    setRecordedFatigueExperimentId(null);
+    start(buildWithFatigueConfig(origin));
+  };
+
+  const handleRecorded = (recorded: AttemptResult) => {
+    if (recorded.config.experimentOf?.kind === 'variability') {
+      setRecordedVariabilityExperimentId(recorded.id);
+    }
+    if (recorded.config.experimentOf?.kind === 'fatigue') {
+      setRecordedFatigueExperimentId(recorded.id);
+    }
+  };
+
+  const goToVariabilityComparison = (experimentalAttemptId: string) => {
+    setVariabilityComparisonId(experimentalAttemptId);
+    setView('variability-comparison');
+  };
+
+  const goToFatigueComparison = (experimentalAttemptId: string) => {
+    setFatigueComparisonId(experimentalAttemptId);
+    setView('fatigue-comparison');
+  };
+
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 p-4 sm:px-6">
       <header className="flex flex-wrap items-center justify-between gap-2">
@@ -192,6 +250,17 @@ export function TrailExperience() {
           config={attempt}
           onBackToPreparation={backToPreparation}
           onViewHistory={goToHistory}
+          onRecorded={handleRecorded}
+          onCompareVariability={
+            attempt.experimentOf?.kind === 'variability' && recordedVariabilityExperimentId
+              ? () => goToVariabilityComparison(recordedVariabilityExperimentId)
+              : undefined
+          }
+          onCompareFatigue={
+            attempt.experimentOf?.kind === 'fatigue' && recordedFatigueExperimentId
+              ? () => goToFatigueComparison(recordedFatigueExperimentId)
+              : undefined
+          }
         />
       )}
 
@@ -200,7 +269,22 @@ export function TrailExperience() {
       )}
 
       {view === 'history' && (
-        <HistoryPanel onCompare={() => setView('comparison')} onReused={goToPreparation} />
+        <HistoryPanel
+          onCompare={() => setView('comparison')}
+          onReused={goToPreparation}
+          onStartVariabilityExperiment={startVariabilityExperiment}
+          onViewVariabilityComparison={goToVariabilityComparison}
+          onStartFatigueExperiment={startFatigueExperiment}
+          onViewFatigueComparison={goToFatigueComparison}
+        />
+      )}
+
+      {view === 'variability-comparison' && variabilityComparisonId && (
+        <VariabilityComparisonPanel experimentalAttemptId={variabilityComparisonId} onBack={goToHistory} />
+      )}
+
+      {view === 'fatigue-comparison' && fatigueComparisonId && (
+        <FatigueComparisonPanel experimentalAttemptId={fatigueComparisonId} onBack={goToHistory} />
       )}
 
       {view === 'comparison' && <ComparisonPanel onBack={goToHistory} />}

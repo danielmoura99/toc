@@ -5,8 +5,19 @@
  * retroativamente por edições na preparação (R12).
  */
 
-import type { AttemptConfig, CharacterId, GuidedStage, ItemId, Scenario } from './types';
+import type {
+  AttemptConfig,
+  CharacterId,
+  ExperimentLink,
+  FatigueMode,
+  FatigueParams,
+  GuidedStage,
+  ItemId,
+  Scenario,
+  VariabilityMode,
+} from './types';
 import { ENGINE_VERSION, TICK_SEC } from './types';
+import { DEFAULT_FATIGUE_PARAMS } from './fatigue';
 
 export interface CreateAttemptOptions {
   seed?: string;
@@ -15,6 +26,10 @@ export interface CreateAttemptOptions {
   participantByCharacter?: Partial<Record<CharacterId, string>>;
   hypothesis?: string;
   guidedStage?: GuidedStage;
+  variabilityMode?: VariabilityMode;
+  fatigueMode?: FatigueMode;
+  fatigueParams?: FatigueParams;
+  experimentOf?: ExperimentLink;
 }
 
 export function createAttemptConfig(
@@ -31,6 +46,10 @@ export function createAttemptConfig(
     ownerByItem: { ...(options.ownerByItem ?? snapshot.initialOwnerByItem) },
     participantByCharacter: { ...(options.participantByCharacter ?? {}) },
     hypothesis: options.hypothesis ?? '',
+    variabilityMode: options.variabilityMode ?? 'standard',
+    fatigueMode: options.fatigueMode ?? 'disabled',
+    fatigueParams: options.fatigueParams ?? DEFAULT_FATIGUE_PARAMS,
+    ...(options.experimentOf ? { experimentOf: options.experimentOf } : {}),
     guidedStage: options.guidedStage ?? 1,
     tickSec: TICK_SEC,
   };

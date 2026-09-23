@@ -20,6 +20,8 @@ export function preparationSnapshotFromDraft(draft: AttemptConfig): PreparationS
     ownerByItem: { ...draft.ownerByItem },
     participantByCharacter: { ...draft.participantByCharacter },
     hypothesis: draft.hypothesis,
+    fatigueMode: draft.fatigueMode,
+    fatigueParams: draft.fatigueParams,
   };
 }
 

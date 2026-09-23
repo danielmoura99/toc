@@ -19,6 +19,8 @@ export const COMPARABILITY_ISSUE_LABELS: Record<ComparabilityIssue, string> = {
   distance: 'Distância diferente',
   tick: 'Passo de simulação diferente',
   variability_block: 'Bloco de variabilidade diferente',
+  variability_mode: 'Modo de variabilidade diferente (com/sem)',
+  fatigue_mode: 'Modo ou parâmetros de fadiga diferentes',
 };
 
 function formatPercent(value: number): string {

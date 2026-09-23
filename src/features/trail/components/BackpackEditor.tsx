@@ -15,6 +15,7 @@ import { ArrowRight } from 'lucide-react';
 
 import { itemsOwnedBy } from '../domain/attempt';
 import type { AttemptConfig, CharacterId, ItemId } from '../domain/types';
+import { characterLabel } from './characterLabel';
 import { colorForCharacter } from './characterColors';
 
 const TRANSFER_AMOUNTS = [1, 3] as const;
@@ -50,6 +51,7 @@ export function BackpackEditor({ config, loads, disabled, onTransfer }: Backpack
       <ul className="flex flex-col gap-1.5">
         {config.order.map((characterId) => {
           const character = config.scenario.characters.find((item) => item.id === characterId)!;
+          const label = characterLabel(config, characterId);
           const loadKg = loads[characterId] ?? 0;
           const isOverloaded = loadKg > character.maxLoadKg;
           const fillPct = Math.min(100, (loadKg / character.maxLoadKg) * 100);
@@ -72,7 +74,7 @@ export function BackpackEditor({ config, loads, disabled, onTransfer }: Backpack
               />
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{character.displayName}</p>
+                <p className="truncate text-sm font-medium">{label}</p>
                 <div className="mt-1 h-1.5 w-full max-w-48 overflow-hidden rounded-full bg-muted">
                   <div
                     className={`h-full rounded-full ${
@@ -95,7 +97,7 @@ export function BackpackEditor({ config, loads, disabled, onTransfer }: Backpack
                 <ArrowRight className="size-3.5 text-muted-foreground" aria-hidden="true" />
 
                 <label>
-                  <span className="sr-only">Destino da carga de {character.displayName}</span>
+                  <span className="sr-only">Destino da carga de {label}</span>
                   <select
                     className="rounded-md border bg-background px-2 py-1 text-xs disabled:opacity-50"
                     value={target}
@@ -109,7 +111,7 @@ export function BackpackEditor({ config, loads, disabled, onTransfer }: Backpack
                   >
                     {others.map((id) => (
                       <option key={id} value={id}>
-                        {config.scenario.characters.find((item) => item.id === id)!.displayName}
+                        {characterLabel(config, id)}
                       </option>
                     ))}
                   </select>

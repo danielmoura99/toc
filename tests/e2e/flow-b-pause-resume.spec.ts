@@ -28,6 +28,21 @@ test('pausar, avançar, continuar — e confirmar antes de descartar o progresso
     .poll(async () => clock.innerText())
     .not.toBe(clockBefore);
 
+  // --- Selecionar alguém na tabela mostra o painel de detalhes mesmo
+  //     pausado — nenhum tick precisa rodar depois do clique (frente 3 da
+  //     evolução pedagógica: o gráfico não pode ficar vazio ou com os dados
+  //     de quem estava selecionado antes). ---
+  const firstNameButton = page.locator('table button').first();
+  const selectedName = await firstNameButton.innerText();
+  await firstNameButton.click();
+  const detailPanel = page.getByRole('region', { name: `Detalhes de ${selectedName}` });
+  await expect(detailPanel).toBeVisible();
+  await expect(detailPanel.getByText(/Chegou|Sem predecessor|Limitado pela fila|Espaço/)).toBeVisible();
+  await expect(detailPanel.getByText('Ritmo de referência')).toBeVisible();
+  // Clicar de novo desmarca (mesmo alternar do canvas).
+  await firstNameButton.click();
+  await expect(detailPanel).toHaveCount(0);
+
   // Tentar sair para a preparação com progresso pausado pede confirmação —
   // não descarta direto (§7.6).
   await page.getByRole('button', { name: 'Preparação' }).click();

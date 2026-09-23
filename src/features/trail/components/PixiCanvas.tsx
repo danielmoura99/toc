@@ -12,7 +12,7 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { AlertTriangle, RotateCcw } from 'lucide-react';
 
-import type { AttemptConfig, SimulationState } from '../domain/types';
+import type { AttemptConfig, CharacterId, SimulationState } from '../domain/types';
 import { TrailScene, walkerSpecsFromConfig } from '../rendering/trailScene';
 import { colorsForScenarioHex } from './characterColors';
 
@@ -20,13 +20,28 @@ interface PixiCanvasProps {
   config: AttemptConfig;
   /** Ref mutável, atualizada a cada tick pelo laço de física do componente pai. */
   stateRef: RefObject<SimulationState>;
+  /** Quem está selecionado agora — vindo do canvas ou da tabela (frente 3 da evolução pedagógica). */
+  selectedId?: CharacterId | null;
+  onSelect?: (characterId: CharacterId | null) => void;
 }
 
-export function PixiCanvas({ config, stateRef }: PixiCanvasProps) {
+export function PixiCanvas({ config, stateRef, selectedId = null, onSelect }: PixiCanvasProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   // Incrementar remonta o efeito de criação, permitindo "tentar novamente".
   const [attempt, setAttempt] = useState(0);
+  // A cena é criada uma vez por tentativa; a instância viva fica aqui para o
+  // efeito de sincronização de seleção (abaixo) poder chamar `setSelected`
+  // sem recriar o canvas inteiro a cada clique.
+  const sceneRef = useRef<TrailScene | null>(null);
+  // `onSelect` pode mudar de identidade a cada render do componente pai; o
+  // efeito de criação só depende de `[attempt]` (§10.3: não recriar o canvas
+  // por causa disso), então lê sempre a versão mais recente por uma ref —
+  // atualizada aqui, num efeito próprio, nunca escrita durante o render.
+  const onSelectRef = useRef(onSelect);
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  });
 
   useEffect(() => {
     const host = hostRef.current;
@@ -44,6 +59,7 @@ export function PixiCanvas({ config, stateRef }: PixiCanvasProps) {
       distanceM: config.scenario.distanceM,
       order: config.order,
       walkers,
+      onSelect: (characterId) => onSelectRef.current?.(characterId),
     })
       .then((created) => {
         // Protege contra desmontagem antes da resolução da promise (§10.3).
@@ -53,6 +69,7 @@ export function PixiCanvas({ config, stateRef }: PixiCanvasProps) {
         }
 
         scene = created;
+        sceneRef.current = created;
         host.appendChild(created.canvas);
         setError(null);
 
@@ -82,6 +99,7 @@ export function PixiCanvas({ config, stateRef }: PixiCanvasProps) {
       cancelled = true;
       if (frameHandle) cancelAnimationFrame(frameHandle);
       resizeObserver?.disconnect();
+      sceneRef.current = null;
       // No cleanup, remover listeners, ticker, canvas e recursos possuídos
       // pela instância (§10.3). Seguro sob React Strict Mode: a criação
       // assíncrona que ainda não resolveu é abortada pela flag `cancelled`.
@@ -89,6 +107,12 @@ export function PixiCanvas({ config, stateRef }: PixiCanvasProps) {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- config e stateRef são estáveis por execução (snapshot congelado ao iniciar).
   }, [attempt]);
+
+  // Seleção vinda de fora (a tabela) sincroniza com o canvas sem recriar a
+  // cena — as duas superfícies mostram a mesma seleção (frente 3).
+  useEffect(() => {
+    sceneRef.current?.setSelected(selectedId);
+  }, [selectedId]);
 
   if (error) {
     return (

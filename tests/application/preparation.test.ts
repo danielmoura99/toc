@@ -1,14 +1,41 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { useAttemptsStore } from '@/features/trail/application/attemptsStore';
 import { usePreparationStore } from '@/features/trail/application/preparationStore';
 import { GUIDED_STAGES, HYPOTHESIS_MAX_LENGTH, getStage } from '@/features/trail/application/stages';
+import { createAttemptConfig } from '@/features/trail/domain/attempt';
 import { computeLoadByCharacter } from '@/features/trail/domain/engine';
+import { finalizeResult } from '@/features/trail/domain/metrics';
 import { validateConfig, conservesItems } from '@/features/trail/domain/validation';
 import { itemsOwnedBy } from '@/features/trail/domain/attempt';
 import { runToEnd } from '@/features/trail/domain/engine';
+import type { AttemptResult, Scenario } from '@/features/trail/domain/types';
 import { SCENARIO_A, SCENARIO_B } from '@/features/trail/scenarios';
 
 const store = usePreparationStore;
+
+/**
+ * Etapas 2 e 3 exigem uma conclusão da etapa 1 desta expedição no histórico
+ * (ajuste de navegação, 22/09/2026). Semeia essa conclusão, pelo motor de
+ * verdade, para os testes que exercitam comportamento das etapas 2/3 sem que
+ * a própria conclusão seja o que está sob teste.
+ */
+function unlockStages23(scenario: Scenario): void {
+  const config = createAttemptConfig(scenario, { guidedStage: 1 });
+  const finalState = runToEnd(config);
+  const metrics = finalizeResult(config, finalState);
+  const attempt: AttemptResult = {
+    id: `seed-etapa1-${scenario.id}`,
+    createdAt: new Date().toISOString(),
+    config,
+    outcome: metrics.outcome,
+    finalState,
+    totalTimeSec: metrics.totalTimeSec,
+    meanSpreadM: metrics.meanSpreadM,
+    metrics,
+  };
+  useAttemptsStore.getState().hydrateHistory([attempt], attempt.id);
+}
 
 // A maior parte destes testes exercita o comportamento GENÉRICO da store
 // (ordenar, redistribuir, restaurar) sobre o cenário A, que continua servindo
@@ -17,6 +44,7 @@ const store = usePreparationStore;
 // libera reordenar; a etapa 1 (sempre travada) tem sua própria seção.
 beforeEach(() => {
   store.getState().startExpedition(SCENARIO_A);
+  unlockStages23(SCENARIO_A);
   store.getState().setStage(2);
 });
 
@@ -119,6 +147,63 @@ describe('store — travamento da etapa 1', () => {
     expect(after.ownerByItem).toEqual(before.ownerByItem);
     expect(after.scenario.id).toBe(before.scenario.id);
     expect(after.scenario.defaultSeed).toBe(before.scenario.defaultSeed);
+  });
+});
+
+describe('store — etapas 2 e 3 exigem ter concluído a etapa 1 desta expedição', () => {
+  // Este bloco parte de uma expedição SEM nenhuma conclusão no histórico —
+  // diferente do `beforeEach` global do arquivo, que já semeia uma. Cada
+  // teste decide por si quando (e se) semear.
+  beforeEach(() => {
+    useAttemptsStore.setState({ history: [], referenceAttemptId: null, selectedForComparison: [], pendingAttempt: null });
+    store.getState().startExpedition(SCENARIO_A);
+  });
+
+  it('setStage(2) não faz nada sem nenhuma conclusão da etapa 1', () => {
+    store.getState().setStage(2);
+    expect(store.getState().stage).toBe(1);
+  });
+
+  it('setStage(3) não faz nada sem nenhuma conclusão da etapa 1', () => {
+    store.getState().setStage(3);
+    expect(store.getState().stage).toBe(1);
+  });
+
+  it('setStage(2) funciona depois de concluir a etapa 1 desta expedição', () => {
+    unlockStages23(SCENARIO_A);
+    store.getState().setStage(2);
+    expect(store.getState().stage).toBe(2);
+  });
+
+  it('uma conclusão de OUTRA expedição não libera esta', () => {
+    unlockStages23(SCENARIO_B);
+    store.getState().setStage(2);
+    expect(store.getState().stage).toBe(1);
+  });
+
+  it('uma conclusão de outra etapa (não a 1) desta expedição não libera', () => {
+    const config = createAttemptConfig(SCENARIO_A, { guidedStage: 2 });
+    const finalState = runToEnd(config);
+    const metrics = finalizeResult(config, finalState);
+    useAttemptsStore.getState().hydrateHistory(
+      [{ id: 'x', createdAt: new Date().toISOString(), config, outcome: metrics.outcome, finalState, totalTimeSec: metrics.totalTimeSec, meanSpreadM: metrics.meanSpreadM, metrics }],
+      null,
+    );
+
+    store.getState().setStage(2);
+    expect(store.getState().stage).toBe(1);
+  });
+
+  it('gerar uma nova expedição re-trava as etapas 2 e 3, mesmo com uma conclusão anterior no histórico', () => {
+    unlockStages23(SCENARIO_A);
+    store.getState().setStage(2);
+    expect(store.getState().stage).toBe(2);
+
+    store.getState().startExpedition(SCENARIO_B);
+    expect(store.getState().stage).toBe(1);
+
+    store.getState().setStage(2);
+    expect(store.getState().stage).toBe(1); // trilha-b não tem conclusão própria
   });
 });
 

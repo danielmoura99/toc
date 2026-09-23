@@ -132,6 +132,38 @@ describe('compareAttempts — comparabilidade', () => {
     expect(compareAttempts(reference, current).issues).toContain('cast');
   });
 
+  it('modos de variabilidade diferentes quebram a comparabilidade (§4.3 da evolução pedagógica)', () => {
+    const reference = makeResult(createAttemptConfig(SCENARIO_A, { variabilityMode: 'standard' }), 'a1');
+    const current = makeResult(createAttemptConfig(SCENARIO_A, { variabilityMode: 'disabled' }), 'a2');
+
+    const comparison = compareAttempts(reference, current);
+    expect(comparison.comparable).toBe(false);
+    expect(comparison.issues).toContain('variability_mode');
+    expect(comparison.improvementPct).toBeNull();
+  });
+
+  it('modos de fadiga diferentes quebram a comparabilidade (§7.3 da evolução pedagógica)', () => {
+    const reference = makeResult(createAttemptConfig(SCENARIO_A, { fatigueMode: 'disabled' }), 'a1');
+    const current = makeResult(createAttemptConfig(SCENARIO_A, { fatigueMode: 'enabled' }), 'a2');
+
+    const comparison = compareAttempts(reference, current);
+    expect(comparison.comparable).toBe(false);
+    expect(comparison.issues).toContain('fatigue_mode');
+    expect(comparison.improvementPct).toBeNull();
+  });
+
+  it('mesma fadiga ativa dos dois lados é comparável (redistribuir com fadiga é permitido, §7.3)', () => {
+    const reference = makeResult(createAttemptConfig(SCENARIO_A, { fatigueMode: 'enabled' }), 'a1');
+    const current = makeResult(
+      createAttemptConfig(SCENARIO_A, { fatigueMode: 'enabled', order: ['p5', 'p1', 'p2', 'p3', 'p4', 'p6'] }),
+      'a2',
+    );
+
+    const comparison = compareAttempts(reference, current);
+    expect(comparison.comparable).toBe(true);
+    expect(comparison.issues).not.toContain('fatigue_mode');
+  });
+
   it('timeout não produz percentual de melhoria', () => {
     const reference = makeResult(createAttemptConfig(SCENARIO_A), 'a1');
     const timedOutScenario = structuredClone(SCENARIO_A);

@@ -228,8 +228,12 @@ export function evaluateGeneratedScenario(scenario: Scenario): ScenarioCheckResu
     return { ok: false, reason: `redistribuir melhora pouco o tempo (${improvementPct.toFixed(1)}%)` };
   }
 
-  // 4) Redistribuir demais é demonstrável: pior que o equilíbrio, mas ainda
-  // melhor que não fazer nada — exatamente o efeito descrito em D09.
+  // 4) Redistribuir demais é demonstrável: pior que o equilíbrio — exatamente
+  // o efeito descrito em D09. Não exige mais que o excesso também fique
+  // melhor que a situação inicial (evolução pedagógica, §6.1): comparado
+  // apenas ao "não fazer nada", excesso pode continuar melhor, empatar ou
+  // ficar pior — a piora relevante é frente ao equilíbrio, não frente à
+  // configuração inicial.
   const excess = overloadFastest(baseline);
   const excessState = runToEnd(excess);
   if (excessState.status !== 'completed') {
@@ -239,9 +243,6 @@ export function evaluateGeneratedScenario(scenario: Scenario): ScenarioCheckResu
 
   if (excessMetrics.totalTimeSec! <= balancedMetrics.totalTimeSec!) {
     return { ok: false, reason: 'redistribuir demais não fica pior que redistribuir com equilíbrio' };
-  }
-  if (excessMetrics.totalTimeSec! >= baselineMetrics.totalTimeSec!) {
-    return { ok: false, reason: 'redistribuir demais não fica melhor que a configuração inicial' };
   }
 
   return { ok: true };

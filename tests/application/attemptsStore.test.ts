@@ -3,12 +3,14 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   MAX_COMPARISON_SELECTION,
   MAX_HISTORY_SIZE,
+  allKnownAttempts,
+  hasCompletedFirstStage,
   useAttemptsStore,
 } from '@/features/trail/application/attemptsStore';
 import { createAttemptConfig } from '@/features/trail/domain/attempt';
 import { runToEnd } from '@/features/trail/domain/engine';
 import { SCENARIO_A, SCENARIO_B } from '@/features/trail/scenarios';
-import type { AttemptConfig } from '@/features/trail/domain/types';
+import type { AttemptConfig, AttemptResult } from '@/features/trail/domain/types';
 
 const store = useAttemptsStore;
 
@@ -326,5 +328,46 @@ describe('integração com o domínio de comparação', () => {
     expect(store.getState().history).toHaveLength(2);
     expect(store.getState().history[0].config.scenario.id).toBe('trilha-a');
     expect(store.getState().history[1].config.scenario.id).toBe('trilha-b');
+  });
+});
+
+describe('hasCompletedFirstStage / allKnownAttempts', () => {
+  function completed(scenario = SCENARIO_A, guidedStage: 1 | 2 | 3 = 1): AttemptResult {
+    const config = createAttemptConfig(scenario, { guidedStage });
+    const result = store.getState().recordAttempt(config, runToEnd(config));
+    if (!result.ok) throw new Error('gravação deveria ter sucesso');
+    return result.attempt;
+  }
+
+  it('falso sem nenhuma tentativa conhecida', () => {
+    expect(hasCompletedFirstStage([], SCENARIO_A.id)).toBe(false);
+  });
+
+  it('verdadeiro com uma conclusão da etapa 1 da mesma expedição', () => {
+    expect(hasCompletedFirstStage([completed(SCENARIO_A, 1)], SCENARIO_A.id)).toBe(true);
+  });
+
+  it('falso para uma conclusão de outra etapa da mesma expedição — etapa 1 é a exigida', () => {
+    expect(hasCompletedFirstStage([completed(SCENARIO_A, 3)], SCENARIO_A.id)).toBe(false);
+  });
+
+  it('falso para uma conclusão da etapa 1 de OUTRA expedição', () => {
+    expect(hasCompletedFirstStage([completed(SCENARIO_B, 1)], SCENARIO_A.id)).toBe(false);
+  });
+
+  it('falso para uma tentativa de etapa 1 que não concluiu (timeout)', () => {
+    const timedOut = { ...completed(SCENARIO_A, 1), outcome: 'timed_out' as const };
+    expect(hasCompletedFirstStage([timedOut], SCENARIO_A.id)).toBe(false);
+  });
+
+  it('allKnownAttempts acrescenta a pendente ao histórico, quando houver', () => {
+    const attempt = completed(SCENARIO_A, 1);
+    expect(allKnownAttempts([], attempt)).toEqual([attempt]);
+    expect(allKnownAttempts([], null)).toEqual([]);
+  });
+
+  it('uma conclusão da etapa 1 ainda pendente (histórico cheio) já conta como concluída', () => {
+    const attempt = completed(SCENARIO_A, 1);
+    expect(hasCompletedFirstStage(allKnownAttempts([], attempt), SCENARIO_A.id)).toBe(true);
   });
 });

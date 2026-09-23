@@ -34,15 +34,21 @@ export function summarize(values: number[]): Summary {
   };
 }
 
-/** Formata segundos como mm:ss, para leitura rápida no terminal. */
+/**
+ * Formata segundos como mm:ss, para leitura rápida no terminal. Aceita
+ * negativos (diferenças "com − sem" podem ser negativas) — o sinal aparece
+ * uma vez só, na frente; sem isso, minutos e segundos negativos produziriam
+ * algo como "-1:-32" em vez de "-1:32".
+ */
 export function formatSeconds(value: number | null): string {
   if (value === null) return '—';
 
-  const total = Math.round(value);
+  const sign = value < 0 ? '-' : '';
+  const total = Math.round(Math.abs(value));
   const minutes = Math.floor(total / 60);
   const seconds = total % 60;
 
-  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+  return `${sign}${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
 export function formatMeters(value: number | null): string {

@@ -5,13 +5,15 @@ import {
   createInitialState,
   kmhToMps,
   loadFactor,
+  referenceSpeedMps,
   runToEnd,
   step,
 } from '@/features/trail/domain/engine';
 import { createAttemptConfig } from '@/features/trail/domain/attempt';
+import { DEFAULT_FATIGUE_PARAMS, fatigueFactor } from '@/features/trail/domain/fatigue';
 import { buildScenario } from '@/features/trail/scenarios/builder';
 import { SCENARIO_A } from '@/features/trail/scenarios';
-import type { AttemptConfig, CharacterId } from '@/features/trail/domain/types';
+import type { AttemptConfig, CharacterId, FatigueParams } from '@/features/trail/domain/types';
 import { ENGINE_VERSION, TICK_SEC } from '@/features/trail/domain/types';
 
 /**
@@ -75,6 +77,64 @@ describe('fórmulas de velocidade', () => {
     // Mesma razão carga/referência produz o mesmo fator, independentemente do ID.
     expect(loadFactor(24, 12)).toBeCloseTo(loadFactor(12, 6), 12);
     expect(loadFactor(30, 10)).toBeCloseTo(loadFactor(42, 14), 12);
+  });
+});
+
+describe('variabilityMode — evolução pedagógica, frente 2', () => {
+  it('"standard" (padrão) reproduz exatamente o comportamento de sempre', () => {
+    const withDefault = availableSpeedMps(
+      SCENARIO_A.characters[0],
+      6,
+      'seed-x',
+      0,
+      SCENARIO_A.variabilityBlockSec,
+    );
+    const withExplicitStandard = availableSpeedMps(
+      SCENARIO_A.characters[0],
+      6,
+      'seed-x',
+      0,
+      SCENARIO_A.variabilityBlockSec,
+      'standard',
+    );
+    expect(withExplicitStandard).toBe(withDefault);
+  });
+
+  it('"disabled" usa fator 1: resultado igual para qualquer seed', () => {
+    const character = SCENARIO_A.characters.find((c) => c.id === 'p5')!; // variability > 0
+    const bySeed = ['seed-a', 'seed-b', 'seed-c'].map((seed) =>
+      availableSpeedMps(character, 18, seed, 90, SCENARIO_A.variabilityBlockSec, 'disabled'),
+    );
+
+    for (const value of bySeed) {
+      expect(value).toBeCloseTo(bySeed[0], 12);
+    }
+    // Fator 1: igual à fórmula sem variação nenhuma (base × carga).
+    expect(bySeed[0]).toBeCloseTo(kmhToMps(character.baseSpeedKmh) * loadFactor(18, character.referenceLoadKg), 12);
+  });
+
+  it('"disabled" não altera a fórmula de carga nem a atualização de posições — só a flutuação', () => {
+    const standard = createAttemptConfig(SCENARIO_A, { variabilityMode: 'standard' });
+    const disabled = createAttemptConfig(SCENARIO_A, { variabilityMode: 'disabled' });
+
+    // Mesma ordem, mesmas cargas, mesma seed — só o modo difere.
+    expect(disabled.order).toEqual(standard.order);
+    expect(computeLoadByCharacter(disabled)).toEqual(computeLoadByCharacter(standard));
+
+    const disabledResult = runToEnd(disabled);
+    expect(disabledResult.status).toBe('completed');
+  });
+
+  it('createAttemptConfig assume "standard" quando a opção não é passada (compatibilidade)', () => {
+    const config = createAttemptConfig(SCENARIO_A);
+    expect(config.variabilityMode).toBe('standard');
+  });
+
+  it('duas execuções completas com "disabled" e seeds diferentes chegam ao mesmo resultado final', () => {
+    const a = createAttemptConfig(SCENARIO_A, { seed: 'seed-um', variabilityMode: 'disabled' });
+    const b = createAttemptConfig(SCENARIO_A, { seed: 'seed-dois', variabilityMode: 'disabled' });
+
+    expect(runToEnd(a)).toEqual(runToEnd(b));
   });
 });
 
@@ -226,6 +286,271 @@ describe('caso 4 — lento à frente, rápido atrás', () => {
     // Limitado não é o mesmo que parado: ele continuou andando.
     expect(final.characters.rapido.stoppedByQueueTimeSec).toBe(0);
     expect(final.maxSpreadM).toBe(0);
+  });
+});
+
+describe('isLimited — condição do tick, não o acumulado (evolução pedagógica, frente 3)', () => {
+  it('verdadeiro exatamente nos ticks em que a fila reduz o avanço, falso na chegada e para quem está livre', () => {
+    const scenario = labScenario({
+      characters: [
+        { id: 'lento', baseSpeedKmh: 3.6 },
+        { id: 'rapido', baseSpeedKmh: 7.2 },
+      ],
+      distanceM: 100,
+      order: ['lento', 'rapido'],
+    });
+    const config = createAttemptConfig(scenario);
+    let state = createInitialState(config);
+
+    for (let tick = 1; tick <= 99; tick += 1) {
+      state = step(config, state);
+      expect(state.characters.rapido.isLimited).toBe(true);
+      expect(state.characters.lento.isLimited).toBe(false);
+    }
+
+    // Tick 100: o rápido chega (99 → 100 m) — cortado pelo destino, não pela fila.
+    state = step(config, state);
+    expect(state.characters.rapido.arrivalTimeSec).toBe(100);
+    expect(state.characters.rapido.isLimited).toBe(false);
+    expect(state.characters.lento.isLimited).toBe(false);
+
+    // Depois de chegado, isLimited nunca volta a ficar verdadeiro.
+    const final = runToEnd(config);
+    expect(final.characters.rapido.isLimited).toBe(false);
+  });
+});
+
+describe('energia e fadiga — evolução pedagógica, frente 5', () => {
+  it('EV12 — fadiga desligada (padrão) preserva o comportamento anterior: energia sempre 1, resultado idêntico', () => {
+    const scenario = labScenario({ characters: [{ id: 'solo', baseSpeedKmh: 3.6 }], distanceM: 100 });
+    const withDefaultFatigue = runToEnd(createAttemptConfig(scenario));
+    const withExplicitDisabled = runToEnd(createAttemptConfig(scenario, { fatigueMode: 'disabled' }));
+
+    expect(withDefaultFatigue).toEqual(withExplicitDisabled);
+    expect(withDefaultFatigue.characters.solo.energy).toBe(1);
+  });
+
+  it('EV14 — caso numérico manual: consumo de energia bate com a fórmula do documento, tick a tick', () => {
+    // 3,6 km/h = 1 m/s; carga = referência (loadRatio = 1); sem fila, sem
+    // variação — só a fadiga muda a velocidade disponível de um tick a outro.
+    const scenario = labScenario({
+      characters: [{ id: 'solo', baseSpeedKmh: 3.6, referenceLoadKg: 10 }],
+      loadKgByCharacter: { solo: 10 },
+      distanceM: 100000,
+    });
+    const config = createAttemptConfig(scenario, { fatigueMode: 'enabled', fatigueParams: DEFAULT_FATIGUE_PARAMS });
+
+    const referenceSpeed = referenceSpeedMps(scenario.characters[0], 10);
+    expect(referenceSpeed).toBeCloseTo(5 / 6, 10);
+
+    let state = createInitialState(config);
+    let expectedEnergy = 1;
+
+    for (let tick = 1; tick <= 5; tick += 1) {
+      const fatigue = fatigueFactor(expectedEnergy, DEFAULT_FATIGUE_PARAMS.minFatigueFactor);
+      const expectedAvailable = referenceSpeed * fatigue;
+      const relativeEffort = expectedAvailable / referenceSpeed; // sem fila: avanço = disponível
+      const expectedLoss = DEFAULT_FATIGUE_PARAMS.drainPerSec * (1 + 0.5 * 1) * relativeEffort ** 2 * 1;
+      expectedEnergy = Math.max(0, expectedEnergy - expectedLoss);
+
+      state = step(config, state);
+
+      expect(state.characters.solo.availableSpeedMps).toBeCloseTo(expectedAvailable, 8);
+      expect(state.characters.solo.energy).toBeCloseTo(expectedEnergy, 8);
+    }
+
+    // Energia é monotonicamente decrescente aqui — cada tick prova consumo.
+    expect(expectedEnergy).toBeLessThan(1);
+  });
+
+  it('EV14 — mesma carga relativa, esforço efetivo menor (limitado pela fila) perde MENOS energia', () => {
+    // Reaproveita a fixture do "caso 4": lento à frente (livre, esforço 1),
+    // rápido atrás, limitado ao ritmo do lento (esforço relativo 0,5) — mesma
+    // carga/referência dos dois lados, então a diferença isola só o esforço.
+    const scenario = labScenario({
+      characters: [
+        { id: 'lento', baseSpeedKmh: 3.6 },
+        { id: 'rapido', baseSpeedKmh: 7.2 },
+      ],
+      distanceM: 100000,
+      order: ['lento', 'rapido'],
+    });
+    const config = createAttemptConfig(scenario, { fatigueMode: 'enabled', fatigueParams: DEFAULT_FATIGUE_PARAMS });
+
+    const state = step(config, createInitialState(config));
+
+    // lento: livre, esforço relativo 1. rápido: capado no avanço do lento,
+    // que é metade da capacidade de referência do rápido — esforço 0,5.
+    expect(state.characters.rapido.isLimited).toBe(true);
+    const lostLento = 1 - state.characters.lento.energy;
+    const lostRapido = 1 - state.characters.rapido.energy;
+
+    expect(lostRapido).toBeGreaterThan(0);
+    expect(lostRapido).toBeLessThan(lostLento);
+    // Fórmula fechada: perda do rápido é exatamente 1/4 da do lento
+    // (esforço 0,5 ao quadrado), mesma carga relativa dos dois lados.
+    expect(lostRapido).toBeCloseTo(lostLento * 0.25, 10);
+  });
+
+  it('EV14/§7.5 — carga relativa maior, sob o mesmo esforço relativo, perde mais energia', () => {
+    // Dois personagens livres (sem fila — cada um sozinho na própria
+    // simulação), mesma velocidade base, cargas diferentes. Livres, os dois
+    // têm esforço relativo 1 (avanço = disponível) — só a carga difere.
+    const leve = labScenario({
+      characters: [{ id: 'x', baseSpeedKmh: 3.6, referenceLoadKg: 10 }],
+      loadKgByCharacter: { x: 5 }, // loadRatio 0,5
+      distanceM: 100000,
+    });
+    const pesado = labScenario({
+      characters: [{ id: 'x', baseSpeedKmh: 3.6, referenceLoadKg: 10 }],
+      loadKgByCharacter: { x: 20 }, // loadRatio 2,0
+      distanceM: 100000,
+    });
+
+    const configLeve = createAttemptConfig(leve, { fatigueMode: 'enabled', fatigueParams: DEFAULT_FATIGUE_PARAMS });
+    const configPesado = createAttemptConfig(pesado, { fatigueMode: 'enabled', fatigueParams: DEFAULT_FATIGUE_PARAMS });
+
+    const stateLeve = step(configLeve, createInitialState(configLeve));
+    const statePesado = step(configPesado, createInitialState(configPesado));
+
+    const lostLeve = 1 - stateLeve.characters.x.energy;
+    const lostPesado = 1 - statePesado.characters.x.energy;
+
+    expect(lostPesado).toBeGreaterThan(lostLeve);
+  });
+
+  it('sem avanço (já chegado antes do tick) não acumula desgaste — energia fica igual', () => {
+    // "Caso 3": rápido à frente chega bem antes do lento; depois de chegar,
+    // continua "esperando" por vários ticks enquanto o lento ainda anda.
+    const scenario = labScenario({
+      characters: [
+        { id: 'rapido', baseSpeedKmh: 7.2 },
+        { id: 'lento', baseSpeedKmh: 3.6 },
+      ],
+      distanceM: 100,
+      order: ['rapido', 'lento'],
+    });
+    const config = createAttemptConfig(scenario, { fatigueMode: 'enabled', fatigueParams: DEFAULT_FATIGUE_PARAMS });
+
+    let state = createInitialState(config);
+    while (state.characters.rapido.arrivalTimeSec === null) {
+      state = step(config, state);
+    }
+    const energyAtArrival = state.characters.rapido.energy;
+    expect(energyAtArrival).toBeLessThan(1); // gastou energia chegando lá
+
+    while (state.status === 'running') {
+      state = step(config, state);
+      // Depois de chegado, nenhum desgaste adicional — mesma energia de quando chegou.
+      expect(state.characters.rapido.energy).toBe(energyAtArrival);
+    }
+    expect(state.characters.lento.arrivalTimeSec).not.toBeNull();
+  });
+
+  it('energia nunca sai de [0, 1] e nunca aumenta, tick a tick', () => {
+    const scenario = labScenario({
+      characters: [
+        { id: 'a', baseSpeedKmh: 3.6 },
+        { id: 'b', baseSpeedKmh: 4.8 },
+      ],
+      distanceM: 500,
+      order: ['a', 'b'],
+    });
+    const config = createAttemptConfig(scenario, { fatigueMode: 'enabled', fatigueParams: DEFAULT_FATIGUE_PARAMS });
+
+    let state = createInitialState(config);
+    const previousEnergy: Record<string, number> = { a: 1, b: 1 };
+
+    while (state.status === 'running') {
+      state = step(config, state);
+      for (const id of ['a', 'b']) {
+        const energy = state.characters[id].energy;
+        expect(energy).toBeGreaterThanOrEqual(0);
+        expect(energy).toBeLessThanOrEqual(1);
+        expect(energy).toBeLessThanOrEqual(previousEnergy[id] + 1e-12);
+        previousEnergy[id] = energy;
+      }
+    }
+  });
+
+  it('reiniciar (createInitialState) sempre repõe a energia em 1 — nunca herda desgaste de outra configuração', () => {
+    const scenario = labScenario({ characters: [{ id: 'solo', baseSpeedKmh: 3.6 }], distanceM: 100000 });
+    const config = createAttemptConfig(scenario, { fatigueMode: 'enabled', fatigueParams: DEFAULT_FATIGUE_PARAMS });
+
+    let state = createInitialState(config);
+    for (let tick = 0; tick < 20; tick += 1) state = step(config, state);
+    expect(state.characters.solo.energy).toBeLessThan(1);
+
+    // Uma nova tentativa (nova chamada a createInitialState) começa do zero.
+    const restarted = createInitialState(config);
+    expect(restarted.characters.solo.energy).toBe(1);
+  });
+
+  it('energia zero preserva o piso de capacidade (minFatigueFactor) — não trava nem para o personagem', () => {
+    const aggressiveParams: FatigueParams = {
+      version: 'test-aggressive',
+      drainPerSec: 0.5,
+      loadDrainCoefficient: 0,
+      minFatigueFactor: 0.6,
+    };
+    const scenario = labScenario({
+      characters: [{ id: 'solo', baseSpeedKmh: 3.6, referenceLoadKg: 10 }],
+      loadKgByCharacter: { solo: 0 },
+      distanceM: 100000,
+    });
+    const config = createAttemptConfig(scenario, { fatigueMode: 'enabled', fatigueParams: aggressiveParams });
+    const referenceSpeed = referenceSpeedMps(scenario.characters[0], 0);
+
+    let state = createInitialState(config);
+    for (let tick = 0; tick < 10; tick += 1) state = step(config, state);
+
+    expect(state.characters.solo.energy).toBe(0);
+    // No piso, a velocidade disponível é referenceSpeed × minFatigueFactor —
+    // nunca menos, e o personagem continua avançando (sem parar).
+    expect(state.characters.solo.availableSpeedMps).toBeCloseTo(referenceSpeed * 0.6, 8);
+    expect(state.characters.solo.actualSpeedMps).toBeGreaterThan(0);
+
+    const nextState = step(config, state);
+    expect(nextState.characters.solo.energy).toBe(0); // não fica negativo
+    expect(nextState.characters.solo.actualSpeedMps).toBeGreaterThan(0); // continua andando
+  });
+
+  it('velocidade disponível nunca aumenta por perda de energia, com carga e flutuação fixas (§7.5)', () => {
+    const character = { id: 'x', displayName: 'X', baseSpeedKmh: 4.5, referenceLoadKg: 10, maxLoadKg: 30, variability: 0 };
+    const loadKg = 8;
+    const params = DEFAULT_FATIGUE_PARAMS;
+
+    const speedAtFullEnergy = availableSpeedMps(character, loadKg, 'seed', 0, 30, 'standard', {
+      energy: 1,
+      fatigueMode: 'enabled',
+      fatigueParams: params,
+    });
+    const speedAtHalfEnergy = availableSpeedMps(character, loadKg, 'seed', 0, 30, 'standard', {
+      energy: 0.5,
+      fatigueMode: 'enabled',
+      fatigueParams: params,
+    });
+    const speedAtNoEnergy = availableSpeedMps(character, loadKg, 'seed', 0, 30, 'standard', {
+      energy: 0,
+      fatigueMode: 'enabled',
+      fatigueParams: params,
+    });
+
+    expect(speedAtHalfEnergy).toBeLessThan(speedAtFullEnergy);
+    expect(speedAtNoEnergy).toBeLessThan(speedAtHalfEnergy);
+  });
+
+  it('validação dos parâmetros: drainPerSec > 0, loadDrainCoefficient >= 0, 0 < minFatigueFactor <= 1', async () => {
+    const { validateFatigueParams } = await import('@/features/trail/domain/fatigue');
+
+    expect(validateFatigueParams(DEFAULT_FATIGUE_PARAMS).valid).toBe(true);
+    expect(validateFatigueParams({ ...DEFAULT_FATIGUE_PARAMS, drainPerSec: 0 }).valid).toBe(false);
+    expect(validateFatigueParams({ ...DEFAULT_FATIGUE_PARAMS, drainPerSec: -1 }).valid).toBe(false);
+    expect(validateFatigueParams({ ...DEFAULT_FATIGUE_PARAMS, loadDrainCoefficient: -0.1 }).valid).toBe(false);
+    expect(validateFatigueParams({ ...DEFAULT_FATIGUE_PARAMS, loadDrainCoefficient: 0 }).valid).toBe(true);
+    expect(validateFatigueParams({ ...DEFAULT_FATIGUE_PARAMS, minFatigueFactor: 0 }).valid).toBe(false);
+    expect(validateFatigueParams({ ...DEFAULT_FATIGUE_PARAMS, minFatigueFactor: 1.5 }).valid).toBe(false);
+    expect(validateFatigueParams({ ...DEFAULT_FATIGUE_PARAMS, minFatigueFactor: 1 }).valid).toBe(true);
   });
 });
 

@@ -13,10 +13,12 @@
 import { ArrowLeft } from 'lucide-react';
 
 import { useAttemptsStore } from '../application/attemptsStore';
-import { scenarioDisplayLabel } from '../scenarios';
+import { attemptLabel, orderAttemptsForComparison } from '../application/comparisonOrdering';
 import { generateComparisonFeedback, COMPARABILITY_ISSUE_LABELS } from '../application/feedback';
+import { diagnoseCapacity, sameCandidateSet } from '../domain/diagnosis';
 import { compareAttempts } from '../domain/metrics';
 import type { AttemptResult, CharacterId } from '../domain/types';
+import { characterLabel } from './characterLabel';
 import { formatClock, formatDateTime } from './format';
 
 const DISCUSSION_QUESTIONS = [
@@ -41,15 +43,7 @@ export function ComparisonPanel({ onBack }: ComparisonPanelProps) {
     .map((id) => history.find((attempt) => attempt.id === id))
     .filter((attempt): attempt is AttemptResult => attempt !== undefined);
 
-  // A referência inicial, quando faz parte da seleção, é sempre a base da
-  // comparação — é para isso que ela existe (§4.1). Sem ela na seleção, a
-  // base é simplesmente a primeira tentativa escolhida.
-  const attempts = referenceAttemptId
-    ? [
-        ...selectedAttempts.filter((attempt) => attempt.id === referenceAttemptId),
-        ...selectedAttempts.filter((attempt) => attempt.id !== referenceAttemptId),
-      ]
-    : selectedAttempts;
+  const attempts = orderAttemptsForComparison(selectedAttempts, history, referenceAttemptId);
 
   if (attempts.length < 2) {
     return (
@@ -74,10 +68,9 @@ export function ComparisonPanel({ onBack }: ComparisonPanelProps) {
           <thead>
             <tr className="border-b text-left text-xs text-muted-foreground">
               <th className="w-32 p-3 font-medium">Tentativa</th>
-              {attempts.map((attempt, index) => (
+              {attempts.map((attempt) => (
                 <th key={attempt.id} className="p-3 font-medium">
-                  {index === 0 ? 'Base' : `#${index + 1}`} ·{' '}
-                  {scenarioDisplayLabel(attempt.config.scenario.id)}
+                  {attemptLabel(attempt, history, attempt.id === referenceAttemptId)}
                   <span className="mt-0.5 block font-normal">{formatDateTime(attempt.createdAt)}</span>
                 </th>
               ))}
@@ -90,22 +83,18 @@ export function ComparisonPanel({ onBack }: ComparisonPanelProps) {
               </th>
               {attempts.map((attempt) => (
                 <td key={attempt.id} className="p-3 text-xs">
-                  {attempt.config.order
-                    .map((id) => attempt.config.scenario.characters.find((c) => c.id === id)?.displayName)
-                    .join(' → ')}
+                  {attempt.config.order.map((id) => characterLabel(attempt.config, id)).join(' → ')}
                 </td>
               ))}
             </tr>
 
             {characterIds.map((characterId) => {
-              const displayName =
-                baseline.config.scenario.characters.find((c) => c.id === characterId)?.displayName ??
-                characterId;
+              const label = characterLabel(baseline.config, characterId);
 
               return (
                 <tr key={characterId} className="border-b">
                   <th scope="row" className="p-3 text-left text-xs font-medium text-muted-foreground">
-                    Carga · {displayName}
+                    Carga · {label}
                   </th>
                   {attempts.map((attempt) => (
                     <td key={attempt.id} className="p-3 tabular-nums">
@@ -158,12 +147,12 @@ export function ComparisonPanel({ onBack }: ComparisonPanelProps) {
         </table>
       </div>
 
-      {/* Uma comparação por coluna, sempre contra a base (a primeira selecionada). */}
+      {/* Uma comparação por coluna, sempre contra a base. */}
       <div className="flex flex-col gap-3">
-        {attempts.slice(1).map((attempt, index) => (
+        {attempts.slice(1).map((attempt) => (
           <ComparisonAgainstBaseline
             key={attempt.id}
-            label={`#${index + 2}`}
+            label={attemptLabel(attempt, history, attempt.id === referenceAttemptId)}
             baseline={baseline}
             current={attempt}
           />
@@ -194,6 +183,15 @@ function ComparisonAgainstBaseline({
   const comparison = compareAttempts(baseline, current);
   const feedback = generateComparisonFeedback(comparison);
 
+  // "A provável restrição pela capacidade mudou" (§3.3 da evolução
+  // pedagógica) — só faz sentido quando as duas são comparáveis, e nunca
+  // afirma uma substituição inequívoca em caso de empate/sobreposição: só
+  // mostra os dois conjuntos, antes e depois.
+  const baselineDiagnosis = diagnoseCapacity(baseline.config);
+  const currentDiagnosis = diagnoseCapacity(current.config);
+  const candidatesChanged =
+    comparison.comparable && !sameCandidateSet(baselineDiagnosis.candidateIds, currentDiagnosis.candidateIds);
+
   return (
     <div className="rounded-lg border bg-card p-4">
       <h3 className="text-sm font-semibold">
@@ -216,6 +214,14 @@ function ComparisonAgainstBaseline({
           Mudou: {comparison.changes.orderChanged && 'ordem da fila'}
           {comparison.changes.orderChanged && comparison.changes.loadChanged && ' e '}
           {comparison.changes.loadChanged && 'distribuição de carga'}.
+        </p>
+      )}
+
+      {candidatesChanged && (
+        <p className="mt-2 text-xs text-muted-foreground">
+          <strong>A provável restrição pela capacidade mudou.</strong> Antes:{' '}
+          {baselineDiagnosis.candidateIds.map((id) => characterLabel(baseline.config, id)).join(', ')}.
+          Depois: {currentDiagnosis.candidateIds.map((id) => characterLabel(current.config, id)).join(', ')}.
         </p>
       )}
     </div>

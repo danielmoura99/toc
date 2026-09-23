@@ -21,9 +21,39 @@
 import { create } from 'zustand';
 
 import { createAttemptConfig, transferItems } from '../domain/attempt';
-import type { AttemptConfig, CharacterId, GuidedStage, ItemId, Scenario } from '../domain/types';
+import { DEFAULT_FATIGUE_PARAMS } from '../domain/fatigue';
+import type {
+  AttemptConfig,
+  AttemptResult,
+  CharacterId,
+  FatigueMode,
+  FatigueParams,
+  GuidedStage,
+  ItemId,
+  Scenario,
+} from '../domain/types';
 import { SCENARIO_A } from '../scenarios';
+import { allKnownAttempts, hasCompletedFirstStage, useAttemptsStore } from './attemptsStore';
 import { HYPOTHESIS_MAX_LENGTH, getStage } from './stages';
+
+/**
+ * Verdadeiro se a etapa pode ser acessada agora. A etapa 1 está sempre
+ * acessível (é onde toda expedição começa); as etapas 2 e 3 exigem uma
+ * conclusão da etapa 1 desta MESMA expedição no histórico — ver
+ * `hasCompletedFirstStage`. Usado tanto pela store (`setStage`, a garantia
+ * de verdade) quanto pela UI (`Preparation`, para desabilitar os botões e
+ * explicar por quê) — as duas camadas de verificação já estabelecidas para
+ * as outras permissões de etapa (`canReorder`/`canRedistribute`).
+ */
+export function canAccessStage(
+  stage: GuidedStage,
+  expedition: Scenario,
+  history: AttemptResult[],
+  pendingAttempt: AttemptResult | null,
+): boolean {
+  if (stage === 1) return true;
+  return hasCompletedFirstStage(allKnownAttempts(history, pendingAttempt), expedition.id);
+}
 
 export interface RestoreDraftSnapshot {
   scenario: Scenario;
@@ -33,6 +63,8 @@ export interface RestoreDraftSnapshot {
   ownerByItem: Record<ItemId, CharacterId>;
   participantByCharacter: Partial<Record<CharacterId, string>>;
   hypothesis: string;
+  fatigueMode: FatigueMode;
+  fatigueParams: FatigueParams;
 }
 
 interface PreparationState {
@@ -60,6 +92,13 @@ interface PreparationState {
   moveItems: (itemIds: ItemId[], toCharacterId: CharacterId) => void;
   setParticipant: (characterId: CharacterId, name: string) => void;
   setHypothesis: (hypothesis: string) => void;
+  /**
+   * Ativação explícita de fadiga para a tentativa em preparação (§7.3) — só
+   * depois da primeira conclusão desta expedição, igual à condição que já
+   * libera as etapas 2 e 3. Sempre com os parâmetros padrão do modelo — não
+   * há edição de coeficientes na UI (§7.2).
+   */
+  setFatigueMode: (mode: FatigueMode) => void;
   resetDraft: () => void;
   /**
    * Restaura a preparação a partir de uma sessão importada ou recuperada do
@@ -94,11 +133,22 @@ export const usePreparationStore = create<PreparationState>((set) => ({
   // antes desta mudança (ver decisions.md) — mas preserva quem representa
   // cada personagem: nomes de participantes identificam pessoas ao longo de
   // toda a expedição, não são uma decisão "sob teste" que a etapa reinicia.
+  //
+  // Ir para a etapa 2 ou 3 exige uma conclusão da etapa 1 desta expedição no
+  // histórico (`canAccessStage`) — sem isso, a chamada não faz nada. Igual às
+  // outras permissões de etapa, a checagem mora aqui, não só num `disabled`
+  // na UI: um botão desabilitado impede o clique, mas sem esta segunda
+  // camada qualquer outro caminho até `setStage` contornaria a regra.
   setStage: (stage) =>
-    set((state) => ({
-      stage,
-      draft: draftForStage(state.expedition, stage, state.draft.participantByCharacter),
-    })),
+    set((state) => {
+      const { history, pendingAttempt } = useAttemptsStore.getState();
+      if (!canAccessStage(stage, state.expedition, history, pendingAttempt)) return state;
+
+      return {
+        stage,
+        draft: draftForStage(state.expedition, stage, state.draft.participantByCharacter),
+      };
+    }),
 
   /**
    * Alternativa por teclado à ordenação por arrastar e soltar (AC12).
@@ -157,6 +207,22 @@ export const usePreparationStore = create<PreparationState>((set) => ({
       draft: { ...state.draft, hypothesis: hypothesis.slice(0, HYPOTHESIS_MAX_LENGTH) },
     })),
 
+  // Mesma checagem de `canAccessStage`, na store — não só num `disabled` na
+  // UI (o padrão de duas camadas de sempre). "O padrão de toda nova
+  // tentativa continua desligado" (§7.3) é automático: `draftForStage`
+  // reconstrói o rascunho via `createAttemptConfig` sem passar `fatigueMode`,
+  // que então assume 'disabled' — a mesma reconstrução que já zera hipótese,
+  // ordem e carga a cada troca de etapa ou nova expedição.
+  setFatigueMode: (mode) =>
+    set((state) => {
+      const { history, pendingAttempt } = useAttemptsStore.getState();
+      if (!hasCompletedFirstStage(allKnownAttempts(history, pendingAttempt), state.expedition.id)) return state;
+
+      return {
+        draft: { ...state.draft, fatigueMode: mode, fatigueParams: DEFAULT_FATIGUE_PARAMS },
+      };
+    }),
+
   // Restaura ordem e mochilas ao ponto de partida da etapa — mas, como em
   // `setStage`, os nomes dos participantes não são "configuração sob teste" e
   // continuam preservados.
@@ -173,6 +239,8 @@ export const usePreparationStore = create<PreparationState>((set) => ({
       participantByCharacter: snapshot.participantByCharacter,
       hypothesis: snapshot.hypothesis,
       guidedStage: snapshot.guidedStage,
+      fatigueMode: snapshot.fatigueMode,
+      fatigueParams: snapshot.fatigueParams,
     });
 
     set({ expedition: snapshot.scenario, stage: snapshot.guidedStage, draft });

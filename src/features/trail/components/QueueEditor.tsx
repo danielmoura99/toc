@@ -30,6 +30,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
 
 import type { AttemptConfig, CharacterId } from '../domain/types';
+import { characterLabel } from './characterLabel';
 import { colorForCharacter } from './characterColors';
 import { usePrefersReducedMotion } from './usePrefersReducedMotion';
 
@@ -140,6 +141,7 @@ function SortableWalker({
 
   const character = config.scenario.characters.find((item) => item.id === characterId)!;
   const participant = config.participantByCharacter[characterId] ?? '';
+  const label = characterLabel(config, characterId);
   const isOverloaded = loadKg > character.maxLoadKg;
 
   return (
@@ -154,7 +156,7 @@ function SortableWalker({
       <button
         type="button"
         className="cursor-grab touch-none rounded p-1 text-muted-foreground hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40"
-        aria-label={`Arrastar ${character.displayName}`}
+        aria-label={`Arrastar ${label}`}
         disabled={disabled}
         {...attributes}
         {...listeners}
@@ -170,7 +172,7 @@ function SortableWalker({
 
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">
-          <span className="text-muted-foreground">{index + 1}º</span> {character.displayName}
+          <span className="text-muted-foreground">{index + 1}º</span> {label}
         </p>
         <p className="text-xs text-muted-foreground">
           {character.baseSpeedKmh} km/h sem carga · referência {character.referenceLoadKg} kg ·
@@ -179,7 +181,7 @@ function SortableWalker({
       </div>
 
       <label className="hidden sm:block">
-        <span className="sr-only">Participante que representa {character.displayName}</span>
+        <span className="sr-only">Nome de quem representa {label}</span>
         <input
           type="text"
           className="w-32 rounded-md border bg-background px-2 py-1 text-xs"
@@ -203,7 +205,7 @@ function SortableWalker({
         <button
           type="button"
           className="rounded p-0.5 hover:bg-accent disabled:opacity-30"
-          aria-label={`Mover ${character.displayName} para frente`}
+          aria-label={`Mover ${label} para frente`}
           disabled={disabled || index === 0}
           onClick={() => onMove(characterId, -1)}
         >
@@ -212,7 +214,7 @@ function SortableWalker({
         <button
           type="button"
           className="rounded p-0.5 hover:bg-accent disabled:opacity-30"
-          aria-label={`Mover ${character.displayName} para trás`}
+          aria-label={`Mover ${label} para trás`}
           disabled={disabled || index === total - 1}
           onClick={() => onMove(characterId, 1)}
         >

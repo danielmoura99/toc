@@ -61,6 +61,74 @@ describe('validateSessionPayload — payload válido', () => {
 
     expect(result.ok).toBe(true);
   });
+
+  it('aceita payload salvo antes de variabilityMode existir (aditivo, não uma quebra de formato)', () => {
+    const payload = validPayload();
+    // Simula uma sessão salva antes da frente 2 da evolução pedagógica: sem
+    // `variabilityMode` no histórico.
+    const stripped = JSON.parse(JSON.stringify(payload));
+    for (const attempt of stripped.history) delete attempt.config.variabilityMode;
+
+    const result = validateSessionPayload(stripped);
+    expect(result.ok, result.issues.join(' | ')).toBe(true);
+    expect(result.payload?.history[0]?.config.variabilityMode).toBe('standard');
+  });
+
+  it('aceita payload salvo antes de fatigueMode/energy existirem (aditivo, evolução pedagógica frente 5)', () => {
+    const payload = validPayload();
+    const stripped = JSON.parse(JSON.stringify(payload));
+    delete stripped.preparation.fatigueMode;
+    delete stripped.preparation.fatigueParams;
+    for (const attempt of stripped.history) {
+      delete attempt.config.fatigueMode;
+      delete attempt.config.fatigueParams;
+      for (const characterId of Object.keys(attempt.finalState.characters)) {
+        delete attempt.finalState.characters[characterId].energy;
+      }
+    }
+
+    const result = validateSessionPayload(stripped);
+    expect(result.ok, result.issues.join(' | ')).toBe(true);
+    expect(result.payload?.preparation.fatigueMode).toBe('disabled');
+    expect(result.payload?.history[0]?.config.fatigueMode).toBe('disabled');
+  });
+});
+
+describe('validateSessionPayload — fadiga (evolução pedagógica, frente 5)', () => {
+  it('recupera modos, coeficientes e resultados de uma tentativa com fadiga, sem reescrevê-los (EV16)', () => {
+    const config = createAttemptConfig(SCENARIO_A, {
+      guidedStage: 1,
+      fatigueMode: 'enabled',
+    });
+    const finalState = runToEnd(config);
+    const metrics = finalizeResult(config, finalState);
+    const attempt: AttemptResult = {
+      id: 'attempt-fadiga',
+      createdAt: new Date().toISOString(),
+      config,
+      outcome: metrics.outcome,
+      finalState,
+      totalTimeSec: metrics.totalTimeSec,
+      meanSpreadM: metrics.meanSpreadM,
+      metrics,
+    };
+
+    const draft = createAttemptConfig(SCENARIO_A, { guidedStage: 1 });
+    const payload = buildSessionPayload(draft, [attempt], attempt.id);
+    const roundtripped = JSON.parse(JSON.stringify(payload));
+
+    const result = validateSessionPayload(roundtripped);
+    expect(result.ok, result.issues.join(' | ')).toBe(true);
+
+    const recovered = result.payload!.history[0];
+    expect(recovered.config.fatigueMode).toBe('enabled');
+    expect(recovered.config.fatigueParams).toEqual(config.fatigueParams);
+    // Energia final de cada personagem sobrevive intacta — nada foi
+    // recalculado ou arredondado no caminho.
+    for (const characterId of Object.keys(finalState.characters)) {
+      expect(recovered.finalState.characters[characterId].energy).toBe(finalState.characters[characterId].energy);
+    }
+  });
 });
 
 describe('validateSessionPayload — forma inválida', () => {
@@ -77,9 +145,18 @@ describe('validateSessionPayload — forma inválida', () => {
     expect(result.issues.length).toBeGreaterThan(0);
   });
 
-  it('rejeita schemaVersion diferente de 1', () => {
+  it('rejeita schemaVersion diferente da atual', () => {
     const payload = { ...validPayload(), schemaVersion: 99 };
     expect(validateSessionPayload(payload).ok).toBe(false);
+  });
+
+  it('rejeita uma sessão v2 (sem isLimited no estado dos personagens), com mensagem clara', () => {
+    const payload = { ...validPayload(), schemaVersion: 2 };
+    const result = validateSessionPayload(payload);
+
+    expect(result.ok).toBe(false);
+    expect(result.payload).toBeNull();
+    expect(result.issues.join(' ')).toContain('schemaVersion 2');
   });
 
   it('rejeita histórico com mais de 20 tentativas', () => {

@@ -14,7 +14,7 @@
  */
 
 import { useMemo } from 'react';
-import { AlertTriangle, Play, RotateCcw, Shuffle } from 'lucide-react';
+import { AlertTriangle, BatteryWarning, Play, RotateCcw, Shuffle } from 'lucide-react';
 
 import { computeLoadByCharacter } from '../domain/engine';
 import { validateConfig } from '../domain/validation';
@@ -23,8 +23,11 @@ import { GUIDED_STAGES, HYPOTHESIS_MAX_LENGTH, getStage } from '../application/s
 import { useAttemptsStore } from '../application/attemptsStore';
 import { scenarioDisplayLabel } from '../scenarios';
 import { BackpackEditor } from './BackpackEditor';
+import { CapacityDiagnosisPanel } from './CapacityDiagnosisPanel';
 import { QueueEditor } from './QueueEditor';
-import { usePreparationStore } from '../application/preparationStore';
+import { canAccessStage, usePreparationStore } from '../application/preparationStore';
+
+const STAGE_LOCK_MESSAGE = 'Conclua a primeira caminhada para liberar as próximas etapas.';
 
 interface PreparationProps {
   onStart: (config: AttemptConfig) => void;
@@ -33,6 +36,7 @@ interface PreparationProps {
 }
 
 export function Preparation({ onStart, onViewHistory, onNewExpedition }: PreparationProps) {
+  const expedition = usePreparationStore((state) => state.expedition);
   const stage = usePreparationStore((state) => state.stage);
   const draft = usePreparationStore((state) => state.draft);
   const setStage = usePreparationStore((state) => state.setStage);
@@ -41,28 +45,43 @@ export function Preparation({ onStart, onViewHistory, onNewExpedition }: Prepara
   const moveItems = usePreparationStore((state) => state.moveItems);
   const setParticipant = usePreparationStore((state) => state.setParticipant);
   const setHypothesis = usePreparationStore((state) => state.setHypothesis);
+  const setFatigueMode = usePreparationStore((state) => state.setFatigueMode);
   const resetDraft = usePreparationStore((state) => state.resetDraft);
 
   const definition = getStage(stage);
   const loads = useMemo(() => computeLoadByCharacter(draft), [draft]);
   const validation = useMemo(() => validateConfig(draft), [draft]);
+  const history = useAttemptsStore((state) => state.history);
   const pendingAttempt = useAttemptsStore((state) => state.pendingAttempt);
+  // Etapas 2 e 3 exigem uma conclusão da etapa 1 desta expedição no
+  // histórico (ajuste de navegação, 22/09/2026) — antes disso, mudar de
+  // etapa não tinha efeito nenhum aqui (a store já recusa), mas o botão
+  // continuava clicável, sem explicar por quê.
+  const stage2Unlocked = useMemo(
+    () => canAccessStage(2, expedition, history, pendingAttempt),
+    [expedition, history, pendingAttempt],
+  );
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Etapas guiadas: o operador avança manualmente, sem desbloqueio por pontuação. */}
+      {/* Etapas guiadas: o operador avança manualmente, sem desbloqueio por
+          pontuação — mas 2 e 3 exigem ter concluído a etapa 1 desta
+          expedição primeiro (ver stage2Unlocked). */}
       <nav aria-label="Etapas guiadas" className="flex flex-wrap gap-1.5">
         {GUIDED_STAGES.map((candidate) => {
           const item = getStage(candidate);
           const isCurrent = candidate === stage;
+          const locked = candidate !== 1 && !stage2Unlocked;
 
           return (
             <button
               key={candidate}
               type="button"
               aria-current={isCurrent ? 'step' : undefined}
+              disabled={locked}
+              title={locked ? STAGE_LOCK_MESSAGE : undefined}
               onClick={() => setStage(candidate as GuidedStage)}
-              className={`rounded-md border px-3 py-1.5 text-xs font-medium ${
+              className={`rounded-md border px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50 ${
                 isCurrent ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-accent'
               }`}
             >
@@ -71,6 +90,7 @@ export function Preparation({ onStart, onViewHistory, onNewExpedition }: Prepara
           );
         })}
       </nav>
+      {!stage2Unlocked && <p className="text-xs text-muted-foreground">{STAGE_LOCK_MESSAGE}</p>}
 
       <header className="rounded-lg border bg-card p-4">
         <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -95,6 +115,8 @@ export function Preparation({ onStart, onViewHistory, onNewExpedition }: Prepara
           </div>
         </dl>
       </header>
+
+      <CapacityDiagnosisPanel config={draft} defaultOpen={stage2Unlocked} />
 
       <section className="rounded-lg border bg-card p-4">
         <QueueEditor
@@ -141,12 +163,40 @@ export function Preparation({ onStart, onViewHistory, onNewExpedition }: Prepara
           maxLength={HYPOTHESIS_MAX_LENGTH}
           value={draft.hypothesis}
           onChange={(event) => setHypothesis(event.target.value)}
-          placeholder="Ex.: tirando peso de quem está sobrecarregado, o grupo todo chega antes."
+          placeholder="O que vocês esperam observar nesta caminhada? Por quê?"
         />
 
         <p className="mt-1 text-right text-xs tabular-nums text-muted-foreground">
           {draft.hypothesis.length} / {HYPOTHESIS_MAX_LENGTH}
         </p>
+      </section>
+
+      {/* Ativação explícita de fadiga (§7.3, opcional): só depois da primeira
+          caminhada concluída desta expedição — mesma condição de
+          `stage2Unlocked`. Toda nova tentativa começa desligada; nenhum
+          coeficiente é editável aqui (§7.2). */}
+      <section className="rounded-lg border bg-card p-4">
+        <label className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            className="mt-0.5 size-4"
+            checked={draft.fatigueMode === 'enabled'}
+            disabled={!stage2Unlocked}
+            onChange={(event) => setFatigueMode(event.target.checked ? 'enabled' : 'disabled')}
+          />
+          <span>
+            <span className="flex items-center gap-1.5 text-sm font-semibold">
+              <BatteryWarning className="size-4" aria-hidden="true" />
+              Ativar fadiga (modelo experimental)
+            </span>
+            <span className="mt-0.5 block text-xs text-muted-foreground">
+              Representa esforço acumulado reduzindo a capacidade ao longo da caminhada — um modelo
+              didático proposto para este software, não uma medida fisiológica real. Desligada por
+              padrão em toda tentativa nova.
+              {!stage2Unlocked && ' Disponível depois da primeira caminhada concluída desta expedição.'}
+            </span>
+          </span>
+        </label>
       </section>
 
       {pendingAttempt && (

@@ -50,9 +50,13 @@ test('preparar, concluir duas vezes, comparar, recarregar e recuperar o históri
   await page.getByRole('button', { name: 'Comparar selecionadas' }).click();
 
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Comparação de tentativas');
-  // A tabela lado a lado mostra as duas colunas de tentativa.
-  await expect(page.getByText('Base ·')).toBeVisible();
-  await expect(page.getByText(/^#2 ·/)).toBeVisible();
+  // A tabela lado a lado mostra as duas colunas de tentativa, identificadas
+  // pela posição cronológica real no histórico — a 1ª caminhada concluída
+  // vira a referência automaticamente (§4.1).
+  await expect(
+    page.getByRole('columnheader', { name: /Tentativa 1 · Observar — Referência/ }),
+  ).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: /Tentativa 2 · Reorganizar/ })).toBeVisible();
   // Reordenar sozinho não muda o tempo total — é o resultado central do
   // motor (docs/decisions.md), e a comparação real precisa continuar
   // mostrando isso, não só uma tela que "parece" funcionar.

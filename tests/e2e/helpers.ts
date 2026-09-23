@@ -28,18 +28,15 @@ export async function completeExpeditionSetup(
 }
 
 /**
- * Inicia a tentativa corrente, pausa e avança 30 s repetidamente até a
- * conclusão. "Avançar 30 s" só fica disponível pausado (§7.6) — pausar
- * primeiro é necessário, não só uma escolha de velocidade.
+ * Inicia e avança até a conclusão uma execução que já está na tela ("ready").
+ * "Avançar 30 s" só fica disponível pausado (§7.6) — pausar primeiro é
+ * necessário, não só uma escolha de velocidade.
  *
  * Usa o próprio motor, não um atalho: cada clique executa 30 ticks reais,
  * então isto exercita exatamente o mesmo caminho de código que reproduzir em
  * tempo real, só sem esperar o tempo real passar.
  */
-export async function fastForwardToCompletion(page: Page): Promise<void> {
-  await page.getByRole('button', { name: /Iniciar caminhada/ }).click();
-  // "Iniciar caminhada" (preparação) leva à tela de execução, ainda parada
-  // ("ready"); "Iniciar" (execução) é quem de fato começa a rodar.
+export async function runReadyAttemptToCompletion(page: Page): Promise<void> {
   await page.getByRole('button', { name: 'Iniciar', exact: true }).click();
   await page.getByRole('button', { name: 'Pausar' }).click();
 
@@ -52,6 +49,19 @@ export async function fastForwardToCompletion(page: Page): Promise<void> {
   }
 
   await expect(novaTentativa).toBeVisible({ timeout: 15_000 });
+}
+
+/**
+ * Sai da preparação ("Iniciar caminhada") e avança até a conclusão. Para uma
+ * execução que já começou fora da preparação (o experimento de
+ * variabilidade, por exemplo, pula direto para a tela de execução), use
+ * `runReadyAttemptToCompletion`.
+ */
+export async function fastForwardToCompletion(page: Page): Promise<void> {
+  await page.getByRole('button', { name: /Iniciar caminhada/ }).click();
+  // "Iniciar caminhada" (preparação) leva à tela de execução, ainda parada
+  // ("ready"); "Iniciar" (execução) é quem de fato começa a rodar.
+  await runReadyAttemptToCompletion(page);
 }
 
 /**
