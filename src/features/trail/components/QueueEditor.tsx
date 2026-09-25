@@ -174,7 +174,7 @@ function SortableWalker({
         <p className="truncate text-sm font-medium">
           <span className="text-muted-foreground">{index + 1}º</span> {label}
         </p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-foreground/80">
           {character.baseSpeedKmh} km/h sem carga · referência {character.referenceLoadKg} kg ·
           máximo {character.maxLoadKg} kg
         </p>
