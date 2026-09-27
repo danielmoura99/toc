@@ -16,7 +16,7 @@ import {
  * localStorage de testes anteriores), então não é preciso limpar nada antes.
  */
 test('preparar, concluir duas vezes, comparar, recarregar e recuperar o histórico', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/trilha');
   await completeExpeditionSetup(page);
 
   // --- Preparar e concluir a primeira tentativa (ordem inicial, etapa 1) ---

@@ -1275,3 +1275,315 @@ comparação → recarregar → recuperar → nova tentativa com fadiga desligad
 `npm run build` e `npm run calibrate` (relatório com as seções `fatiguePairs`
 e `fatigueFixtures` em `docs/calibration/calibration-1.0.0.json`, resultados
 reais resumidos em D59) passam.
+
+## 2026-09-26 — Fábrica de componentes (novo módulo, `GUIA_MVP_SIMULADOR_DAS_TIGELAS.md`)
+
+Segundo exercício independente no mesmo projeto — o jogo de tigelas,
+fósforos e dado do capítulo 14 de *A Meta*, ambientado como "Fábrica de
+componentes aeronáuticos". Motor, RNG, stores, persistência e rotas
+inteiramente separados da trilha (TG12); só reaproveita peças
+deliberadamente genéricas (hash puro do RNG, `ConfirmDialog`,
+`useFocusTrap`, `usePrefersReducedMotion`, `formatDateTime`).
+
+### D60 — RNG reaproveita o hash puro da trilha, mas com chave e versão próprias
+
+O guia pede explicitamente a chave `[versãoDoRng, seed, stageId, roundIndex]`
+(§5) — diferente da chave da trilha, `[seed, characterId, blockIndex]` (sem a
+versão do algoritmo dentro do hash). Em vez de duplicar o FNV-1a com mistura
+final, `factory/domain/random.ts` importa `fnv1a32` diretamente de
+`trail/domain/random.ts` — é a mesma função pura, sem nenhuma noção de
+personagem ou trilha embutida nela — e só monta uma chave e um rótulo de
+versão (`RNG_VERSION = 'fnv1a32-mix-1-d6'`) próprios. Reuso explicitamente
+autorizado pelo guia (§2, §5: "reutilizar o RNG puro e versionado do
+projeto se compatível"), documentado no próprio arquivo para a próxima
+entrega não reinventar o hash. Vetores de teste oficiais fixados em
+`tests/factory/domain/random.test.ts`, no mesmo espírito dos vetores da
+trilha — mudar qualquer um deles exige subir `RNG_VERSION`.
+
+### D61 — Motor por turno: um objeto de estado imutável, `stepTurn` idempotente ao concluir
+
+`ProductionLineState`/`TurnEvent`/`stepTurn` seguem quase literalmente o
+contrato do §10 do guia. A decisão não trivial foi a leitura de "em estado
+concluído não lança novamente" (§10): não é "não lança uma exceção" — é "não
+lança o dado de novo" (o termo do próprio guia para o sorteio de um turno,
+§4.2). `stepTurn` sobre um estado `completed` devolve o MESMO objeto de
+estado, sem sortear nada — verificado por identidade de referência em teste
+(`tests/factory/domain/engine.test.ts`, "stepTurn em estado concluído...").
+Os índices terminais (`nextRoundIndex === rounds`, `nextStageIndex === 0`)
+são uma representação consistente de "nada mais a jogar", não um turno
+futuro real (§10) — `nextTurnDescriptor` devolve `null` nesse caso, e a
+interface nunca tenta mostrar "Dia 11 de 10".
+
+`rollFace` é um parâmetro opcional de `stepTurn`/`runToEnd`, nunca um campo
+de `ProductionLineConfig` nem do payload persistido — exatamente a permissão
+do guia (§10: "permitir fornecer uma sequência de faces apenas em fixtures
+de teste, fora dos controles e do formato importável de produção"). A
+referência manual do §11 (dois ciclos com dados fixos) e as fixtures
+adicionais (todos tiram 6, estoque que não desaparece, fila vazia, estoque
+suficiente) são implementadas injetando essa função — nunca adulterando o
+RNG de produção.
+
+### D62 — `application/runStore.ts`: `processNextStage` e `advanceAutoTurn` são ações DIFERENTES, não a mesma com um parâmetro
+
+Erro encontrado via E2E (não em unitário, porque o teste unitário de
+`processNextStage` só verificava o bloqueio contra si mesmo, nunca contra um
+consumidor de fora): a primeira versão tinha uma única ação de turno que
+recusava agir sempre que `uiStatus === 'running'` — pensada para bloquear
+cliques manuais concorrentes com o automático (§6). Mas o PRÓPRIO laço de
+reprodução automática chamava essa mesma ação para avançar — e como o
+automático já está em `running` quando dispara, cada tique do intervalo era
+recusado silenciosamente. O fluxo E2E completo (`flow-g-factory-full-
+cycle.spec.ts`) pegou isso: depois de "Automático" + esperar + "Pausar", o
+turno não tinha avançado nada.
+
+Corrigido separando as duas ações: `processNextStage`/`completeDay`
+(manuais) exigem `uiStatus !== 'running'` — continuam bloqueando ações
+concorrentes com o automático, papel original. `advanceAutoTurn` (só chamada
+pelo intervalo do próprio automático, em `ProductionLine.tsx`) exige o
+OPOSTO — só age se `uiStatus` JÁ é `running` — e, ao contrário das manuais,
+MANTÉM `running` depois de cada turno bem-sucedido (não rebaixa para
+`paused`), para o próprio intervalo continuar dominando os turnos seguintes
+sem downgrade prematuro. Coberto por quatro testes dedicados em
+`tests/factory/application/runStore.test.ts`.
+
+### D63 — Ordem de efeitos React: `ProductionLine` nunca inicia sua própria partida — só `FactoryExperience.start()` chama `startRun`
+
+Segundo bug encontrado pelo mesmo E2E (depois de corrigir D62): recarregar
+no meio de uma partida não recuperava o progresso — voltava para o início.
+Causa: `ProductionLine` tinha um efeito de montagem que chamava `startRun`
+sempre que não havia config no controlador ainda; `FactoryExperience` tinha
+OUTRO efeito de montagem que restaurava a sessão salva e chamava
+`resumeRun`. Efeitos de um componente FILHO disparam antes dos efeitos do
+PAI (ordem "de baixo para cima" do React) — então, ao recarregar com uma
+partida ativa salva, `ProductionLine` (filho) rodava seu `startRun` (uma
+partida nova, vazia) ANTES de `FactoryExperience` (pai) sequer ter lido o
+localStorage, e o próprio `startRun` disparava o salvamento imediato da
+store de execução (D64), sobrescrevendo o progresso salvo com zero eventos
+— tudo isso antes da restauração real acontecer.
+
+Corrigido concentrando toda criação de partida NOVA em
+`FactoryExperience.start()` (chamado só pelo clique em "Iniciar partida" na
+preparação, depois de `usePreparationStore`/`useHistoryStore` já estarem
+montados havia tempo) — `ProductionLine` não inicia mais nada sozinho.
+Numa recarga com partida ativa salva, o próprio efeito de restauração do pai
+chama `resumeRun` (sempre pausada, TG07); `ProductionLine`, ao montar, já
+encontra a store preenchida e simplesmente lê o estado existente (mostra um
+esqueleto de carregamento por um instante, se o efeito do pai ainda não
+rodou — nunca dados incorretos). TG07 e a corrida entre efeitos ficaram
+cobertos por asserções específicas no E2E (`progressBeforeReload` comparado
+byte a byte com o texto exibido depois do `page.reload()`).
+
+### D64 — Persistência: preparação/histórico com pequeno atraso; execução salva a CADA turno, sem atraso
+
+A trilha espera 500 ms depois da última mudança confirmada antes de salvar,
+porque nada nela muda por tick de física (a física fica isolada numa ref).
+A fábrica é o oposto para a execução: o guia exige "salvar após cada turno
+CONFIRMADO" (§9) explicitamente, e TG07 exige recuperar "o estado correto,
+pausado" depois de recarregar — um atraso de 500 ms perderia o último turno
+exatamente no momento em que ele acabou de ser confirmado, se a página
+fechasse dentro dessa janela. Como turnos são discretos e pouco frequentes
+(no máximo um a cada 250 ms no automático mais rápido, 2×), uma escrita
+síncrona de `localStorage` por turno não é um problema de desempenho —
+diferente da física a 60 fps da trilha, que nunca poderia se dar a esse
+luxo. `FactoryExperience` tem duas inscrições separadas: uma debatida
+(preparação + histórico) e uma imediata, só para `useRunStore`.
+
+### D65 — Schema versão 1 desde o início: sem histórico de formatos anteriores para reconciliar
+
+Diferente da trilha (que chegou à v3 acumulando decisões sobre o que é
+aditivo vs. o que exige rejeição), a fábrica nasce com `SCHEMA_VERSION = 1`
+— não há nenhuma versão anterior deste payload para ser compatível ou
+incompatível com. A mesma checagem de coerência por recomputação da trilha
+(`attemptCoherenceIssues`, recalcular e comparar bit a bit em vez de
+reescrever cada invariante) foi reaproveitada aqui como `runResultIssues`/
+`activeRunIssues` — a segunda é nova em relação ao padrão da trilha, porque
+só a fábrica precisa validar um estado ATIVO (não só concluído) salvo no
+meio de uma partida: `recomputeState` joga `events.length` turnos a partir
+do estado inicial e compara com o que foi salvo, servindo igualmente para
+`RunResult.finalState` (concluída) e `ActiveRun.state` (em andamento).
+
+### D66 — Rota própria (`/fabrica`), não um seletor que substitui a raiz da trilha
+
+A primeira tentativa colocou um "seletor de exercícios" como a NOVA raiz de
+`/`, atrás do qual a trilha só aparecia depois de um clique — quebraria
+"preservar a rota e o comportamento da trilha" (§2 do guia da fábrica, dito
+explicitamente) e todos os fluxos E2E existentes da trilha, que assumem
+`page.goto('/')` já entrega a trilha direto. Revertido: `/` continua sendo
+só a trilha, sem nenhuma tela nova antes dela; `/fabrica` é uma rota
+irmã (`src/app/fabrica/page.tsx`) com a fábrica. Cada experiência ganhou um
+link discreto para a outra no próprio cabeçalho (ícone + rótulo, usando
+`next/link` para navegação sem recarregar) — isso é o "seletor de
+exercícios" que o guia pede (§2), só que como navegação cruzada em vez de
+uma tela intermediária. Trocar de exercício no meio de uma tentativa da
+trilha tem o mesmo efeito que um recarregamento (a trilha já lida com isso
+via o marcador de interrupção existente); na fábrica, o efeito é menor
+ainda — a partida ativa já está salva a cada turno (D64), então nada se
+perde de qualquer forma.
+
+### D67 — Calibração da fábrica: mecanismo de eventos dependentes confirmado em 500 execuções, sem intervenção
+
+`scripts/calibrateFactory.ts`: 100 seeds fixas × 5 combinações (5 setores em
+10/20/30 dias; 4 e 12 setores em 10 dias) — 500 partidas completas. Resultado
+real (`docs/calibration/calibration-factory-1.0.0.json`): em TODAS as cinco
+combinações, a entrega ficou abaixo da referência (`3,5 × rodadas`) em pelo
+menos 99% das seeds — 100% em quatro das cinco. Nenhuma entrega zero,
+nenhum resultado degenerado. Mais setores reduz a saída média (12 setores:
+média 16,65 lotes em 10 dias; 5 setores: média 23,03) — o efeito de cadeia
+mais longa amplificando o gargalo por dependência, coerente com o mecanismo
+do livro. Como o próprio guia proíbe (§12): não foi exigido que TODA seed
+fique abaixo da referência nem que a saída caia monotonicamente — o
+resultado ficou perto de 100% "naturalmente", sem nenhum parâmetro ajustado
+para produzir esse número; nenhuma seed foi escolhida a dedo.
+
+### Verificações desta entrega
+
+`npx tsc --noEmit`, `npx eslint .`, `npx vitest run` (485 testes — 99 novos
+só da fábrica: `random.test.ts`, `engine.test.ts` [referência manual do §11
++ fixtures + TG01/TG03/TG04/TG05], `metrics.test.ts`, `validation.test.ts`,
+`config.test.ts`, `schema.test.ts`, `historyStore.test.ts`,
+`preparationStore.test.ts`, `runStore.test.ts`, `sessionSync.test.ts`),
+`npx playwright test` (12 specs — `flow-g-factory-full-cycle.spec.ts`,
+novo, cobre o fluxo completo do §12: preparar → manual → completar rodada →
+automático → pausar → recarregar → concluir → comparar com repetição →
+exportar/importar), `npm run build` (rotas `/` e `/fabrica`) e
+`npm run calibrate:factory` (resultados reais resumidos em D67) passam.
+
+## 2026-09-26 — Tela inicial com seletor de exercícios e zerar histórico
+
+### D68 — `/` volta a ser uma tela própria (pedido explícito do usuário); trilha migra para `/trilha`
+
+D66 tinha decidido não usar uma tela seletora em `/` para preservar a rota e
+o comportamento anteriores da trilha. O usuário pediu explicitamente uma
+tela inicial com dois botões (Trilha / Fábrica) — instrução direta que
+substitui aquela decisão. `TrailExperience` mudou de `/` para `/trilha`
+(`src/app/trilha/page.tsx`); `/` agora é `HomeScreen` (`src/app/HomeScreen.tsx`),
+um componente cliente simples com dois cartões-link e o botão "Zerar
+histórico". Os links cruzados de cada exercício (adicionados em D66) foram
+ajustados: a fábrica aponta para `/trilha` em vez de `/`, e as duas telas
+ganharam um link "Início" de volta à tela inicial — sem ele, a tela inicial
+seria um beco sem saída depois do primeiro clique. Os 11 `page.goto('/')`
+nos specs E2E da trilha viraram `page.goto('/trilha')`.
+
+### D69 — "Zerar histórico" limpa storage E memória, via reload — não tenta resetar cada store por fora
+
+`resetAllData` (`src/app/resetAllData.ts`) é o único lugar do projeto que
+importa dos dois módulos ao mesmo tempo — legítimo aqui, porque é
+exatamente a tela que precisa conhecer os dois. Zera as duas chaves de
+`localStorage` (`clearStoredSession` de cada módulo, mais o marcador de
+tentativa ativa da trilha) e then força `window.location.reload()`. A
+alternativa — chamar `setState` em cada store Zustand das duas features a
+partir daqui — foi descartada: os stores são singletons de módulo que
+sobrevivem à navegação client-side entre rotas: só limpar o `localStorage`
+deixaria dados em memória de uma sessão já aberta reaparecerem (e serem
+regravados) ao reentrar naquele exercício, e replicar a forma de cada store
+aqui duplicaria conhecimento que já muda dentro de cada módulo. Um reload
+depois de limpar o storage é simples, robusto, e não corre esse risco.
+Confirmação obrigatória via `ConfirmDialog` (reaproveitado da trilha, já
+genérico) antes de apagar — ação destrutiva e irreversível.
+
+### Verificações desta entrega
+
+`npx tsc --noEmit`, `npx eslint .`, `npx vitest run` (485 testes, sem novos
+— mudança só de roteamento/UI), `npx playwright test` (13 specs —
+`flow-h-home-screen.spec.ts`, novo: navega para os dois exercícios e volta,
+gera progresso na fábrica, cancela um "zerar histórico" e confirma que nada
+mudou, confirma o segundo e verifica que a partida em andamento sumiu; as 11
+ocorrências de `page.goto('/')` nos specs da trilha atualizadas para
+`/trilha`) e `npm run build` (rotas `/`, `/trilha`, `/fabrica`) passam.
+
+## 2026-09-26 — Correções da auditoria do guia das tigelas
+
+### D70 — Conclusão registrada pelo controlador e pendência protegida
+
+O controlador registra o resultado antes de publicar o estado terminal.
+Histórico e execução são salvos imediatamente; somente a preparação mantém
+debounce. Completar um dia publica cada turno confirmado. A conclusão deixa
+de depender de um efeito React, inclusive no último clique antes de recarregar.
+Com 20 resultados e uma partida pendente, novos inícios e repetições ficam
+bloqueados até liberar espaço. Sessões antigas ou importadas com uma partida
+ativa e outra pendente preservam ambas e bloqueiam o avanço até resolver a
+pendência. `recordRun` também recusa sobrescrever a
+pendência. A exportação continua incluindo esse resultado.
+
+### D71 — Apresentação acompanha o estado confirmado
+
+A ponte Pixi usa a API atual de criação, `fit`, `setTempo` e `settle`, aplica
+o snapshot depois da criação assíncrona e acompanha o setor ativo com rolagem.
+Pausar encerra a apresentação pendente no estado confirmado. A preferência
+de movimento reduzido é respeitada. A sessão local é lida para escolher a
+tela somente depois da hidratação, evitando divergência entre HTML do servidor
+e sessão restaurada. Visitar o histórico pausa a execução; retomar preserva
+o progresso e iniciar outra partida exige confirmação de descarte.
+
+### D72 — Observação durante a partida e comparação auditável
+
+Indicadores e gráficos ficam disponíveis durante a execução. Dias parciais
+são identificados e os gráficos usam dias encerrados. A tabela mostra
+capacidades acumuladas e jogadas por setor. Os fechamentos diários e o
+registro completo de jogadas podem ser consultados na execução e nos
+detalhes das partidas comparadas. A comparação inclui curvas de entrega
+por partida, com horizonte e escala explícitos. Instruções iniciais,
+unidades, rótulos dos campos e anúncios manuais esclarecem a experiência.
+Nenhuma regra de sorteio, transferência ou conservação foi alterada.
+
+### Evidência estatística
+
+`npm run calibrate:factory` executado novamente: 500 partidas, em cinco
+configurações. Com cinco setores, a entrega média foi 23,03 / 51,08 / 80,48
+lotes em 10 / 20 / 30 dias. Com quatro setores houve uma partida acima da
+referência entre 100 seeds, preservada no relatório. Esses resultados são
+descritivos; não constituem validação pedagógica com pessoas.
+
+### Verificações da auditoria corrigida
+
+`npm test`: 488 testes aprovados. `npx tsc --noEmit`, `npm run lint` e
+`npm run build`: aprovados. `npx playwright test`: 16 testes aprovados,
+incluindo os fluxos existentes da trilha e três regressões novas da fábrica
+(persistência imediata da conclusão, proteção da partida pendente e retomada
+com 12 setores sem descarte nem erro de hidratação). O teste do controlador
+foi executado novamente após incluir a proteção para sessões antigas:
+17 testes aprovados, com nova checagem de retomada após liberar espaço.
+Inspeção visual em Chromium com cinco e 12 setores, movimento reduzido,
+foco por teclado e rolagem do canvas; sem exceções nas páginas inspecionadas.
+
+## 2026-09-27 — Dado destacado e linha de produção em três colunas
+
+### D73 — Animação manual e percurso em zigue-zague
+
+As estações ficam em linhas de três, alternando o sentido do fluxo. As
+curvas entre linhas usam o mesmo caminho para desenhar a esteira e mover
+os lotes. A doca segue o último setor. O canvas acompanha o setor apresentado
+com rolagem vertical, mantendo rolagem horizontal em telas estreitas.
+
+O dado ficou maior e cada estação exibe seu último valor por escrito; o
+último sorteio também ganha destaque fora do canvas. O turno manual tem
+animação de 1,8 segundo e bloqueia o próximo avanço enquanto ela acontece.
+Completar dia apresenta a sequência de forma mais rápida. Apenas pausar o
+automático encerra a apresentação imediatamente; o modo manual deixa de ser
+confundido com essa ação. Recuperação e movimento reduzido aplicam o estado
+diretamente. O motor e o salvamento continuam independentes da animação.
+
+Verificações: 488 testes unitários, cinco testes E2E da fábrica (incluindo
+animação manual, movimento reduzido, retomada e 12 setores), TypeScript,
+lint dos arquivos envolvidos e build aprovados. Inspeção visual com cinco
+e 12 setores sem exceções no navegador.
+
+## 2026-09-27 — Fábrica: toda partida nova sorteia dados novos
+
+### D70 — A seed era gerada uma vez por rascunho e reaproveitada em toda partida
+
+Reportado em uso: quatro partidas seguidas de 10 dias deram sempre o mesmo
+resultado (21 expedidos, 15 em estoque). O dado é determinístico por seed (é
+isso que permite "Repetir os mesmos sorteios" e a validação por replay na
+importação), mas a seed só era gerada ao criar o rascunho da preparação — e
+o rascunho fica salvo no navegador. "Iniciar partida" passava sempre o mesmo
+rascunho, logo a mesma seed e os mesmos dados. Contrariava o §5 ("gerar uma
+seed ao criar uma nova partida").
+
+Corrigido com `preparationStore.newRunConfig()`: sorteia uma seed nova
+(`crypto.randomUUID`) e devolve a configuração com que a partida começa; o
+botão "Iniciar partida" usa isso. Só "Repetir os mesmos sorteios", na tela de
+resultado, reaproveita a seed — de propósito. O botão "Nova sequência de
+dados" da preparação foi removido (iniciar já sempre sorteia dados novos); o
+da tela de resultado continua. Testes novos em `preparationStore.test.ts`
+confirmam seeds diferentes e sequências de dados diferentes em 5 partidas.

@@ -16,7 +16,7 @@ test('diagnóstico, experimento de variabilidade e comparação sobrevivem a um 
   // padrão de 60 s do resto da suíte.
   test.setTimeout(150_000);
 
-  await page.goto('/');
+  await page.goto('/trilha');
   await completeExpeditionSetup(page);
 
   // --- Diagnóstico recolhido antes de concluir a primeira caminhada ---

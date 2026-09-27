@@ -19,7 +19,8 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { History, ListChecks } from 'lucide-react';
+import Link from 'next/link';
+import { Factory, History, Home, ListChecks } from 'lucide-react';
 
 import type { AttemptConfig, AttemptResult } from '../domain/types';
 import { useAttemptsStore } from '../application/attemptsStore';
@@ -208,35 +209,51 @@ export function TrailExperience() {
           <h1 className="text-2xl font-semibold">{VIEW_TITLES[view]}</h1>
         </div>
 
-        {view !== 'setup' && (
-          <nav className="flex flex-wrap items-center gap-2">
-            {view !== 'running' && view !== 'preparation' && (
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent"
-                onClick={goToPreparation}
-              >
-                <ListChecks className="size-4" aria-hidden="true" />
-                Preparação
-              </button>
-            )}
-            {view !== 'running' && historyCount > 0 && view !== 'history' && view !== 'comparison' && (
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent"
-                onClick={goToHistory}
-              >
-                <History className="size-4" aria-hidden="true" />
-                Histórico ({historyCount})
-              </button>
-            )}
-            {/* Exportar/importar ficam sempre acessíveis — inclusive durante uma
-                execução — porque nenhuma delas descarta a tentativa em andamento:
-                a importação só troca a preparação e o histórico, sempre com
-                confirmação explícita antes de substituir qualquer coisa. */}
-            <SessionMenu />
-          </nav>
-        )}
+        <nav className="flex flex-wrap items-center gap-2">
+          {view !== 'setup' && view !== 'running' && view !== 'preparation' && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent"
+              onClick={goToPreparation}
+            >
+              <ListChecks className="size-4" aria-hidden="true" />
+              Preparação
+            </button>
+          )}
+          {view !== 'setup' && view !== 'running' && historyCount > 0 && view !== 'history' && view !== 'comparison' && (
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent"
+              onClick={goToHistory}
+            >
+              <History className="size-4" aria-hidden="true" />
+              Histórico ({historyCount})
+            </button>
+          )}
+          {/* Exportar/importar ficam sempre acessíveis — inclusive durante uma
+              execução — porque nenhuma delas descarta a tentativa em andamento:
+              a importação só troca a preparação e o histórico, sempre com
+              confirmação explícita antes de substituir qualquer coisa. */}
+          {view !== 'setup' && <SessionMenu />}
+          {/* Seletor de exercícios: leva à Fábrica de componentes, outro
+              exercício independente no mesmo projeto — sessão e persistência
+              próprias, sem afetar a rota nem o comportamento da trilha (TG12
+              do guia da fábrica). */}
+          <Link
+            href="/fabrica"
+            className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent"
+          >
+            <Factory className="size-4" aria-hidden="true" />
+            Fábrica de componentes
+          </Link>
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm font-medium hover:bg-accent"
+          >
+            <Home className="size-4" aria-hidden="true" />
+            Início
+          </Link>
+        </nav>
       </header>
 
       <PersistenceBanner />

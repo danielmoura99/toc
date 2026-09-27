@@ -14,7 +14,7 @@ test('experimento de fadiga: energia observável, comparação e nova tentativa 
   // fadiga") — mais lento que o padrão de 60 s do resto da suíte.
   test.setTimeout(150_000);
 
-  await page.goto('/');
+  await page.goto('/trilha');
   await completeExpeditionSetup(page);
 
   // --- Referência sem fadiga: primeira caminhada concluída ---

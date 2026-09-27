@@ -4,8 +4,8 @@ import { expect, type Page } from '@playwright/test';
  * Completa o assistente de nova expedição (tamanho do grupo → nomes →
  * sorteio) e aguarda a preparação carregar. A tela de configuração é o ponto
  * de entrada padrão de toda sessão nova — sem sessão salva no navegador,
- * `page.goto('/')` sempre chega aqui primeiro, então todo fluxo E2E precisa
- * passar por este assistente antes de interagir com a preparação.
+ * `page.goto('/trilha')` sempre chega aqui primeiro, então todo fluxo E2E
+ * precisa passar por este assistente antes de interagir com a preparação.
  *
  * Os nomes são fictícios e não influenciam o sorteio (características são
  * sorteadas à parte) — servem só para preencher o formulário.

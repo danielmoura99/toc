@@ -9,7 +9,7 @@ import { completeExpeditionSetup } from './helpers';
  * nenhum diálogo de confirmação chega a aparecer.
  */
 test('JSON malformado é rejeitado com mensagem clara, sem alterar a sessão', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/trilha');
   await completeExpeditionSetup(page);
 
   await page.getByRole('button', { name: 'Importar', exact: true }).click();
@@ -28,7 +28,7 @@ test('JSON malformado é rejeitado com mensagem clara, sem alterar a sessão', a
 });
 
 test('versão de motor incompatível é rejeitada com mensagem específica', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/trilha');
   await completeExpeditionSetup(page);
 
   // Exporta a sessão corrente só para ter um payload estruturalmente válido,
@@ -57,7 +57,7 @@ test('versão de motor incompatível é rejeitada com mensagem específica', asy
 });
 
 test('arquivo maior que o limite de 2 MiB é rejeitado antes de tentar ler o conteúdo', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/trilha');
   await completeExpeditionSetup(page);
 
   await page.getByRole('button', { name: 'Importar', exact: true }).click();

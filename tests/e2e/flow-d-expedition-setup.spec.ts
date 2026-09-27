@@ -12,7 +12,7 @@ import { completeExpeditionSetup, displayNameAtQueuePosition, fastForwardToCompl
 test('grupo de 4 pessoas (mínimo): etapas 2 e 3 só liberam depois da primeira caminhada concluída', async ({
   page,
 }) => {
-  await page.goto('/');
+  await page.goto('/trilha');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Nova expedição');
 
   await completeExpeditionSetup(page, { partySize: 4, names: ['Ana', 'Beto', 'Cátia', 'Davi'] });
@@ -62,7 +62,7 @@ test('grupo de 4 pessoas (mínimo): etapas 2 e 3 só liberam depois da primeira 
 test('grupo de 12 pessoas (máximo): assistente completa, preparação mostra as 12 e começa travada', async ({
   page,
 }) => {
-  await page.goto('/');
+  await page.goto('/trilha');
   await completeExpeditionSetup(page, { partySize: 12 });
 
   await expect(page.locator('[data-testid^="queue-"]')).toHaveCount(12);
@@ -72,7 +72,7 @@ test('grupo de 12 pessoas (máximo): assistente completa, preparação mostra as
 });
 
 test('reiniciar a primeira caminhada não sorteia outra expedição nem destrava edições', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/trilha');
   await completeExpeditionSetup(page, { partySize: 5 });
 
   const queueBefore = await page.locator('[data-testid^="queue-"]').allTextContents();
@@ -93,7 +93,7 @@ test('reiniciar a primeira caminhada não sorteia outra expedição nem destrava
 });
 
 test('a liberação das etapas 2 e 3 sobrevive a um recarregamento', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/trilha');
   await completeExpeditionSetup(page, { partySize: 4 });
 
   await fastForwardToCompletion(page);

@@ -1,9 +1,9 @@
-import { TrailExperience } from '@/features/trail/components/TrailExperience';
+import { HomeScreen } from './HomeScreen';
 
 export default function Page() {
   return (
     <main className="flex-1">
-      <TrailExperience />
+      <HomeScreen />
     </main>
   );
 }

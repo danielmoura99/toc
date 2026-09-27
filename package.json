@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "calibrate": "tsx scripts/calibrate.ts",
+    "calibrate:factory": "tsx scripts/calibrateFactory.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {

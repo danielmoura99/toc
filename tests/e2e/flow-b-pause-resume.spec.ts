@@ -8,7 +8,7 @@ import { completeExpeditionSetup } from './helpers';
  * justamente ao estado pausado.
  */
 test('pausar, avançar, continuar — e confirmar antes de descartar o progresso', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/trilha');
   await completeExpeditionSetup(page);
   await page.getByRole('button', { name: /Iniciar caminhada/ }).click();
   await page.getByRole('button', { name: 'Iniciar', exact: true }).click();
