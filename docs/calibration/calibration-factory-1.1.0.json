@@ -1,0 +1,6935 @@
+{
+  "generatedAt": "2026-09-29T00:13:06.829Z",
+  "engineVersion": "1.1.0",
+  "rngVersion": "fnv1a32-mix-1-d6",
+  "referenceCapacityPerRound": 3.5,
+  "seeds": [
+    "factory-calib-001",
+    "factory-calib-002",
+    "factory-calib-003",
+    "factory-calib-004",
+    "factory-calib-005",
+    "factory-calib-006",
+    "factory-calib-007",
+    "factory-calib-008",
+    "factory-calib-009",
+    "factory-calib-010",
+    "factory-calib-011",
+    "factory-calib-012",
+    "factory-calib-013",
+    "factory-calib-014",
+    "factory-calib-015",
+    "factory-calib-016",
+    "factory-calib-017",
+    "factory-calib-018",
+    "factory-calib-019",
+    "factory-calib-020",
+    "factory-calib-021",
+    "factory-calib-022",
+    "factory-calib-023",
+    "factory-calib-024",
+    "factory-calib-025",
+    "factory-calib-026",
+    "factory-calib-027",
+    "factory-calib-028",
+    "factory-calib-029",
+    "factory-calib-030",
+    "factory-calib-031",
+    "factory-calib-032",
+    "factory-calib-033",
+    "factory-calib-034",
+    "factory-calib-035",
+    "factory-calib-036",
+    "factory-calib-037",
+    "factory-calib-038",
+    "factory-calib-039",
+    "factory-calib-040",
+    "factory-calib-041",
+    "factory-calib-042",
+    "factory-calib-043",
+    "factory-calib-044",
+    "factory-calib-045",
+    "factory-calib-046",
+    "factory-calib-047",
+    "factory-calib-048",
+    "factory-calib-049",
+    "factory-calib-050",
+    "factory-calib-051",
+    "factory-calib-052",
+    "factory-calib-053",
+    "factory-calib-054",
+    "factory-calib-055",
+    "factory-calib-056",
+    "factory-calib-057",
+    "factory-calib-058",
+    "factory-calib-059",
+    "factory-calib-060",
+    "factory-calib-061",
+    "factory-calib-062",
+    "factory-calib-063",
+    "factory-calib-064",
+    "factory-calib-065",
+    "factory-calib-066",
+    "factory-calib-067",
+    "factory-calib-068",
+    "factory-calib-069",
+    "factory-calib-070",
+    "factory-calib-071",
+    "factory-calib-072",
+    "factory-calib-073",
+    "factory-calib-074",
+    "factory-calib-075",
+    "factory-calib-076",
+    "factory-calib-077",
+    "factory-calib-078",
+    "factory-calib-079",
+    "factory-calib-080",
+    "factory-calib-081",
+    "factory-calib-082",
+    "factory-calib-083",
+    "factory-calib-084",
+    "factory-calib-085",
+    "factory-calib-086",
+    "factory-calib-087",
+    "factory-calib-088",
+    "factory-calib-089",
+    "factory-calib-090",
+    "factory-calib-091",
+    "factory-calib-092",
+    "factory-calib-093",
+    "factory-calib-094",
+    "factory-calib-095",
+    "factory-calib-096",
+    "factory-calib-097",
+    "factory-calib-098",
+    "factory-calib-099",
+    "factory-calib-100"
+  ],
+  "combinations": [
+    {
+      "stageCount": 5,
+      "rounds": 10,
+      "seedCount": 100,
+      "referencePerGame": 35,
+      "delivered": {
+        "count": 100,
+        "median": 23,
+        "min": 15,
+        "max": 31
+      },
+      "meanDelivered": 23.03,
+      "inventoryRemaining": {
+        "count": 100,
+        "median": 13,
+        "min": 2,
+        "max": 27
+      },
+      "deliveredZeroCount": 0,
+      "belowReferenceCount": 100,
+      "belowReferenceProportion": 1,
+      "aboveReferenceCount": 0,
+      "aboveReferenceProportion": 0,
+      "atReferenceCount": 0
+    },
+    {
+      "stageCount": 5,
+      "rounds": 20,
+      "seedCount": 100,
+      "referencePerGame": 70,
+      "delivered": {
+        "count": 100,
+        "median": 51,
+        "min": 37,
+        "max": 65
+      },
+      "meanDelivered": 51.08,
+      "inventoryRemaining": {
+        "count": 100,
+        "median": 20,
+        "min": 4,
+        "max": 40
+      },
+      "deliveredZeroCount": 0,
+      "belowReferenceCount": 100,
+      "belowReferenceProportion": 1,
+      "aboveReferenceCount": 0,
+      "aboveReferenceProportion": 0,
+      "atReferenceCount": 0
+    },
+    {
+      "stageCount": 5,
+      "rounds": 30,
+      "seedCount": 100,
+      "referencePerGame": 105,
+      "delivered": {
+        "count": 100,
+        "median": 81,
+        "min": 67,
+        "max": 96
+      },
+      "meanDelivered": 80.48,
+      "inventoryRemaining": {
+        "count": 100,
+        "median": 24,
+        "min": 4,
+        "max": 48
+      },
+      "deliveredZeroCount": 0,
+      "belowReferenceCount": 100,
+      "belowReferenceProportion": 1,
+      "aboveReferenceCount": 0,
+      "aboveReferenceProportion": 0,
+      "atReferenceCount": 0
+    },
+    {
+      "stageCount": 4,
+      "rounds": 10,
+      "seedCount": 100,
+      "referencePerGame": 35,
+      "delivered": {
+        "count": 100,
+        "median": 24,
+        "min": 16,
+        "max": 38
+      },
+      "meanDelivered": 24.56,
+      "inventoryRemaining": {
+        "count": 100,
+        "median": 11,
+        "min": 0,
+        "max": 27
+      },
+      "deliveredZeroCount": 0,
+      "belowReferenceCount": 99,
+      "belowReferenceProportion": 0.99,
+      "aboveReferenceCount": 1,
+      "aboveReferenceProportion": 0.01,
+      "atReferenceCount": 0
+    },
+    {
+      "stageCount": 12,
+      "rounds": 10,
+      "seedCount": 100,
+      "referencePerGame": 35,
+      "delivered": {
+        "count": 100,
+        "median": 17,
+        "min": 12,
+        "max": 23
+      },
+      "meanDelivered": 16.65,
+      "inventoryRemaining": {
+        "count": 100,
+        "median": 19,
+        "min": 6,
+        "max": 37
+      },
+      "deliveredZeroCount": 0,
+      "belowReferenceCount": 100,
+      "belowReferenceProportion": 1,
+      "aboveReferenceCount": 0,
+      "aboveReferenceProportion": 0,
+      "atReferenceCount": 0
+    }
+  ],
+  "constraintFlow": {
+    "capacityModelVersion": "capacity-profile-1",
+    "stageCount": 5,
+    "rounds": 20,
+    "baseProfiles": [
+      {
+        "stageId": "stage-0",
+        "baseBonus": 2,
+        "upgrade": 0
+      },
+      {
+        "stageId": "stage-1",
+        "baseBonus": 2,
+        "upgrade": 0
+      },
+      {
+        "stageId": "stage-2",
+        "baseBonus": 0,
+        "upgrade": 0
+      },
+      {
+        "stageId": "stage-3",
+        "baseBonus": 2,
+        "upgrade": 0
+      },
+      {
+        "stageId": "stage-4",
+        "baseBonus": 2,
+        "upgrade": 0
+      }
+    ],
+    "seeds": [
+      "constraint-calib-001",
+      "constraint-calib-002",
+      "constraint-calib-003",
+      "constraint-calib-004",
+      "constraint-calib-005",
+      "constraint-calib-006",
+      "constraint-calib-007",
+      "constraint-calib-008",
+      "constraint-calib-009",
+      "constraint-calib-010",
+      "constraint-calib-011",
+      "constraint-calib-012",
+      "constraint-calib-013",
+      "constraint-calib-014",
+      "constraint-calib-015",
+      "constraint-calib-016",
+      "constraint-calib-017",
+      "constraint-calib-018",
+      "constraint-calib-019",
+      "constraint-calib-020",
+      "constraint-calib-021",
+      "constraint-calib-022",
+      "constraint-calib-023",
+      "constraint-calib-024",
+      "constraint-calib-025",
+      "constraint-calib-026",
+      "constraint-calib-027",
+      "constraint-calib-028",
+      "constraint-calib-029",
+      "constraint-calib-030",
+      "constraint-calib-031",
+      "constraint-calib-032",
+      "constraint-calib-033",
+      "constraint-calib-034",
+      "constraint-calib-035",
+      "constraint-calib-036",
+      "constraint-calib-037",
+      "constraint-calib-038",
+      "constraint-calib-039",
+      "constraint-calib-040",
+      "constraint-calib-041",
+      "constraint-calib-042",
+      "constraint-calib-043",
+      "constraint-calib-044",
+      "constraint-calib-045",
+      "constraint-calib-046",
+      "constraint-calib-047",
+      "constraint-calib-048",
+      "constraint-calib-049",
+      "constraint-calib-050",
+      "constraint-calib-051",
+      "constraint-calib-052",
+      "constraint-calib-053",
+      "constraint-calib-054",
+      "constraint-calib-055",
+      "constraint-calib-056",
+      "constraint-calib-057",
+      "constraint-calib-058",
+      "constraint-calib-059",
+      "constraint-calib-060",
+      "constraint-calib-061",
+      "constraint-calib-062",
+      "constraint-calib-063",
+      "constraint-calib-064",
+      "constraint-calib-065",
+      "constraint-calib-066",
+      "constraint-calib-067",
+      "constraint-calib-068",
+      "constraint-calib-069",
+      "constraint-calib-070",
+      "constraint-calib-071",
+      "constraint-calib-072",
+      "constraint-calib-073",
+      "constraint-calib-074",
+      "constraint-calib-075",
+      "constraint-calib-076",
+      "constraint-calib-077",
+      "constraint-calib-078",
+      "constraint-calib-079",
+      "constraint-calib-080",
+      "constraint-calib-081",
+      "constraint-calib-082",
+      "constraint-calib-083",
+      "constraint-calib-084",
+      "constraint-calib-085",
+      "constraint-calib-086",
+      "constraint-calib-087",
+      "constraint-calib-088",
+      "constraint-calib-089",
+      "constraint-calib-090",
+      "constraint-calib-091",
+      "constraint-calib-092",
+      "constraint-calib-093",
+      "constraint-calib-094",
+      "constraint-calib-095",
+      "constraint-calib-096",
+      "constraint-calib-097",
+      "constraint-calib-098",
+      "constraint-calib-099",
+      "constraint-calib-100"
+    ],
+    "runs": 800,
+    "diceMismatches": 0,
+    "variants": [
+      {
+        "key": "base",
+        "label": "Linha de base",
+        "delivered": {
+          "count": 100,
+          "median": 68,
+          "min": 53,
+          "max": 81,
+          "mean": 67.33
+        },
+        "inventory": {
+          "count": 100,
+          "median": 43.5,
+          "min": 21,
+          "max": 70,
+          "mean": 42.88
+        },
+        "rate": {
+          "count": 100,
+          "median": 3.4,
+          "min": 2.65,
+          "max": 4.05,
+          "mean": 3.3665000000000016
+        },
+        "constraintUnused": {
+          "count": 100,
+          "median": 0,
+          "min": 0,
+          "max": 5,
+          "mean": 0.89
+        },
+        "pairedDeltaDelivered": {
+          "count": 100,
+          "median": 0,
+          "min": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "pairedDeltaInventory": {
+          "count": 100,
+          "median": 0,
+          "min": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "noGainCount": 100,
+        "gainCount": 0,
+        "lossCount": 0
+      },
+      {
+        "key": "+1@0",
+        "label": "+1 no setor 1",
+        "delivered": {
+          "count": 100,
+          "median": 69,
+          "min": 53,
+          "max": 81,
+          "mean": 67.73
+        },
+        "inventory": {
+          "count": 100,
+          "median": 63,
+          "min": 41,
+          "max": 90,
+          "mean": 62.48
+        },
+        "rate": {
+          "count": 100,
+          "median": 3.45,
+          "min": 2.65,
+          "max": 4.05,
+          "mean": 3.3865000000000016
+        },
+        "constraintUnused": {
+          "count": 100,
+          "median": 0,
+          "min": 0,
+          "max": 4,
+          "mean": 0.49
+        },
+        "pairedDeltaDelivered": {
+          "count": 100,
+          "median": 0,
+          "min": 0,
+          "max": 4,
+          "mean": 0.4
+        },
+        "pairedDeltaInventory": {
+          "count": 100,
+          "median": 20,
+          "min": 16,
+          "max": 20,
+          "mean": 19.6
+        },
+        "noGainCount": 71,
+        "gainCount": 29,
+        "lossCount": 0
+      },
+      {
+        "key": "+1@1",
+        "label": "+1 no setor 2",
+        "delivered": {
+          "count": 100,
+          "median": 68.5,
+          "min": 53,
+          "max": 81,
+          "mean": 67.66
+        },
+        "inventory": {
+          "count": 100,
+          "median": 43,
+          "min": 21,
+          "max": 70,
+          "mean": 42.55
+        },
+        "rate": {
+          "count": 100,
+          "median": 3.425,
+          "min": 2.65,
+          "max": 4.05,
+          "mean": 3.3830000000000013
+        },
+        "constraintUnused": {
+          "count": 100,
+          "median": 0,
+          "min": 0,
+          "max": 5,
+          "mean": 0.56
+        },
+        "pairedDeltaDelivered": {
+          "count": 100,
+          "median": 0,
+          "min": 0,
+          "max": 4,
+          "mean": 0.33
+        },
+        "pairedDeltaInventory": {
+          "count": 100,
+          "median": 0,
+          "min": -4,
+          "max": 0,
+          "mean": -0.33
+        },
+        "noGainCount": 77,
+        "gainCount": 23,
+        "lossCount": 0
+      },
+      {
+        "key": "+1@2",
+        "label": "+1 no setor 3 (restrição)",
+        "delivered": {
+          "count": 100,
+          "median": 84,
+          "min": 71,
+          "max": 100,
+          "mean": 83.43
+        },
+        "inventory": {
+          "count": 100,
+          "median": 26,
+          "min": 4,
+          "max": 52,
+          "mean": 26.78
+        },
+        "rate": {
+          "count": 100,
+          "median": 4.2,
+          "min": 3.55,
+          "max": 5,
+          "mean": 4.1715
+        },
+        "constraintUnused": {
+          "count": 100,
+          "median": 2,
+          "min": 0,
+          "max": 12,
+          "mean": 3.15
+        },
+        "pairedDeltaDelivered": {
+          "count": 100,
+          "median": 17,
+          "min": 6,
+          "max": 20,
+          "mean": 16.1
+        },
+        "pairedDeltaInventory": {
+          "count": 100,
+          "median": -17,
+          "min": -20,
+          "max": -6,
+          "mean": -16.1
+        },
+        "noGainCount": 0,
+        "gainCount": 100,
+        "lossCount": 0
+      },
+      {
+        "key": "+1@3",
+        "label": "+1 no setor 4",
+        "delivered": {
+          "count": 100,
+          "median": 68,
+          "min": 53,
+          "max": 81,
+          "mean": 67.54
+        },
+        "inventory": {
+          "count": 100,
+          "median": 43,
+          "min": 20,
+          "max": 70,
+          "mean": 42.67
+        },
+        "rate": {
+          "count": 100,
+          "median": 3.4,
+          "min": 2.65,
+          "max": 4.05,
+          "mean": 3.3770000000000016
+        },
+        "constraintUnused": {
+          "count": 100,
+          "median": 0,
+          "min": 0,
+          "max": 5,
+          "mean": 0.89
+        },
+        "pairedDeltaDelivered": {
+          "count": 100,
+          "median": 0,
+          "min": 0,
+          "max": 2,
+          "mean": 0.21
+        },
+        "pairedDeltaInventory": {
+          "count": 100,
+          "median": 0,
+          "min": -2,
+          "max": 0,
+          "mean": -0.21
+        },
+        "noGainCount": 81,
+        "gainCount": 19,
+        "lossCount": 0
+      },
+      {
+        "key": "+1@4",
+        "label": "+1 no setor 5",
+        "delivered": {
+          "count": 100,
+          "median": 68,
+          "min": 53,
+          "max": 81,
+          "mean": 67.56
+        },
+        "inventory": {
+          "count": 100,
+          "median": 43,
+          "min": 21,
+          "max": 70,
+          "mean": 42.65
+        },
+        "rate": {
+          "count": 100,
+          "median": 3.4,
+          "min": 2.65,
+          "max": 4.05,
+          "mean": 3.3780000000000014
+        },
+        "constraintUnused": {
+          "count": 100,
+          "median": 0,
+          "min": 0,
+          "max": 5,
+          "mean": 0.89
+        },
+        "pairedDeltaDelivered": {
+          "count": 100,
+          "median": 0,
+          "min": 0,
+          "max": 4,
+          "mean": 0.23
+        },
+        "pairedDeltaInventory": {
+          "count": 100,
+          "median": 0,
+          "min": -4,
+          "max": 0,
+          "mean": -0.23
+        },
+        "noGainCount": 85,
+        "gainCount": 15,
+        "lossCount": 0
+      },
+      {
+        "key": "+2@2",
+        "label": "+2 na restrição (setor 3)",
+        "delivered": {
+          "count": 100,
+          "median": 91,
+          "min": 75,
+          "max": 105,
+          "mean": 91.6
+        },
+        "inventory": {
+          "count": 100,
+          "median": 18.5,
+          "min": 0,
+          "max": 40,
+          "mean": 18.61
+        },
+        "rate": {
+          "count": 100,
+          "median": 4.55,
+          "min": 3.75,
+          "max": 5.25,
+          "mean": 4.580000000000003
+        },
+        "constraintUnused": {
+          "count": 100,
+          "median": 10.5,
+          "min": 0,
+          "max": 28,
+          "mean": 11.36
+        },
+        "pairedDeltaDelivered": {
+          "count": 100,
+          "median": 24,
+          "min": 7,
+          "max": 38,
+          "mean": 24.27
+        },
+        "pairedDeltaInventory": {
+          "count": 100,
+          "median": -24,
+          "min": -38,
+          "max": -7,
+          "mean": -24.27
+        },
+        "noGainCount": 0,
+        "gainCount": 100,
+        "lossCount": 0
+      },
+      {
+        "key": "+3@2",
+        "label": "+3 na restrição (setor 3)",
+        "delivered": {
+          "count": 100,
+          "median": 94,
+          "min": 77,
+          "max": 107,
+          "mean": 93.96
+        },
+        "inventory": {
+          "count": 100,
+          "median": 16,
+          "min": 0,
+          "max": 40,
+          "mean": 16.25
+        },
+        "rate": {
+          "count": 100,
+          "median": 4.7,
+          "min": 3.85,
+          "max": 5.35,
+          "mean": 4.698000000000001
+        },
+        "constraintUnused": {
+          "count": 100,
+          "median": 26.5,
+          "min": 9,
+          "max": 47,
+          "mean": 27.1
+        },
+        "pairedDeltaDelivered": {
+          "count": 100,
+          "median": 27,
+          "min": 7,
+          "max": 46,
+          "mean": 26.63
+        },
+        "pairedDeltaInventory": {
+          "count": 100,
+          "median": -27,
+          "min": -46,
+          "max": -7,
+          "mean": -26.63
+        },
+        "noGainCount": 0,
+        "gainCount": 100,
+        "lossCount": 0
+      }
+    ],
+    "perSeed": [
+      {
+        "seed": "constraint-calib-001",
+        "outcomes": {
+          "base": {
+            "delivered": 73,
+            "inventory": 36,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 73,
+            "inventory": 56,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 73,
+            "inventory": 36,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 91,
+            "inventory": 18,
+            "rate": 4.55,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 73,
+            "inventory": 36,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 73,
+            "inventory": 36,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 100,
+            "inventory": 9,
+            "rate": 5,
+            "constraintUnused": 10,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 103,
+            "inventory": 6,
+            "rate": 5.15,
+            "constraintUnused": 27,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-002",
+        "outcomes": {
+          "base": {
+            "delivered": 74,
+            "inventory": 27,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 74,
+            "inventory": 47,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 74,
+            "inventory": 27,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 90,
+            "inventory": 11,
+            "rate": 4.5,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 74,
+            "inventory": 27,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 74,
+            "inventory": 27,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 101,
+            "inventory": 0,
+            "rate": 5.05,
+            "constraintUnused": 13,
+            "constraintInsufficientDays": 6
+          },
+          "+3@2": {
+            "delivered": 101,
+            "inventory": 0,
+            "rate": 5.05,
+            "constraintUnused": 33,
+            "constraintInsufficientDays": 12
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-003",
+        "outcomes": {
+          "base": {
+            "delivered": 70,
+            "inventory": 28,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 70,
+            "inventory": 48,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 70,
+            "inventory": 28,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 90,
+            "inventory": 8,
+            "rate": 4.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 70,
+            "inventory": 28,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 70,
+            "inventory": 28,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 93,
+            "inventory": 5,
+            "rate": 4.65,
+            "constraintUnused": 14,
+            "constraintInsufficientDays": 10
+          },
+          "+3@2": {
+            "delivered": 94,
+            "inventory": 4,
+            "rate": 4.7,
+            "constraintUnused": 32,
+            "constraintInsufficientDays": 14
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-004",
+        "outcomes": {
+          "base": {
+            "delivered": 67,
+            "inventory": 34,
+            "rate": 3.35,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 68,
+            "inventory": 53,
+            "rate": 3.4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 67,
+            "inventory": 34,
+            "rate": 3.35,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 86,
+            "inventory": 15,
+            "rate": 4.3,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 67,
+            "inventory": 34,
+            "rate": 3.35,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 67,
+            "inventory": 34,
+            "rate": 3.35,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 96,
+            "inventory": 5,
+            "rate": 4.8,
+            "constraintUnused": 13,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 100,
+            "inventory": 1,
+            "rate": 5,
+            "constraintUnused": 29,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-005",
+        "outcomes": {
+          "base": {
+            "delivered": 53,
+            "inventory": 70,
+            "rate": 2.65,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 53,
+            "inventory": 90,
+            "rate": 2.65,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 53,
+            "inventory": 70,
+            "rate": 2.65,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 71,
+            "inventory": 52,
+            "rate": 3.55,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 53,
+            "inventory": 70,
+            "rate": 2.65,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 53,
+            "inventory": 70,
+            "rate": 2.65,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 88,
+            "inventory": 35,
+            "rate": 4.4,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+3@2": {
+            "delivered": 91,
+            "inventory": 32,
+            "rate": 4.55,
+            "constraintUnused": 21,
+            "constraintInsufficientDays": 8
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-006",
+        "outcomes": {
+          "base": {
+            "delivered": 70,
+            "inventory": 51,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 70,
+            "inventory": 71,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 70,
+            "inventory": 51,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 90,
+            "inventory": 31,
+            "rate": 4.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 70,
+            "inventory": 51,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 70,
+            "inventory": 51,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 99,
+            "inventory": 22,
+            "rate": 4.95,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+3@2": {
+            "delivered": 104,
+            "inventory": 17,
+            "rate": 5.2,
+            "constraintUnused": 19,
+            "constraintInsufficientDays": 7
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-007",
+        "outcomes": {
+          "base": {
+            "delivered": 57,
+            "inventory": 54,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 57,
+            "inventory": 74,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 57,
+            "inventory": 54,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 77,
+            "inventory": 34,
+            "rate": 3.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 57,
+            "inventory": 54,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 57,
+            "inventory": 54,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 91,
+            "inventory": 20,
+            "rate": 4.55,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+3@2": {
+            "delivered": 92,
+            "inventory": 19,
+            "rate": 4.6,
+            "constraintUnused": 20,
+            "constraintInsufficientDays": 10
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-008",
+        "outcomes": {
+          "base": {
+            "delivered": 60,
+            "inventory": 44,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 60,
+            "inventory": 64,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 60,
+            "inventory": 44,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 76,
+            "inventory": 28,
+            "rate": 3.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 61,
+            "inventory": 43,
+            "rate": 3.05,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 63,
+            "inventory": 41,
+            "rate": 3.15,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 91,
+            "inventory": 13,
+            "rate": 4.55,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 94,
+            "inventory": 10,
+            "rate": 4.7,
+            "constraintUnused": 25,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-009",
+        "outcomes": {
+          "base": {
+            "delivered": 59,
+            "inventory": 67,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 59,
+            "inventory": 87,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 59,
+            "inventory": 67,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 76,
+            "inventory": 50,
+            "rate": 3.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 60,
+            "inventory": 66,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 60,
+            "inventory": 66,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 90,
+            "inventory": 36,
+            "rate": 4.5,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+3@2": {
+            "delivered": 95,
+            "inventory": 31,
+            "rate": 4.75,
+            "constraintUnused": 10,
+            "constraintInsufficientDays": 7
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-010",
+        "outcomes": {
+          "base": {
+            "delivered": 74,
+            "inventory": 37,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 74,
+            "inventory": 57,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 74,
+            "inventory": 37,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 89,
+            "inventory": 22,
+            "rate": 4.45,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 74,
+            "inventory": 37,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 74,
+            "inventory": 37,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 91,
+            "inventory": 20,
+            "rate": 4.55,
+            "constraintUnused": 10,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 91,
+            "inventory": 20,
+            "rate": 4.55,
+            "constraintUnused": 28,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-011",
+        "outcomes": {
+          "base": {
+            "delivered": 71,
+            "inventory": 40,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 71,
+            "inventory": 60,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 71,
+            "inventory": 40,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 87,
+            "inventory": 24,
+            "rate": 4.35,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 71,
+            "inventory": 40,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 71,
+            "inventory": 40,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 97,
+            "inventory": 14,
+            "rate": 4.85,
+            "constraintUnused": 7,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 98,
+            "inventory": 13,
+            "rate": 4.9,
+            "constraintUnused": 25,
+            "constraintInsufficientDays": 10
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-012",
+        "outcomes": {
+          "base": {
+            "delivered": 69,
+            "inventory": 44,
+            "rate": 3.45,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 70,
+            "inventory": 63,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 70,
+            "inventory": 43,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 84,
+            "inventory": 29,
+            "rate": 4.2,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 3
+          },
+          "+1@3": {
+            "delivered": 70,
+            "inventory": 43,
+            "rate": 3.5,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 69,
+            "inventory": 44,
+            "rate": 3.45,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 96,
+            "inventory": 17,
+            "rate": 4.8,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 98,
+            "inventory": 15,
+            "rate": 4.9,
+            "constraintUnused": 25,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-013",
+        "outcomes": {
+          "base": {
+            "delivered": 57,
+            "inventory": 55,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 57,
+            "inventory": 75,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 57,
+            "inventory": 55,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 74,
+            "inventory": 38,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 59,
+            "inventory": 53,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 58,
+            "inventory": 54,
+            "rate": 2.9,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 89,
+            "inventory": 23,
+            "rate": 4.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+3@2": {
+            "delivered": 92,
+            "inventory": 20,
+            "rate": 4.6,
+            "constraintUnused": 18,
+            "constraintInsufficientDays": 8
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-014",
+        "outcomes": {
+          "base": {
+            "delivered": 63,
+            "inventory": 55,
+            "rate": 3.15,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 63,
+            "inventory": 75,
+            "rate": 3.15,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 63,
+            "inventory": 55,
+            "rate": 3.15,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 81,
+            "inventory": 37,
+            "rate": 4.05,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 63,
+            "inventory": 55,
+            "rate": 3.15,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 63,
+            "inventory": 55,
+            "rate": 3.15,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 96,
+            "inventory": 22,
+            "rate": 4.8,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 2
+          },
+          "+3@2": {
+            "delivered": 99,
+            "inventory": 19,
+            "rate": 4.95,
+            "constraintUnused": 16,
+            "constraintInsufficientDays": 6
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-015",
+        "outcomes": {
+          "base": {
+            "delivered": 74,
+            "inventory": 39,
+            "rate": 3.7,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 4
+          },
+          "+1@0": {
+            "delivered": 74,
+            "inventory": 59,
+            "rate": 3.7,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 4
+          },
+          "+1@1": {
+            "delivered": 78,
+            "inventory": 35,
+            "rate": 3.9,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 89,
+            "inventory": 24,
+            "rate": 4.45,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 5
+          },
+          "+1@3": {
+            "delivered": 74,
+            "inventory": 39,
+            "rate": 3.7,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 4
+          },
+          "+1@4": {
+            "delivered": 74,
+            "inventory": 39,
+            "rate": 3.7,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 4
+          },
+          "+2@2": {
+            "delivered": 92,
+            "inventory": 21,
+            "rate": 4.6,
+            "constraintUnused": 25,
+            "constraintInsufficientDays": 11
+          },
+          "+3@2": {
+            "delivered": 93,
+            "inventory": 20,
+            "rate": 4.65,
+            "constraintUnused": 41,
+            "constraintInsufficientDays": 15
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-016",
+        "outcomes": {
+          "base": {
+            "delivered": 59,
+            "inventory": 50,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 59,
+            "inventory": 70,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 59,
+            "inventory": 50,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 79,
+            "inventory": 30,
+            "rate": 3.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 59,
+            "inventory": 50,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 59,
+            "inventory": 50,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 96,
+            "inventory": 13,
+            "rate": 4.8,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+3@2": {
+            "delivered": 97,
+            "inventory": 12,
+            "rate": 4.85,
+            "constraintUnused": 16,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-017",
+        "outcomes": {
+          "base": {
+            "delivered": 56,
+            "inventory": 48,
+            "rate": 2.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 56,
+            "inventory": 68,
+            "rate": 2.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 56,
+            "inventory": 48,
+            "rate": 2.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 75,
+            "inventory": 29,
+            "rate": 3.75,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 57,
+            "inventory": 47,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 56,
+            "inventory": 48,
+            "rate": 2.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 91,
+            "inventory": 13,
+            "rate": 4.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+3@2": {
+            "delivered": 97,
+            "inventory": 7,
+            "rate": 4.85,
+            "constraintUnused": 14,
+            "constraintInsufficientDays": 5
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-018",
+        "outcomes": {
+          "base": {
+            "delivered": 80,
+            "inventory": 31,
+            "rate": 4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 80,
+            "inventory": 51,
+            "rate": 4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 80,
+            "inventory": 31,
+            "rate": 4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 90,
+            "inventory": 21,
+            "rate": 4.5,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 6
+          },
+          "+1@3": {
+            "delivered": 80,
+            "inventory": 31,
+            "rate": 4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 80,
+            "inventory": 31,
+            "rate": 4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 92,
+            "inventory": 19,
+            "rate": 4.6,
+            "constraintUnused": 28,
+            "constraintInsufficientDays": 11
+          },
+          "+3@2": {
+            "delivered": 93,
+            "inventory": 18,
+            "rate": 4.65,
+            "constraintUnused": 47,
+            "constraintInsufficientDays": 14
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-019",
+        "outcomes": {
+          "base": {
+            "delivered": 65,
+            "inventory": 35,
+            "rate": 3.25,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 66,
+            "inventory": 54,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 66,
+            "inventory": 34,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 80,
+            "inventory": 20,
+            "rate": 4,
+            "constraintUnused": 6,
+            "constraintInsufficientDays": 3
+          },
+          "+1@3": {
+            "delivered": 65,
+            "inventory": 35,
+            "rate": 3.25,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 65,
+            "inventory": 35,
+            "rate": 3.25,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 86,
+            "inventory": 14,
+            "rate": 4.3,
+            "constraintUnused": 15,
+            "constraintInsufficientDays": 7
+          },
+          "+3@2": {
+            "delivered": 87,
+            "inventory": 13,
+            "rate": 4.35,
+            "constraintUnused": 27,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-020",
+        "outcomes": {
+          "base": {
+            "delivered": 60,
+            "inventory": 50,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 60,
+            "inventory": 70,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 60,
+            "inventory": 50,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 78,
+            "inventory": 32,
+            "rate": 3.9,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 60,
+            "inventory": 50,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 60,
+            "inventory": 50,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 86,
+            "inventory": 24,
+            "rate": 4.3,
+            "constraintUnused": 8,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 91,
+            "inventory": 19,
+            "rate": 4.55,
+            "constraintUnused": 17,
+            "constraintInsufficientDays": 7
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-021",
+        "outcomes": {
+          "base": {
+            "delivered": 67,
+            "inventory": 46,
+            "rate": 3.35,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 68,
+            "inventory": 65,
+            "rate": 3.4,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 69,
+            "inventory": 44,
+            "rate": 3.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 77,
+            "inventory": 36,
+            "rate": 3.85,
+            "constraintUnused": 8,
+            "constraintInsufficientDays": 3
+          },
+          "+1@3": {
+            "delivered": 67,
+            "inventory": 46,
+            "rate": 3.35,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 67,
+            "inventory": 46,
+            "rate": 3.35,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 83,
+            "inventory": 30,
+            "rate": 4.15,
+            "constraintUnused": 14,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 86,
+            "inventory": 27,
+            "rate": 4.3,
+            "constraintUnused": 25,
+            "constraintInsufficientDays": 8
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-022",
+        "outcomes": {
+          "base": {
+            "delivered": 69,
+            "inventory": 53,
+            "rate": 3.45,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@0": {
+            "delivered": 69,
+            "inventory": 73,
+            "rate": 3.45,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@1": {
+            "delivered": 72,
+            "inventory": 50,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 85,
+            "inventory": 37,
+            "rate": 4.25,
+            "constraintUnused": 7,
+            "constraintInsufficientDays": 3
+          },
+          "+1@3": {
+            "delivered": 69,
+            "inventory": 53,
+            "rate": 3.45,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@4": {
+            "delivered": 69,
+            "inventory": 53,
+            "rate": 3.45,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+2@2": {
+            "delivered": 94,
+            "inventory": 28,
+            "rate": 4.7,
+            "constraintUnused": 11,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 97,
+            "inventory": 25,
+            "rate": 4.85,
+            "constraintUnused": 23,
+            "constraintInsufficientDays": 8
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-023",
+        "outcomes": {
+          "base": {
+            "delivered": 54,
+            "inventory": 58,
+            "rate": 2.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 54,
+            "inventory": 78,
+            "rate": 2.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 54,
+            "inventory": 58,
+            "rate": 2.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 73,
+            "inventory": 39,
+            "rate": 3.65,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 54,
+            "inventory": 58,
+            "rate": 2.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 54,
+            "inventory": 58,
+            "rate": 2.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 87,
+            "inventory": 25,
+            "rate": 4.35,
+            "constraintUnused": 7,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 96,
+            "inventory": 16,
+            "rate": 4.8,
+            "constraintUnused": 15,
+            "constraintInsufficientDays": 6
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-024",
+        "outcomes": {
+          "base": {
+            "delivered": 78,
+            "inventory": 32,
+            "rate": 3.9,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 78,
+            "inventory": 52,
+            "rate": 3.9,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 78,
+            "inventory": 32,
+            "rate": 3.9,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 86,
+            "inventory": 24,
+            "rate": 4.3,
+            "constraintUnused": 12,
+            "constraintInsufficientDays": 7
+          },
+          "+1@3": {
+            "delivered": 78,
+            "inventory": 32,
+            "rate": 3.9,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 78,
+            "inventory": 32,
+            "rate": 3.9,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 87,
+            "inventory": 23,
+            "rate": 4.35,
+            "constraintUnused": 27,
+            "constraintInsufficientDays": 11
+          },
+          "+3@2": {
+            "delivered": 87,
+            "inventory": 23,
+            "rate": 4.35,
+            "constraintUnused": 45,
+            "constraintInsufficientDays": 16
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-025",
+        "outcomes": {
+          "base": {
+            "delivered": 59,
+            "inventory": 47,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 59,
+            "inventory": 67,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 59,
+            "inventory": 47,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 76,
+            "inventory": 30,
+            "rate": 3.8,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 61,
+            "inventory": 45,
+            "rate": 3.05,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 59,
+            "inventory": 47,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 85,
+            "inventory": 21,
+            "rate": 4.25,
+            "constraintUnused": 10,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 94,
+            "inventory": 12,
+            "rate": 4.7,
+            "constraintUnused": 24,
+            "constraintInsufficientDays": 10
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-026",
+        "outcomes": {
+          "base": {
+            "delivered": 60,
+            "inventory": 50,
+            "rate": 3,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 61,
+            "inventory": 69,
+            "rate": 3.05,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 61,
+            "inventory": 49,
+            "rate": 3.05,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 77,
+            "inventory": 33,
+            "rate": 3.85,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 60,
+            "inventory": 50,
+            "rate": 3,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 60,
+            "inventory": 50,
+            "rate": 3,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 90,
+            "inventory": 20,
+            "rate": 4.5,
+            "constraintUnused": 11,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 92,
+            "inventory": 18,
+            "rate": 4.6,
+            "constraintUnused": 25,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-027",
+        "outcomes": {
+          "base": {
+            "delivered": 70,
+            "inventory": 44,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 70,
+            "inventory": 64,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 70,
+            "inventory": 44,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 87,
+            "inventory": 27,
+            "rate": 4.35,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 70,
+            "inventory": 44,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 70,
+            "inventory": 44,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 89,
+            "inventory": 25,
+            "rate": 4.45,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 90,
+            "inventory": 24,
+            "rate": 4.5,
+            "constraintUnused": 24,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-028",
+        "outcomes": {
+          "base": {
+            "delivered": 69,
+            "inventory": 55,
+            "rate": 3.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 69,
+            "inventory": 75,
+            "rate": 3.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 69,
+            "inventory": 55,
+            "rate": 3.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 84,
+            "inventory": 40,
+            "rate": 4.2,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 69,
+            "inventory": 55,
+            "rate": 3.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 69,
+            "inventory": 55,
+            "rate": 3.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 93,
+            "inventory": 31,
+            "rate": 4.65,
+            "constraintUnused": 6,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 101,
+            "inventory": 23,
+            "rate": 5.05,
+            "constraintUnused": 11,
+            "constraintInsufficientDays": 5
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-029",
+        "outcomes": {
+          "base": {
+            "delivered": 61,
+            "inventory": 47,
+            "rate": 3.05,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 61,
+            "inventory": 67,
+            "rate": 3.05,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 62,
+            "inventory": 46,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 76,
+            "inventory": 32,
+            "rate": 3.8,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 61,
+            "inventory": 47,
+            "rate": 3.05,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 61,
+            "inventory": 47,
+            "rate": 3.05,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 89,
+            "inventory": 19,
+            "rate": 4.45,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 2
+          },
+          "+3@2": {
+            "delivered": 99,
+            "inventory": 9,
+            "rate": 4.95,
+            "constraintUnused": 21,
+            "constraintInsufficientDays": 7
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-030",
+        "outcomes": {
+          "base": {
+            "delivered": 67,
+            "inventory": 42,
+            "rate": 3.35,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 68,
+            "inventory": 61,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 67,
+            "inventory": 42,
+            "rate": 3.35,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 86,
+            "inventory": 23,
+            "rate": 4.3,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 67,
+            "inventory": 42,
+            "rate": 3.35,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 67,
+            "inventory": 42,
+            "rate": 3.35,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 97,
+            "inventory": 12,
+            "rate": 4.85,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 98,
+            "inventory": 11,
+            "rate": 4.9,
+            "constraintUnused": 20,
+            "constraintInsufficientDays": 8
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-031",
+        "outcomes": {
+          "base": {
+            "delivered": 59,
+            "inventory": 45,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 59,
+            "inventory": 65,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 59,
+            "inventory": 45,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 79,
+            "inventory": 25,
+            "rate": 3.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 59,
+            "inventory": 45,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 59,
+            "inventory": 45,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 93,
+            "inventory": 11,
+            "rate": 4.65,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 2
+          },
+          "+3@2": {
+            "delivered": 100,
+            "inventory": 4,
+            "rate": 5,
+            "constraintUnused": 15,
+            "constraintInsufficientDays": 8
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-032",
+        "outcomes": {
+          "base": {
+            "delivered": 65,
+            "inventory": 49,
+            "rate": 3.25,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 65,
+            "inventory": 69,
+            "rate": 3.25,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 65,
+            "inventory": 49,
+            "rate": 3.25,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 82,
+            "inventory": 32,
+            "rate": 4.1,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 65,
+            "inventory": 49,
+            "rate": 3.25,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 65,
+            "inventory": 49,
+            "rate": 3.25,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 94,
+            "inventory": 20,
+            "rate": 4.7,
+            "constraintUnused": 10,
+            "constraintInsufficientDays": 6
+          },
+          "+3@2": {
+            "delivered": 94,
+            "inventory": 20,
+            "rate": 4.7,
+            "constraintUnused": 29,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-033",
+        "outcomes": {
+          "base": {
+            "delivered": 66,
+            "inventory": 53,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 66,
+            "inventory": 73,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 66,
+            "inventory": 53,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 86,
+            "inventory": 33,
+            "rate": 4.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 66,
+            "inventory": 53,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 66,
+            "inventory": 53,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 97,
+            "inventory": 22,
+            "rate": 4.85,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 99,
+            "inventory": 20,
+            "rate": 4.95,
+            "constraintUnused": 17,
+            "constraintInsufficientDays": 8
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-034",
+        "outcomes": {
+          "base": {
+            "delivered": 62,
+            "inventory": 44,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 62,
+            "inventory": 64,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 62,
+            "inventory": 44,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 82,
+            "inventory": 24,
+            "rate": 4.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 62,
+            "inventory": 44,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 62,
+            "inventory": 44,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 87,
+            "inventory": 19,
+            "rate": 4.35,
+            "constraintUnused": 14,
+            "constraintInsufficientDays": 6
+          },
+          "+3@2": {
+            "delivered": 91,
+            "inventory": 15,
+            "rate": 4.55,
+            "constraintUnused": 28,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-035",
+        "outcomes": {
+          "base": {
+            "delivered": 68,
+            "inventory": 48,
+            "rate": 3.4,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 3
+          },
+          "+1@0": {
+            "delivered": 71,
+            "inventory": 65,
+            "rate": 3.55,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@1": {
+            "delivered": 68,
+            "inventory": 48,
+            "rate": 3.4,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 3
+          },
+          "+1@2": {
+            "delivered": 83,
+            "inventory": 33,
+            "rate": 4.15,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 4
+          },
+          "+1@3": {
+            "delivered": 68,
+            "inventory": 48,
+            "rate": 3.4,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 3
+          },
+          "+1@4": {
+            "delivered": 68,
+            "inventory": 48,
+            "rate": 3.4,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 3
+          },
+          "+2@2": {
+            "delivered": 89,
+            "inventory": 27,
+            "rate": 4.45,
+            "constraintUnused": 16,
+            "constraintInsufficientDays": 6
+          },
+          "+3@2": {
+            "delivered": 91,
+            "inventory": 25,
+            "rate": 4.55,
+            "constraintUnused": 33,
+            "constraintInsufficientDays": 12
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-036",
+        "outcomes": {
+          "base": {
+            "delivered": 74,
+            "inventory": 47,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 74,
+            "inventory": 67,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 74,
+            "inventory": 47,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 81,
+            "inventory": 40,
+            "rate": 4.05,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 3
+          },
+          "+1@3": {
+            "delivered": 74,
+            "inventory": 47,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 74,
+            "inventory": 47,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 81,
+            "inventory": 40,
+            "rate": 4.05,
+            "constraintUnused": 13,
+            "constraintInsufficientDays": 7
+          },
+          "+3@2": {
+            "delivered": 81,
+            "inventory": 40,
+            "rate": 4.05,
+            "constraintUnused": 28,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-037",
+        "outcomes": {
+          "base": {
+            "delivered": 70,
+            "inventory": 43,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 70,
+            "inventory": 63,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 70,
+            "inventory": 43,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 88,
+            "inventory": 25,
+            "rate": 4.4,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 70,
+            "inventory": 43,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 70,
+            "inventory": 43,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 94,
+            "inventory": 19,
+            "rate": 4.7,
+            "constraintUnused": 12,
+            "constraintInsufficientDays": 6
+          },
+          "+3@2": {
+            "delivered": 95,
+            "inventory": 18,
+            "rate": 4.75,
+            "constraintUnused": 30,
+            "constraintInsufficientDays": 12
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-038",
+        "outcomes": {
+          "base": {
+            "delivered": 67,
+            "inventory": 55,
+            "rate": 3.35,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 67,
+            "inventory": 75,
+            "rate": 3.35,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 67,
+            "inventory": 55,
+            "rate": 3.35,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 85,
+            "inventory": 37,
+            "rate": 4.25,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 68,
+            "inventory": 54,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 67,
+            "inventory": 55,
+            "rate": 3.35,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 98,
+            "inventory": 24,
+            "rate": 4.9,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+3@2": {
+            "delivered": 99,
+            "inventory": 23,
+            "rate": 4.95,
+            "constraintUnused": 13,
+            "constraintInsufficientDays": 7
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-039",
+        "outcomes": {
+          "base": {
+            "delivered": 69,
+            "inventory": 38,
+            "rate": 3.45,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+1@0": {
+            "delivered": 70,
+            "inventory": 57,
+            "rate": 3.5,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@1": {
+            "delivered": 70,
+            "inventory": 37,
+            "rate": 3.5,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 85,
+            "inventory": 22,
+            "rate": 4.25,
+            "constraintUnused": 8,
+            "constraintInsufficientDays": 3
+          },
+          "+1@3": {
+            "delivered": 69,
+            "inventory": 38,
+            "rate": 3.45,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+1@4": {
+            "delivered": 69,
+            "inventory": 38,
+            "rate": 3.45,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+2@2": {
+            "delivered": 91,
+            "inventory": 16,
+            "rate": 4.55,
+            "constraintUnused": 22,
+            "constraintInsufficientDays": 9
+          },
+          "+3@2": {
+            "delivered": 91,
+            "inventory": 16,
+            "rate": 4.55,
+            "constraintUnused": 42,
+            "constraintInsufficientDays": 15
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-040",
+        "outcomes": {
+          "base": {
+            "delivered": 75,
+            "inventory": 26,
+            "rate": 3.75,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 76,
+            "inventory": 45,
+            "rate": 3.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 75,
+            "inventory": 26,
+            "rate": 3.75,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 90,
+            "inventory": 11,
+            "rate": 4.5,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 75,
+            "inventory": 26,
+            "rate": 3.75,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 75,
+            "inventory": 26,
+            "rate": 3.75,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 93,
+            "inventory": 8,
+            "rate": 4.65,
+            "constraintUnused": 17,
+            "constraintInsufficientDays": 9
+          },
+          "+3@2": {
+            "delivered": 95,
+            "inventory": 6,
+            "rate": 4.75,
+            "constraintUnused": 35,
+            "constraintInsufficientDays": 13
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-041",
+        "outcomes": {
+          "base": {
+            "delivered": 62,
+            "inventory": 52,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 62,
+            "inventory": 72,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 62,
+            "inventory": 52,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 78,
+            "inventory": 36,
+            "rate": 3.9,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 62,
+            "inventory": 52,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 62,
+            "inventory": 52,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 91,
+            "inventory": 23,
+            "rate": 4.55,
+            "constraintUnused": 8,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 91,
+            "inventory": 23,
+            "rate": 4.55,
+            "constraintUnused": 21,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-042",
+        "outcomes": {
+          "base": {
+            "delivered": 71,
+            "inventory": 37,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 71,
+            "inventory": 57,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 71,
+            "inventory": 37,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 89,
+            "inventory": 19,
+            "rate": 4.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 71,
+            "inventory": 37,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 71,
+            "inventory": 37,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 90,
+            "inventory": 18,
+            "rate": 4.5,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 90,
+            "inventory": 18,
+            "rate": 4.5,
+            "constraintUnused": 28,
+            "constraintInsufficientDays": 14
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-043",
+        "outcomes": {
+          "base": {
+            "delivered": 65,
+            "inventory": 27,
+            "rate": 3.25,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 2
+          },
+          "+1@0": {
+            "delivered": 69,
+            "inventory": 43,
+            "rate": 3.45,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 65,
+            "inventory": 27,
+            "rate": 3.25,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 2
+          },
+          "+1@2": {
+            "delivered": 78,
+            "inventory": 14,
+            "rate": 3.9,
+            "constraintUnused": 12,
+            "constraintInsufficientDays": 5
+          },
+          "+1@3": {
+            "delivered": 65,
+            "inventory": 27,
+            "rate": 3.25,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 2
+          },
+          "+1@4": {
+            "delivered": 65,
+            "inventory": 27,
+            "rate": 3.25,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 2
+          },
+          "+2@2": {
+            "delivered": 86,
+            "inventory": 6,
+            "rate": 4.3,
+            "constraintUnused": 20,
+            "constraintInsufficientDays": 7
+          },
+          "+3@2": {
+            "delivered": 89,
+            "inventory": 3,
+            "rate": 4.45,
+            "constraintUnused": 38,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-044",
+        "outcomes": {
+          "base": {
+            "delivered": 71,
+            "inventory": 36,
+            "rate": 3.55,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 71,
+            "inventory": 56,
+            "rate": 3.55,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 71,
+            "inventory": 36,
+            "rate": 3.55,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 89,
+            "inventory": 18,
+            "rate": 4.45,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 71,
+            "inventory": 36,
+            "rate": 3.55,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 71,
+            "inventory": 36,
+            "rate": 3.55,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 95,
+            "inventory": 12,
+            "rate": 4.75,
+            "constraintUnused": 12,
+            "constraintInsufficientDays": 7
+          },
+          "+3@2": {
+            "delivered": 96,
+            "inventory": 11,
+            "rate": 4.8,
+            "constraintUnused": 31,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-045",
+        "outcomes": {
+          "base": {
+            "delivered": 71,
+            "inventory": 37,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 71,
+            "inventory": 57,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 71,
+            "inventory": 37,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 89,
+            "inventory": 19,
+            "rate": 4.45,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 71,
+            "inventory": 37,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 71,
+            "inventory": 37,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 90,
+            "inventory": 18,
+            "rate": 4.5,
+            "constraintUnused": 20,
+            "constraintInsufficientDays": 9
+          },
+          "+3@2": {
+            "delivered": 90,
+            "inventory": 18,
+            "rate": 4.5,
+            "constraintUnused": 39,
+            "constraintInsufficientDays": 13
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-046",
+        "outcomes": {
+          "base": {
+            "delivered": 73,
+            "inventory": 23,
+            "rate": 3.65,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@0": {
+            "delivered": 75,
+            "inventory": 41,
+            "rate": 3.75,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 74,
+            "inventory": 22,
+            "rate": 3.7,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 84,
+            "inventory": 12,
+            "rate": 4.2,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 4
+          },
+          "+1@3": {
+            "delivered": 73,
+            "inventory": 23,
+            "rate": 3.65,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@4": {
+            "delivered": 73,
+            "inventory": 23,
+            "rate": 3.65,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+2@2": {
+            "delivered": 92,
+            "inventory": 4,
+            "rate": 4.6,
+            "constraintUnused": 23,
+            "constraintInsufficientDays": 9
+          },
+          "+3@2": {
+            "delivered": 92,
+            "inventory": 4,
+            "rate": 4.6,
+            "constraintUnused": 43,
+            "constraintInsufficientDays": 14
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-047",
+        "outcomes": {
+          "base": {
+            "delivered": 70,
+            "inventory": 53,
+            "rate": 3.5,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 71,
+            "inventory": 72,
+            "rate": 3.55,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 72,
+            "inventory": 51,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 80,
+            "inventory": 43,
+            "rate": 4,
+            "constraintUnused": 6,
+            "constraintInsufficientDays": 3
+          },
+          "+1@3": {
+            "delivered": 70,
+            "inventory": 53,
+            "rate": 3.5,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 70,
+            "inventory": 53,
+            "rate": 3.5,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 86,
+            "inventory": 37,
+            "rate": 4.3,
+            "constraintUnused": 12,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 91,
+            "inventory": 32,
+            "rate": 4.55,
+            "constraintUnused": 28,
+            "constraintInsufficientDays": 7
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-048",
+        "outcomes": {
+          "base": {
+            "delivered": 71,
+            "inventory": 35,
+            "rate": 3.55,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 72,
+            "inventory": 54,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 71,
+            "inventory": 35,
+            "rate": 3.55,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 88,
+            "inventory": 18,
+            "rate": 4.4,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 71,
+            "inventory": 35,
+            "rate": 3.55,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 72,
+            "inventory": 34,
+            "rate": 3.6,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 96,
+            "inventory": 10,
+            "rate": 4.8,
+            "constraintUnused": 13,
+            "constraintInsufficientDays": 6
+          },
+          "+3@2": {
+            "delivered": 98,
+            "inventory": 8,
+            "rate": 4.9,
+            "constraintUnused": 31,
+            "constraintInsufficientDays": 12
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-049",
+        "outcomes": {
+          "base": {
+            "delivered": 73,
+            "inventory": 26,
+            "rate": 3.65,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 74,
+            "inventory": 45,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 73,
+            "inventory": 26,
+            "rate": 3.65,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 85,
+            "inventory": 14,
+            "rate": 4.25,
+            "constraintUnused": 8,
+            "constraintInsufficientDays": 6
+          },
+          "+1@3": {
+            "delivered": 73,
+            "inventory": 26,
+            "rate": 3.65,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 73,
+            "inventory": 26,
+            "rate": 3.65,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 93,
+            "inventory": 6,
+            "rate": 4.65,
+            "constraintUnused": 18,
+            "constraintInsufficientDays": 9
+          },
+          "+3@2": {
+            "delivered": 94,
+            "inventory": 5,
+            "rate": 4.7,
+            "constraintUnused": 37,
+            "constraintInsufficientDays": 13
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-050",
+        "outcomes": {
+          "base": {
+            "delivered": 58,
+            "inventory": 63,
+            "rate": 2.9,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 58,
+            "inventory": 83,
+            "rate": 2.9,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 59,
+            "inventory": 62,
+            "rate": 2.95,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 74,
+            "inventory": 47,
+            "rate": 3.7,
+            "constraintUnused": 6,
+            "constraintInsufficientDays": 3
+          },
+          "+1@3": {
+            "delivered": 58,
+            "inventory": 63,
+            "rate": 2.9,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 58,
+            "inventory": 63,
+            "rate": 2.9,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 88,
+            "inventory": 33,
+            "rate": 4.4,
+            "constraintUnused": 11,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 99,
+            "inventory": 22,
+            "rate": 4.95,
+            "constraintUnused": 19,
+            "constraintInsufficientDays": 6
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-051",
+        "outcomes": {
+          "base": {
+            "delivered": 72,
+            "inventory": 50,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 72,
+            "inventory": 70,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 72,
+            "inventory": 50,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 86,
+            "inventory": 36,
+            "rate": 4.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 72,
+            "inventory": 50,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 73,
+            "inventory": 49,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 93,
+            "inventory": 29,
+            "rate": 4.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+3@2": {
+            "delivered": 99,
+            "inventory": 23,
+            "rate": 4.95,
+            "constraintUnused": 16,
+            "constraintInsufficientDays": 7
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-052",
+        "outcomes": {
+          "base": {
+            "delivered": 71,
+            "inventory": 36,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 71,
+            "inventory": 56,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 71,
+            "inventory": 36,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 91,
+            "inventory": 16,
+            "rate": 4.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 71,
+            "inventory": 36,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 71,
+            "inventory": 36,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 102,
+            "inventory": 5,
+            "rate": 5.1,
+            "constraintUnused": 6,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 103,
+            "inventory": 4,
+            "rate": 5.15,
+            "constraintUnused": 24,
+            "constraintInsufficientDays": 10
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-053",
+        "outcomes": {
+          "base": {
+            "delivered": 72,
+            "inventory": 51,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 72,
+            "inventory": 71,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 72,
+            "inventory": 51,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 89,
+            "inventory": 34,
+            "rate": 4.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 72,
+            "inventory": 51,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 72,
+            "inventory": 51,
+            "rate": 3.6,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 100,
+            "inventory": 23,
+            "rate": 5,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 100,
+            "inventory": 23,
+            "rate": 5,
+            "constraintUnused": 21,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-054",
+        "outcomes": {
+          "base": {
+            "delivered": 62,
+            "inventory": 60,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 62,
+            "inventory": 80,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 62,
+            "inventory": 60,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 79,
+            "inventory": 43,
+            "rate": 3.95,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 62,
+            "inventory": 60,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 62,
+            "inventory": 60,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 85,
+            "inventory": 37,
+            "rate": 4.25,
+            "constraintUnused": 17,
+            "constraintInsufficientDays": 6
+          },
+          "+3@2": {
+            "delivered": 89,
+            "inventory": 33,
+            "rate": 4.45,
+            "constraintUnused": 31,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-055",
+        "outcomes": {
+          "base": {
+            "delivered": 73,
+            "inventory": 52,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 73,
+            "inventory": 72,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 73,
+            "inventory": 52,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 90,
+            "inventory": 35,
+            "rate": 4.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 73,
+            "inventory": 52,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 73,
+            "inventory": 52,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 94,
+            "inventory": 31,
+            "rate": 4.7,
+            "constraintUnused": 7,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 94,
+            "inventory": 31,
+            "rate": 4.7,
+            "constraintUnused": 20,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-056",
+        "outcomes": {
+          "base": {
+            "delivered": 60,
+            "inventory": 40,
+            "rate": 3,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 61,
+            "inventory": 59,
+            "rate": 3.05,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 60,
+            "inventory": 40,
+            "rate": 3,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 72,
+            "inventory": 28,
+            "rate": 3.6,
+            "constraintUnused": 8,
+            "constraintInsufficientDays": 4
+          },
+          "+1@3": {
+            "delivered": 61,
+            "inventory": 39,
+            "rate": 3.05,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 60,
+            "inventory": 40,
+            "rate": 3,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 75,
+            "inventory": 25,
+            "rate": 3.75,
+            "constraintUnused": 23,
+            "constraintInsufficientDays": 9
+          },
+          "+3@2": {
+            "delivered": 77,
+            "inventory": 23,
+            "rate": 3.85,
+            "constraintUnused": 41,
+            "constraintInsufficientDays": 14
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-057",
+        "outcomes": {
+          "base": {
+            "delivered": 58,
+            "inventory": 55,
+            "rate": 2.9,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 59,
+            "inventory": 74,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 59,
+            "inventory": 54,
+            "rate": 2.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 76,
+            "inventory": 37,
+            "rate": 3.8,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 58,
+            "inventory": 55,
+            "rate": 2.9,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 58,
+            "inventory": 55,
+            "rate": 2.9,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 87,
+            "inventory": 26,
+            "rate": 4.35,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 1
+          },
+          "+3@2": {
+            "delivered": 92,
+            "inventory": 21,
+            "rate": 4.6,
+            "constraintUnused": 13,
+            "constraintInsufficientDays": 5
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-058",
+        "outcomes": {
+          "base": {
+            "delivered": 61,
+            "inventory": 54,
+            "rate": 3.05,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 62,
+            "inventory": 73,
+            "rate": 3.1,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 61,
+            "inventory": 54,
+            "rate": 3.05,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 78,
+            "inventory": 37,
+            "rate": 3.9,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 61,
+            "inventory": 54,
+            "rate": 3.05,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 62,
+            "inventory": 53,
+            "rate": 3.1,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 86,
+            "inventory": 29,
+            "rate": 4.3,
+            "constraintUnused": 7,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 90,
+            "inventory": 25,
+            "rate": 4.5,
+            "constraintUnused": 20,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-059",
+        "outcomes": {
+          "base": {
+            "delivered": 68,
+            "inventory": 60,
+            "rate": 3.4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 68,
+            "inventory": 80,
+            "rate": 3.4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 69,
+            "inventory": 59,
+            "rate": 3.45,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 83,
+            "inventory": 45,
+            "rate": 4.15,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 68,
+            "inventory": 60,
+            "rate": 3.4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 68,
+            "inventory": 60,
+            "rate": 3.4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 92,
+            "inventory": 36,
+            "rate": 4.6,
+            "constraintUnused": 8,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 92,
+            "inventory": 36,
+            "rate": 4.6,
+            "constraintUnused": 26,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-060",
+        "outcomes": {
+          "base": {
+            "delivered": 79,
+            "inventory": 38,
+            "rate": 3.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 79,
+            "inventory": 58,
+            "rate": 3.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 79,
+            "inventory": 38,
+            "rate": 3.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 99,
+            "inventory": 18,
+            "rate": 4.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 79,
+            "inventory": 38,
+            "rate": 3.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 79,
+            "inventory": 38,
+            "rate": 3.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 102,
+            "inventory": 15,
+            "rate": 5.1,
+            "constraintUnused": 10,
+            "constraintInsufficientDays": 6
+          },
+          "+3@2": {
+            "delivered": 102,
+            "inventory": 15,
+            "rate": 5.1,
+            "constraintUnused": 30,
+            "constraintInsufficientDays": 14
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-061",
+        "outcomes": {
+          "base": {
+            "delivered": 57,
+            "inventory": 49,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 57,
+            "inventory": 69,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 57,
+            "inventory": 49,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 75,
+            "inventory": 31,
+            "rate": 3.75,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 58,
+            "inventory": 48,
+            "rate": 2.9,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 57,
+            "inventory": 49,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 89,
+            "inventory": 17,
+            "rate": 4.45,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 94,
+            "inventory": 12,
+            "rate": 4.7,
+            "constraintUnused": 17,
+            "constraintInsufficientDays": 6
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-062",
+        "outcomes": {
+          "base": {
+            "delivered": 67,
+            "inventory": 26,
+            "rate": 3.35,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@0": {
+            "delivered": 68,
+            "inventory": 45,
+            "rate": 3.4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@1": {
+            "delivered": 68,
+            "inventory": 25,
+            "rate": 3.4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 82,
+            "inventory": 11,
+            "rate": 4.1,
+            "constraintUnused": 7,
+            "constraintInsufficientDays": 3
+          },
+          "+1@3": {
+            "delivered": 68,
+            "inventory": 25,
+            "rate": 3.4,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@4": {
+            "delivered": 67,
+            "inventory": 26,
+            "rate": 3.35,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+2@2": {
+            "delivered": 87,
+            "inventory": 6,
+            "rate": 4.35,
+            "constraintUnused": 21,
+            "constraintInsufficientDays": 8
+          },
+          "+3@2": {
+            "delivered": 87,
+            "inventory": 6,
+            "rate": 4.35,
+            "constraintUnused": 39,
+            "constraintInsufficientDays": 13
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-063",
+        "outcomes": {
+          "base": {
+            "delivered": 64,
+            "inventory": 45,
+            "rate": 3.2,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 64,
+            "inventory": 65,
+            "rate": 3.2,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 64,
+            "inventory": 45,
+            "rate": 3.2,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 84,
+            "inventory": 25,
+            "rate": 4.2,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 64,
+            "inventory": 45,
+            "rate": 3.2,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 64,
+            "inventory": 45,
+            "rate": 3.2,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 96,
+            "inventory": 13,
+            "rate": 4.8,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 2
+          },
+          "+3@2": {
+            "delivered": 98,
+            "inventory": 11,
+            "rate": 4.9,
+            "constraintUnused": 22,
+            "constraintInsufficientDays": 10
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-064",
+        "outcomes": {
+          "base": {
+            "delivered": 74,
+            "inventory": 30,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 74,
+            "inventory": 50,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 74,
+            "inventory": 30,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 88,
+            "inventory": 16,
+            "rate": 4.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 75,
+            "inventory": 29,
+            "rate": 3.75,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 74,
+            "inventory": 30,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 92,
+            "inventory": 12,
+            "rate": 4.6,
+            "constraintUnused": 15,
+            "constraintInsufficientDays": 8
+          },
+          "+3@2": {
+            "delivered": 92,
+            "inventory": 12,
+            "rate": 4.6,
+            "constraintUnused": 35,
+            "constraintInsufficientDays": 15
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-065",
+        "outcomes": {
+          "base": {
+            "delivered": 67,
+            "inventory": 46,
+            "rate": 3.35,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 68,
+            "inventory": 65,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 68,
+            "inventory": 45,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 85,
+            "inventory": 28,
+            "rate": 4.25,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 67,
+            "inventory": 46,
+            "rate": 3.35,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 67,
+            "inventory": 46,
+            "rate": 3.35,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 88,
+            "inventory": 25,
+            "rate": 4.4,
+            "constraintUnused": 17,
+            "constraintInsufficientDays": 9
+          },
+          "+3@2": {
+            "delivered": 88,
+            "inventory": 25,
+            "rate": 4.4,
+            "constraintUnused": 34,
+            "constraintInsufficientDays": 16
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-066",
+        "outcomes": {
+          "base": {
+            "delivered": 64,
+            "inventory": 46,
+            "rate": 3.2,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 64,
+            "inventory": 66,
+            "rate": 3.2,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 64,
+            "inventory": 46,
+            "rate": 3.2,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 82,
+            "inventory": 28,
+            "rate": 4.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 64,
+            "inventory": 46,
+            "rate": 3.2,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 65,
+            "inventory": 45,
+            "rate": 3.25,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 86,
+            "inventory": 24,
+            "rate": 4.3,
+            "constraintUnused": 7,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 87,
+            "inventory": 23,
+            "rate": 4.35,
+            "constraintUnused": 27,
+            "constraintInsufficientDays": 10
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-067",
+        "outcomes": {
+          "base": {
+            "delivered": 68,
+            "inventory": 42,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 68,
+            "inventory": 62,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 68,
+            "inventory": 42,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 86,
+            "inventory": 24,
+            "rate": 4.3,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 68,
+            "inventory": 42,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 68,
+            "inventory": 42,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 94,
+            "inventory": 16,
+            "rate": 4.7,
+            "constraintUnused": 10,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 95,
+            "inventory": 15,
+            "rate": 4.75,
+            "constraintUnused": 25,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-068",
+        "outcomes": {
+          "base": {
+            "delivered": 66,
+            "inventory": 42,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 66,
+            "inventory": 62,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 66,
+            "inventory": 42,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 77,
+            "inventory": 31,
+            "rate": 3.85,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 6
+          },
+          "+1@3": {
+            "delivered": 66,
+            "inventory": 42,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 66,
+            "inventory": 42,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 87,
+            "inventory": 21,
+            "rate": 4.35,
+            "constraintUnused": 19,
+            "constraintInsufficientDays": 7
+          },
+          "+3@2": {
+            "delivered": 94,
+            "inventory": 14,
+            "rate": 4.7,
+            "constraintUnused": 32,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-069",
+        "outcomes": {
+          "base": {
+            "delivered": 71,
+            "inventory": 48,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 71,
+            "inventory": 68,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 71,
+            "inventory": 48,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 89,
+            "inventory": 30,
+            "rate": 4.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 71,
+            "inventory": 48,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 71,
+            "inventory": 48,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 92,
+            "inventory": 27,
+            "rate": 4.6,
+            "constraintUnused": 11,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 93,
+            "inventory": 26,
+            "rate": 4.65,
+            "constraintUnused": 22,
+            "constraintInsufficientDays": 7
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-070",
+        "outcomes": {
+          "base": {
+            "delivered": 68,
+            "inventory": 44,
+            "rate": 3.4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 69,
+            "inventory": 63,
+            "rate": 3.45,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 69,
+            "inventory": 43,
+            "rate": 3.45,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 86,
+            "inventory": 26,
+            "rate": 4.3,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 68,
+            "inventory": 44,
+            "rate": 3.4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 68,
+            "inventory": 44,
+            "rate": 3.4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 99,
+            "inventory": 13,
+            "rate": 4.95,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 102,
+            "inventory": 10,
+            "rate": 5.1,
+            "constraintUnused": 26,
+            "constraintInsufficientDays": 10
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-071",
+        "outcomes": {
+          "base": {
+            "delivered": 79,
+            "inventory": 26,
+            "rate": 3.95,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 81,
+            "inventory": 44,
+            "rate": 4.05,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 79,
+            "inventory": 26,
+            "rate": 3.95,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 85,
+            "inventory": 20,
+            "rate": 4.25,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 3
+          },
+          "+1@3": {
+            "delivered": 79,
+            "inventory": 26,
+            "rate": 3.95,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 80,
+            "inventory": 25,
+            "rate": 4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 86,
+            "inventory": 19,
+            "rate": 4.3,
+            "constraintUnused": 21,
+            "constraintInsufficientDays": 9
+          },
+          "+3@2": {
+            "delivered": 86,
+            "inventory": 19,
+            "rate": 4.3,
+            "constraintUnused": 38,
+            "constraintInsufficientDays": 12
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-072",
+        "outcomes": {
+          "base": {
+            "delivered": 73,
+            "inventory": 43,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 73,
+            "inventory": 63,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 73,
+            "inventory": 43,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 91,
+            "inventory": 25,
+            "rate": 4.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 74,
+            "inventory": 42,
+            "rate": 3.7,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 73,
+            "inventory": 43,
+            "rate": 3.65,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 100,
+            "inventory": 16,
+            "rate": 5,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 100,
+            "inventory": 16,
+            "rate": 5,
+            "constraintUnused": 19,
+            "constraintInsufficientDays": 10
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-073",
+        "outcomes": {
+          "base": {
+            "delivered": 75,
+            "inventory": 41,
+            "rate": 3.75,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 75,
+            "inventory": 61,
+            "rate": 3.75,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 75,
+            "inventory": 41,
+            "rate": 3.75,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 89,
+            "inventory": 27,
+            "rate": 4.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 76,
+            "inventory": 40,
+            "rate": 3.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 79,
+            "inventory": 37,
+            "rate": 3.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 97,
+            "inventory": 19,
+            "rate": 4.85,
+            "constraintUnused": 15,
+            "constraintInsufficientDays": 7
+          },
+          "+3@2": {
+            "delivered": 99,
+            "inventory": 17,
+            "rate": 4.95,
+            "constraintUnused": 35,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-074",
+        "outcomes": {
+          "base": {
+            "delivered": 65,
+            "inventory": 39,
+            "rate": 3.25,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 65,
+            "inventory": 59,
+            "rate": 3.25,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 65,
+            "inventory": 39,
+            "rate": 3.25,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 82,
+            "inventory": 22,
+            "rate": 4.1,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 65,
+            "inventory": 39,
+            "rate": 3.25,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 65,
+            "inventory": 39,
+            "rate": 3.25,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 91,
+            "inventory": 13,
+            "rate": 4.55,
+            "constraintUnused": 11,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 99,
+            "inventory": 5,
+            "rate": 4.95,
+            "constraintUnused": 21,
+            "constraintInsufficientDays": 6
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-075",
+        "outcomes": {
+          "base": {
+            "delivered": 77,
+            "inventory": 25,
+            "rate": 3.85,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 2
+          },
+          "+1@0": {
+            "delivered": 79,
+            "inventory": 43,
+            "rate": 3.95,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@1": {
+            "delivered": 78,
+            "inventory": 24,
+            "rate": 3.9,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+1@2": {
+            "delivered": 91,
+            "inventory": 11,
+            "rate": 4.55,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 4
+          },
+          "+1@3": {
+            "delivered": 77,
+            "inventory": 25,
+            "rate": 3.85,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 2
+          },
+          "+1@4": {
+            "delivered": 77,
+            "inventory": 25,
+            "rate": 3.85,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 2
+          },
+          "+2@2": {
+            "delivered": 97,
+            "inventory": 5,
+            "rate": 4.85,
+            "constraintUnused": 24,
+            "constraintInsufficientDays": 11
+          },
+          "+3@2": {
+            "delivered": 97,
+            "inventory": 5,
+            "rate": 4.85,
+            "constraintUnused": 44,
+            "constraintInsufficientDays": 16
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-076",
+        "outcomes": {
+          "base": {
+            "delivered": 60,
+            "inventory": 36,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 60,
+            "inventory": 56,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 60,
+            "inventory": 36,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 74,
+            "inventory": 22,
+            "rate": 3.7,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 60,
+            "inventory": 36,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 61,
+            "inventory": 35,
+            "rate": 3.05,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 78,
+            "inventory": 18,
+            "rate": 3.9,
+            "constraintUnused": 13,
+            "constraintInsufficientDays": 7
+          },
+          "+3@2": {
+            "delivered": 78,
+            "inventory": 18,
+            "rate": 3.9,
+            "constraintUnused": 29,
+            "constraintInsufficientDays": 14
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-077",
+        "outcomes": {
+          "base": {
+            "delivered": 68,
+            "inventory": 38,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 68,
+            "inventory": 58,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 68,
+            "inventory": 38,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 79,
+            "inventory": 27,
+            "rate": 3.95,
+            "constraintUnused": 7,
+            "constraintInsufficientDays": 4
+          },
+          "+1@3": {
+            "delivered": 68,
+            "inventory": 38,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 68,
+            "inventory": 38,
+            "rate": 3.4,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 85,
+            "inventory": 21,
+            "rate": 4.25,
+            "constraintUnused": 17,
+            "constraintInsufficientDays": 7
+          },
+          "+3@2": {
+            "delivered": 90,
+            "inventory": 16,
+            "rate": 4.5,
+            "constraintUnused": 34,
+            "constraintInsufficientDays": 12
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-078",
+        "outcomes": {
+          "base": {
+            "delivered": 57,
+            "inventory": 56,
+            "rate": 2.85,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+1@0": {
+            "delivered": 57,
+            "inventory": 76,
+            "rate": 2.85,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+1@1": {
+            "delivered": 59,
+            "inventory": 54,
+            "rate": 2.95,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 74,
+            "inventory": 39,
+            "rate": 3.7,
+            "constraintUnused": 6,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 58,
+            "inventory": 55,
+            "rate": 2.9,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+1@4": {
+            "delivered": 57,
+            "inventory": 56,
+            "rate": 2.85,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+2@2": {
+            "delivered": 91,
+            "inventory": 22,
+            "rate": 4.55,
+            "constraintUnused": 8,
+            "constraintInsufficientDays": 2
+          },
+          "+3@2": {
+            "delivered": 103,
+            "inventory": 10,
+            "rate": 5.15,
+            "constraintUnused": 16,
+            "constraintInsufficientDays": 6
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-079",
+        "outcomes": {
+          "base": {
+            "delivered": 77,
+            "inventory": 31,
+            "rate": 3.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 77,
+            "inventory": 51,
+            "rate": 3.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 77,
+            "inventory": 31,
+            "rate": 3.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 91,
+            "inventory": 17,
+            "rate": 4.55,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 4
+          },
+          "+1@3": {
+            "delivered": 77,
+            "inventory": 31,
+            "rate": 3.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 77,
+            "inventory": 31,
+            "rate": 3.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 92,
+            "inventory": 16,
+            "rate": 4.6,
+            "constraintUnused": 16,
+            "constraintInsufficientDays": 8
+          },
+          "+3@2": {
+            "delivered": 92,
+            "inventory": 16,
+            "rate": 4.6,
+            "constraintUnused": 35,
+            "constraintInsufficientDays": 14
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-080",
+        "outcomes": {
+          "base": {
+            "delivered": 62,
+            "inventory": 42,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 62,
+            "inventory": 62,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 62,
+            "inventory": 42,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 79,
+            "inventory": 25,
+            "rate": 3.95,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 63,
+            "inventory": 41,
+            "rate": 3.15,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 62,
+            "inventory": 42,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 92,
+            "inventory": 12,
+            "rate": 4.6,
+            "constraintUnused": 6,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 93,
+            "inventory": 11,
+            "rate": 4.65,
+            "constraintUnused": 26,
+            "constraintInsufficientDays": 8
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-081",
+        "outcomes": {
+          "base": {
+            "delivered": 62,
+            "inventory": 48,
+            "rate": 3.1,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@0": {
+            "delivered": 64,
+            "inventory": 66,
+            "rate": 3.2,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 62,
+            "inventory": 48,
+            "rate": 3.1,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@2": {
+            "delivered": 79,
+            "inventory": 31,
+            "rate": 3.95,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 62,
+            "inventory": 48,
+            "rate": 3.1,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@4": {
+            "delivered": 63,
+            "inventory": 47,
+            "rate": 3.15,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+2@2": {
+            "delivered": 93,
+            "inventory": 17,
+            "rate": 4.65,
+            "constraintUnused": 7,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 95,
+            "inventory": 15,
+            "rate": 4.75,
+            "constraintUnused": 25,
+            "constraintInsufficientDays": 10
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-082",
+        "outcomes": {
+          "base": {
+            "delivered": 81,
+            "inventory": 35,
+            "rate": 4.05,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 81,
+            "inventory": 55,
+            "rate": 4.05,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 81,
+            "inventory": 35,
+            "rate": 4.05,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 100,
+            "inventory": 16,
+            "rate": 5,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 81,
+            "inventory": 35,
+            "rate": 4.05,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 81,
+            "inventory": 35,
+            "rate": 4.05,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 105,
+            "inventory": 11,
+            "rate": 5.25,
+            "constraintUnused": 13,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 106,
+            "inventory": 10,
+            "rate": 5.3,
+            "constraintUnused": 33,
+            "constraintInsufficientDays": 14
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-083",
+        "outcomes": {
+          "base": {
+            "delivered": 75,
+            "inventory": 30,
+            "rate": 3.75,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 75,
+            "inventory": 50,
+            "rate": 3.75,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 75,
+            "inventory": 30,
+            "rate": 3.75,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 86,
+            "inventory": 19,
+            "rate": 4.3,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 75,
+            "inventory": 30,
+            "rate": 3.75,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 75,
+            "inventory": 30,
+            "rate": 3.75,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 87,
+            "inventory": 18,
+            "rate": 4.35,
+            "constraintUnused": 14,
+            "constraintInsufficientDays": 8
+          },
+          "+3@2": {
+            "delivered": 87,
+            "inventory": 18,
+            "rate": 4.35,
+            "constraintUnused": 34,
+            "constraintInsufficientDays": 14
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-084",
+        "outcomes": {
+          "base": {
+            "delivered": 57,
+            "inventory": 45,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 57,
+            "inventory": 65,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 57,
+            "inventory": 45,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 76,
+            "inventory": 26,
+            "rate": 3.8,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 57,
+            "inventory": 45,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 57,
+            "inventory": 45,
+            "rate": 2.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 89,
+            "inventory": 13,
+            "rate": 4.45,
+            "constraintUnused": 7,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 94,
+            "inventory": 8,
+            "rate": 4.7,
+            "constraintUnused": 21,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-085",
+        "outcomes": {
+          "base": {
+            "delivered": 61,
+            "inventory": 39,
+            "rate": 3.05,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 61,
+            "inventory": 59,
+            "rate": 3.05,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 62,
+            "inventory": 38,
+            "rate": 3.1,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 80,
+            "inventory": 20,
+            "rate": 4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 61,
+            "inventory": 39,
+            "rate": 3.05,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 61,
+            "inventory": 39,
+            "rate": 3.05,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 91,
+            "inventory": 9,
+            "rate": 4.55,
+            "constraintUnused": 11,
+            "constraintInsufficientDays": 6
+          },
+          "+3@2": {
+            "delivered": 94,
+            "inventory": 6,
+            "rate": 4.7,
+            "constraintUnused": 26,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-086",
+        "outcomes": {
+          "base": {
+            "delivered": 69,
+            "inventory": 47,
+            "rate": 3.45,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 69,
+            "inventory": 67,
+            "rate": 3.45,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 69,
+            "inventory": 47,
+            "rate": 3.45,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 83,
+            "inventory": 33,
+            "rate": 4.15,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 69,
+            "inventory": 47,
+            "rate": 3.45,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 71,
+            "inventory": 45,
+            "rate": 3.55,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 92,
+            "inventory": 24,
+            "rate": 4.6,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 1
+          },
+          "+3@2": {
+            "delivered": 97,
+            "inventory": 19,
+            "rate": 4.85,
+            "constraintUnused": 18,
+            "constraintInsufficientDays": 6
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-087",
+        "outcomes": {
+          "base": {
+            "delivered": 60,
+            "inventory": 55,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 60,
+            "inventory": 75,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 60,
+            "inventory": 55,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 79,
+            "inventory": 36,
+            "rate": 3.95,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 60,
+            "inventory": 55,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 60,
+            "inventory": 55,
+            "rate": 3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 98,
+            "inventory": 17,
+            "rate": 4.9,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+3@2": {
+            "delivered": 102,
+            "inventory": 13,
+            "rate": 5.1,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 4
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-088",
+        "outcomes": {
+          "base": {
+            "delivered": 76,
+            "inventory": 37,
+            "rate": 3.8,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 77,
+            "inventory": 56,
+            "rate": 3.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 76,
+            "inventory": 37,
+            "rate": 3.8,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 91,
+            "inventory": 22,
+            "rate": 4.55,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 76,
+            "inventory": 37,
+            "rate": 3.8,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 77,
+            "inventory": 36,
+            "rate": 3.85,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 99,
+            "inventory": 14,
+            "rate": 4.95,
+            "constraintUnused": 12,
+            "constraintInsufficientDays": 6
+          },
+          "+3@2": {
+            "delivered": 99,
+            "inventory": 14,
+            "rate": 4.95,
+            "constraintUnused": 29,
+            "constraintInsufficientDays": 11
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-089",
+        "outcomes": {
+          "base": {
+            "delivered": 65,
+            "inventory": 40,
+            "rate": 3.25,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 65,
+            "inventory": 60,
+            "rate": 3.25,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 66,
+            "inventory": 39,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 83,
+            "inventory": 22,
+            "rate": 4.15,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 66,
+            "inventory": 39,
+            "rate": 3.3,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 65,
+            "inventory": 40,
+            "rate": 3.25,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 87,
+            "inventory": 18,
+            "rate": 4.35,
+            "constraintUnused": 17,
+            "constraintInsufficientDays": 8
+          },
+          "+3@2": {
+            "delivered": 89,
+            "inventory": 16,
+            "rate": 4.45,
+            "constraintUnused": 34,
+            "constraintInsufficientDays": 14
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-090",
+        "outcomes": {
+          "base": {
+            "delivered": 68,
+            "inventory": 43,
+            "rate": 3.4,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 69,
+            "inventory": 62,
+            "rate": 3.45,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 68,
+            "inventory": 43,
+            "rate": 3.4,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 86,
+            "inventory": 25,
+            "rate": 4.3,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 68,
+            "inventory": 43,
+            "rate": 3.4,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 68,
+            "inventory": 43,
+            "rate": 3.4,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 92,
+            "inventory": 19,
+            "rate": 4.6,
+            "constraintUnused": 14,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 92,
+            "inventory": 19,
+            "rate": 4.6,
+            "constraintUnused": 27,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-091",
+        "outcomes": {
+          "base": {
+            "delivered": 69,
+            "inventory": 44,
+            "rate": 3.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 69,
+            "inventory": 64,
+            "rate": 3.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 69,
+            "inventory": 44,
+            "rate": 3.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 85,
+            "inventory": 28,
+            "rate": 4.25,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 70,
+            "inventory": 43,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 70,
+            "inventory": 43,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 91,
+            "inventory": 22,
+            "rate": 4.55,
+            "constraintUnused": 10,
+            "constraintInsufficientDays": 4
+          },
+          "+3@2": {
+            "delivered": 92,
+            "inventory": 21,
+            "rate": 4.6,
+            "constraintUnused": 22,
+            "constraintInsufficientDays": 8
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-092",
+        "outcomes": {
+          "base": {
+            "delivered": 65,
+            "inventory": 34,
+            "rate": 3.25,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@0": {
+            "delivered": 66,
+            "inventory": 53,
+            "rate": 3.3,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@1": {
+            "delivered": 65,
+            "inventory": 34,
+            "rate": 3.25,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@2": {
+            "delivered": 82,
+            "inventory": 17,
+            "rate": 4.1,
+            "constraintUnused": 6,
+            "constraintInsufficientDays": 3
+          },
+          "+1@3": {
+            "delivered": 65,
+            "inventory": 34,
+            "rate": 3.25,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@4": {
+            "delivered": 65,
+            "inventory": 34,
+            "rate": 3.25,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+2@2": {
+            "delivered": 86,
+            "inventory": 13,
+            "rate": 4.3,
+            "constraintUnused": 22,
+            "constraintInsufficientDays": 9
+          },
+          "+3@2": {
+            "delivered": 86,
+            "inventory": 13,
+            "rate": 4.3,
+            "constraintUnused": 42,
+            "constraintInsufficientDays": 15
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-093",
+        "outcomes": {
+          "base": {
+            "delivered": 65,
+            "inventory": 54,
+            "rate": 3.25,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 66,
+            "inventory": 73,
+            "rate": 3.3,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 65,
+            "inventory": 54,
+            "rate": 3.25,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@2": {
+            "delivered": 82,
+            "inventory": 37,
+            "rate": 4.1,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 65,
+            "inventory": 54,
+            "rate": 3.25,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 65,
+            "inventory": 54,
+            "rate": 3.25,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 91,
+            "inventory": 28,
+            "rate": 4.55,
+            "constraintUnused": 8,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 93,
+            "inventory": 26,
+            "rate": 4.65,
+            "constraintUnused": 26,
+            "constraintInsufficientDays": 10
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-094",
+        "outcomes": {
+          "base": {
+            "delivered": 76,
+            "inventory": 21,
+            "rate": 3.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 76,
+            "inventory": 41,
+            "rate": 3.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 76,
+            "inventory": 21,
+            "rate": 3.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 93,
+            "inventory": 4,
+            "rate": 4.65,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 77,
+            "inventory": 20,
+            "rate": 3.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 76,
+            "inventory": 21,
+            "rate": 3.8,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 97,
+            "inventory": 0,
+            "rate": 4.85,
+            "constraintUnused": 21,
+            "constraintInsufficientDays": 8
+          },
+          "+3@2": {
+            "delivered": 97,
+            "inventory": 0,
+            "rate": 4.85,
+            "constraintUnused": 41,
+            "constraintInsufficientDays": 16
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-095",
+        "outcomes": {
+          "base": {
+            "delivered": 70,
+            "inventory": 29,
+            "rate": 3.5,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+1@0": {
+            "delivered": 72,
+            "inventory": 47,
+            "rate": 3.6,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 72,
+            "inventory": 27,
+            "rate": 3.6,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 2
+          },
+          "+1@2": {
+            "delivered": 78,
+            "inventory": 21,
+            "rate": 3.9,
+            "constraintUnused": 12,
+            "constraintInsufficientDays": 5
+          },
+          "+1@3": {
+            "delivered": 70,
+            "inventory": 29,
+            "rate": 3.5,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+1@4": {
+            "delivered": 70,
+            "inventory": 29,
+            "rate": 3.5,
+            "constraintUnused": 4,
+            "constraintInsufficientDays": 2
+          },
+          "+2@2": {
+            "delivered": 81,
+            "inventory": 18,
+            "rate": 4.05,
+            "constraintUnused": 25,
+            "constraintInsufficientDays": 11
+          },
+          "+3@2": {
+            "delivered": 82,
+            "inventory": 17,
+            "rate": 4.1,
+            "constraintUnused": 44,
+            "constraintInsufficientDays": 15
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-096",
+        "outcomes": {
+          "base": {
+            "delivered": 70,
+            "inventory": 33,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 70,
+            "inventory": 53,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 70,
+            "inventory": 33,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 89,
+            "inventory": 14,
+            "rate": 4.45,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 70,
+            "inventory": 33,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 70,
+            "inventory": 33,
+            "rate": 3.5,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 95,
+            "inventory": 8,
+            "rate": 4.75,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 5
+          },
+          "+3@2": {
+            "delivered": 96,
+            "inventory": 7,
+            "rate": 4.8,
+            "constraintUnused": 29,
+            "constraintInsufficientDays": 16
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-097",
+        "outcomes": {
+          "base": {
+            "delivered": 68,
+            "inventory": 38,
+            "rate": 3.4,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@0": {
+            "delivered": 70,
+            "inventory": 56,
+            "rate": 3.5,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 68,
+            "inventory": 38,
+            "rate": 3.4,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@2": {
+            "delivered": 81,
+            "inventory": 25,
+            "rate": 4.05,
+            "constraintUnused": 9,
+            "constraintInsufficientDays": 4
+          },
+          "+1@3": {
+            "delivered": 69,
+            "inventory": 37,
+            "rate": 3.45,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+1@4": {
+            "delivered": 68,
+            "inventory": 38,
+            "rate": 3.4,
+            "constraintUnused": 3,
+            "constraintInsufficientDays": 2
+          },
+          "+2@2": {
+            "delivered": 88,
+            "inventory": 18,
+            "rate": 4.4,
+            "constraintUnused": 16,
+            "constraintInsufficientDays": 6
+          },
+          "+3@2": {
+            "delivered": 88,
+            "inventory": 18,
+            "rate": 4.4,
+            "constraintUnused": 31,
+            "constraintInsufficientDays": 9
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-098",
+        "outcomes": {
+          "base": {
+            "delivered": 71,
+            "inventory": 54,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@0": {
+            "delivered": 71,
+            "inventory": 74,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@1": {
+            "delivered": 71,
+            "inventory": 54,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 91,
+            "inventory": 34,
+            "rate": 4.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@3": {
+            "delivered": 71,
+            "inventory": 54,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@4": {
+            "delivered": 71,
+            "inventory": 54,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+2@2": {
+            "delivered": 105,
+            "inventory": 20,
+            "rate": 5.25,
+            "constraintUnused": 5,
+            "constraintInsufficientDays": 3
+          },
+          "+3@2": {
+            "delivered": 107,
+            "inventory": 18,
+            "rate": 5.35,
+            "constraintUnused": 15,
+            "constraintInsufficientDays": 6
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-099",
+        "outcomes": {
+          "base": {
+            "delivered": 69,
+            "inventory": 37,
+            "rate": 3.45,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 69,
+            "inventory": 57,
+            "rate": 3.45,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 71,
+            "inventory": 35,
+            "rate": 3.55,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 84,
+            "inventory": 22,
+            "rate": 4.2,
+            "constraintUnused": 6,
+            "constraintInsufficientDays": 2
+          },
+          "+1@3": {
+            "delivered": 69,
+            "inventory": 37,
+            "rate": 3.45,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 69,
+            "inventory": 37,
+            "rate": 3.45,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 90,
+            "inventory": 16,
+            "rate": 4.5,
+            "constraintUnused": 21,
+            "constraintInsufficientDays": 9
+          },
+          "+3@2": {
+            "delivered": 90,
+            "inventory": 16,
+            "rate": 4.5,
+            "constraintUnused": 41,
+            "constraintInsufficientDays": 16
+          }
+        }
+      },
+      {
+        "seed": "constraint-calib-100",
+        "outcomes": {
+          "base": {
+            "delivered": 76,
+            "inventory": 28,
+            "rate": 3.8,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@0": {
+            "delivered": 76,
+            "inventory": 48,
+            "rate": 3.8,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@1": {
+            "delivered": 77,
+            "inventory": 27,
+            "rate": 3.85,
+            "constraintUnused": 0,
+            "constraintInsufficientDays": 0
+          },
+          "+1@2": {
+            "delivered": 88,
+            "inventory": 16,
+            "rate": 4.4,
+            "constraintUnused": 2,
+            "constraintInsufficientDays": 1
+          },
+          "+1@3": {
+            "delivered": 76,
+            "inventory": 28,
+            "rate": 3.8,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+1@4": {
+            "delivered": 79,
+            "inventory": 25,
+            "rate": 3.95,
+            "constraintUnused": 1,
+            "constraintInsufficientDays": 1
+          },
+          "+2@2": {
+            "delivered": 89,
+            "inventory": 15,
+            "rate": 4.45,
+            "constraintUnused": 18,
+            "constraintInsufficientDays": 7
+          },
+          "+3@2": {
+            "delivered": 89,
+            "inventory": 15,
+            "rate": 4.45,
+            "constraintUnused": 37,
+            "constraintInsufficientDays": 11
+          }
+        }
+      }
+    ],
+    "boundarySeeds": [
+      "constraint-boundary-01",
+      "constraint-boundary-02",
+      "constraint-boundary-03",
+      "constraint-boundary-04",
+      "constraint-boundary-05",
+      "constraint-boundary-06",
+      "constraint-boundary-07",
+      "constraint-boundary-08",
+      "constraint-boundary-09",
+      "constraint-boundary-10",
+      "constraint-boundary-11",
+      "constraint-boundary-12",
+      "constraint-boundary-13",
+      "constraint-boundary-14",
+      "constraint-boundary-15",
+      "constraint-boundary-16",
+      "constraint-boundary-17",
+      "constraint-boundary-18",
+      "constraint-boundary-19",
+      "constraint-boundary-20"
+    ],
+    "boundary": [
+      {
+        "stageCount": 4,
+        "rounds": 10,
+        "seedCount": 20,
+        "runs": 140,
+        "deliveryDecreases": 0,
+        "conservationFailures": 0,
+        "capacityLimitFailures": 0,
+        "diceMismatches": 0,
+        "tieDiagnosisFailures": 0
+      },
+      {
+        "stageCount": 4,
+        "rounds": 30,
+        "seedCount": 20,
+        "runs": 140,
+        "deliveryDecreases": 0,
+        "conservationFailures": 0,
+        "capacityLimitFailures": 0,
+        "diceMismatches": 0,
+        "tieDiagnosisFailures": 0
+      },
+      {
+        "stageCount": 12,
+        "rounds": 10,
+        "seedCount": 20,
+        "runs": 300,
+        "deliveryDecreases": 0,
+        "conservationFailures": 0,
+        "capacityLimitFailures": 0,
+        "diceMismatches": 0,
+        "tieDiagnosisFailures": 0
+      },
+      {
+        "stageCount": 12,
+        "rounds": 30,
+        "seedCount": 20,
+        "runs": 300,
+        "deliveryDecreases": 0,
+        "conservationFailures": 0,
+        "capacityLimitFailures": 0,
+        "diceMismatches": 0,
+        "tieDiagnosisFailures": 0
+      }
+    ]
+  }
+}

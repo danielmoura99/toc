@@ -10,6 +10,7 @@ import { ArrowLeft, GitCompare, Trash2 } from 'lucide-react';
 
 import { MAX_COMPARISON_SELECTION, useHistoryStore } from '../application/historyStore';
 import { formatDateTime } from '@/features/trail/components/format';
+import { formatLots, interventionLabel } from './capacityText';
 
 interface HistoryPanelProps {
   onBack: () => void;
@@ -66,6 +67,7 @@ export function HistoryPanel({ onBack, onCompare }: HistoryPanelProps) {
                 </th>
                 <th scope="col" className="p-3 font-medium">#</th>
                 <th scope="col" className="p-3 font-medium">Data/hora</th>
+                <th scope="col" className="p-3 font-medium">Experiência · configuração</th>
                 <th scope="col" className="p-3 font-medium">Setores</th>
                 <th scope="col" className="p-3 font-medium">Horizonte</th>
                 <th scope="col" className="p-3 font-medium">Seed</th>
@@ -96,14 +98,24 @@ export function HistoryPanel({ onBack, onCompare }: HistoryPanelProps) {
                     </td>
                     <td className="p-3 tabular-nums">{index + 1}</td>
                     <td className="p-3">{formatDateTime(run.createdAt)}</td>
+                    <td className="p-3">
+                      {run.config.experience === 'constraint-flow' ? (
+                        <>
+                          <span className="text-xs text-muted-foreground">Restrição e fluxo · </span>
+                          <span className="font-medium">{interventionLabel(run.config)}</span>
+                        </>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">{interventionLabel(run.config)}</span>
+                      )}
+                    </td>
                     <td className="p-3 tabular-nums" title={participants || undefined}>
                       {run.config.stages.length}
                       {participants && <span className="ml-1 text-xs text-muted-foreground">({participants})</span>}
                     </td>
                     <td className="p-3 tabular-nums">{run.config.rounds} dias</td>
                     <td className="p-3 font-mono text-xs">{run.config.seed.slice(0, 8)}</td>
-                    <td className="p-3 tabular-nums">{run.summary.delivered} lotes</td>
-                    <td className="p-3 tabular-nums">{run.summary.inventoryRemaining} lotes</td>
+                    <td className="p-3 tabular-nums">{formatLots(run.summary.delivered)}</td>
+                    <td className="p-3 tabular-nums">{formatLots(run.summary.inventoryRemaining)}</td>
                     <td className="p-3">
                       <button
                         type="button"

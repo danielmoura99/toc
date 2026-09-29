@@ -3,38 +3,65 @@ import type { RunSummary } from '../domain/metrics';
 import { DeliveredChart } from './DeliveredChart';
 import { StageDeviationChart } from './StageDeviationChart';
 import { stageLabel } from './stageLabel';
+import { formatLots, formatNumber } from './capacityText';
 
 export function RunObservations({ config, state, summary }: {
   config: ProductionLineConfig; state: ProductionLineState; summary: RunSummary;
 }) {
   const partial = state.nextStageIndex !== 0;
+  const isConstraintFlow = config.experience === 'constraint-flow';
+  const rate = summary.meanOutputPerRound === null ? '—' : `${formatNumber(summary.meanOutputPerRound, 2)} lotes/dia`;
+  const indicators: Array<[string, string, string?]> = isConstraintFlow
+    ? [
+        ['Lotes expedidos', formatLots(summary.delivered)],
+        ['Taxa de entrega (dias encerrados)', rate, 'Throughput físico: saída em lotes por dia, não ganho financeiro.'],
+        ['Estoque em processo', formatLots(summary.inventoryRemaining)],
+        [
+          'Referência pela menor capacidade média',
+          formatLots(summary.referenceAccumulated),
+          `${formatNumber(summary.referenceRatePerRound)} lotes/dia × dias encerrados — não é garantia de entrega.`,
+        ],
+      ]
+    : [
+        ['Lotes expedidos', formatLots(summary.delivered)],
+        ['Referência pela capacidade média', formatLots(summary.referenceAccumulated)],
+        ['Estoque em processo', formatLots(summary.inventoryRemaining)],
+        ['Entrada acumulada', formatLots(state.introduced)],
+      ];
   return (
     <section aria-label="Observação do fluxo" className="space-y-4">
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {[
-          ['Lotes expedidos', summary.delivered],
-          ['Referência pela capacidade média', summary.referenceAccumulated],
-          ['Estoque em processo', summary.inventoryRemaining],
-          ['Entrada acumulada', state.introduced],
-        ].map(([label, value]) => (
+        {indicators.map(([label, value, help]) => (
           <div key={label} className="rounded-lg border bg-card p-3">
             <dt className="text-sm text-muted-foreground">{label}</dt>
-            <dd className="text-2xl font-semibold tabular-nums">{value} <span className="text-sm">lotes</span></dd>
+            <dd className="text-2xl font-semibold tabular-nums">{value}</dd>
+            {help && <dd className="mt-1 text-xs text-muted-foreground">{help}</dd>}
           </div>
         ))}
       </dl>
       <p className="text-sm text-muted-foreground">
-        {partial ? 'Dia em andamento: estoques e entrada são parciais. Gráficos e referência usam somente os dias encerrados.' : `${state.completedRounds} dias encerrados.`}
-        {' '}Saída média nos dias encerrados: {summary.meanOutputPerRound === null ? '—' : `${summary.meanOutputPerRound.toLocaleString('pt-BR', { maximumFractionDigits: 2 })} lotes/dia`}.
-        {' '}A referência de 3,5 lotes por dia não é uma promessa de entrega.
+        {partial
+          ? 'Dia em andamento: estoques e entrada são parciais. Gráficos, taxa e referência usam somente os dias encerrados.'
+          : `${state.completedRounds} ${state.completedRounds === 1 ? 'dia encerrado' : 'dias encerrados'}.`}
+        {' '}Taxa de entrega nos dias encerrados: {rate}.
+        {' '}A referência de {formatNumber(summary.referenceRatePerRound)} lotes por dia
+        {isConstraintFlow ? ' (menor capacidade média configurada)' : ''} não é uma promessa de entrega.
       </p>
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-lg border bg-card p-4">
           <h3 className="font-semibold">Entrega acumulada × referência</h3>
-          <DeliveredChart roundAggregates={summary.roundAggregates} totalRounds={config.rounds} />
+          <DeliveredChart
+            roundAggregates={summary.roundAggregates}
+            totalRounds={config.rounds}
+            referenceRate={summary.referenceRatePerRound}
+            experience={config.experience}
+          />
         </div>
         <div className="rounded-lg border bg-card p-4">
           <h3 className="font-semibold">Desvio acumulado por setor até o último dia encerrado</h3>
+          {isConstraintFlow && (
+            <p className="text-xs text-muted-foreground">Transferência acumulada menos a capacidade média do próprio setor × jogadas.</p>
+          )}
           {summary.roundAggregates.length > 0 ? <StageDeviationChart config={config} deviationByStage={summary.roundAggregates.at(-1)!.deviationByStage} /> : <p className="text-sm">Aguardando o primeiro dia encerrar.</p>}
         </div>
       </div>
@@ -59,7 +86,7 @@ export function RunObservations({ config, state, summary }: {
             <thead><tr>{['Dia', 'Setor', 'Dado / capacidade', 'Material disponível', 'Transferido', 'Não utilizada', 'Entrada total', 'Expedido total', 'Filas após a jogada'].map(h => <th scope="col" className="p-2" key={h}>{h}</th>)}</tr></thead>
             <tbody>{state.events.map(event => <tr key={`${event.roundIndex}-${event.stageIndex}`} className="border-t">
               <td className="p-2">{event.roundIndex + 1}</td><th scope="row" className="p-2 font-normal">{event.stageIndex + 1}. {stageLabel(config.stages[event.stageIndex])}</th>
-              <td className="p-2">{event.die} lotes</td><td className="p-2">{event.availableBefore === null ? 'Fonte irrestrita' : `${event.availableBefore} lotes`}</td>
+              <td className="p-2">{event.availableCapacity === event.die ? formatLots(event.die) : `dado ${event.die} → ${formatLots(event.availableCapacity)}`}</td><td className="p-2">{event.availableBefore === null ? 'Fonte irrestrita' : `${event.availableBefore} lotes`}</td>
               <td className="p-2">{event.transferred} lotes</td><td className="p-2">{event.unusedCapacity} lotes</td>
               <td className="p-2">{event.introducedTotal}</td><td className="p-2">{event.deliveredTotal}</td>
               <td className="p-2">{config.stages.slice(1).map((stage, i) => `Setor ${i + 2}: ${event.inventoryAfter[stage.id]} lotes`).join(' · ')}</td>

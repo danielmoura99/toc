@@ -66,24 +66,25 @@ describe('summarize', () => {
 
 describe('classifyRunRelationship / compareRuns', () => {
   const base = createProductionLineConfig({ stageCount: 5, rounds: 10, seed: 'seed-a' });
+  const run = (config: typeof base) => ({ config, finalState: runToEnd(config) });
 
   it('mesma configuração e seed: reprodução', () => {
-    expect(classifyRunRelationship(base, base)).toBe('reproduction');
+    expect(classifyRunRelationship(run(base), run(base))).toBe('reproduction');
   });
 
   it('mesma configuração, seed diferente: outra realização aleatória', () => {
     const other = { ...base, seed: 'seed-b' };
-    expect(classifyRunRelationship(base, other)).toBe('same_conditions_new_seed');
+    expect(classifyRunRelationship(run(base), run(other))).toBe('same_conditions_new_seed');
   });
 
   it('quantidade de etapas diferente: condições diferentes', () => {
     const other = createProductionLineConfig({ stageCount: 6, rounds: 10, seed: 'seed-a' });
-    expect(classifyRunRelationship(base, other)).toBe('different_conditions');
+    expect(classifyRunRelationship(run(base), run(other))).toBe('different_conditions');
   });
 
   it('horizonte diferente: condições diferentes', () => {
     const other = createProductionLineConfig({ stageCount: 5, rounds: 20, seed: 'seed-a' });
-    expect(classifyRunRelationship(base, other)).toBe('different_conditions');
+    expect(classifyRunRelationship(run(base), run(other))).toBe('different_conditions');
   });
 
   it('nomes de participantes não afetam a classificação (TG09)', () => {
@@ -91,7 +92,7 @@ describe('classifyRunRelationship / compareRuns', () => {
       ...base,
       stages: base.stages.map((s, i) => ({ ...s, participantName: `Pessoa ${i}`, sectorName: `Custom ${i}` })),
     };
-    expect(classifyRunRelationship(base, renamed)).toBe('reproduction');
+    expect(classifyRunRelationship(run(base), run(renamed))).toBe('reproduction');
   });
 
   it('compareRuns não calcula percentual de melhoria — só deltas brutos', () => {
@@ -100,8 +101,8 @@ describe('classifyRunRelationship / compareRuns', () => {
     const stateB = runToEnd(otherConfig);
 
     const comparison = compareRuns(
-      { config: base, summary: summarize(base, stateA) },
-      { config: otherConfig, summary: summarize(otherConfig, stateB) },
+      { config: base, finalState: stateA, summary: summarize(base, stateA) },
+      { config: otherConfig, finalState: stateB, summary: summarize(otherConfig, stateB) },
     );
 
     expect(comparison.relationship).toBe('same_conditions_new_seed');

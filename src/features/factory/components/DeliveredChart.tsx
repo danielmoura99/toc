@@ -7,18 +7,26 @@
  */
 
 import type { RoundAggregate } from '../domain/metrics';
-import { REFERENCE_CAPACITY_PER_ROUND } from '../domain/types';
+import { REFERENCE_CAPACITY_PER_ROUND, type Experience } from '../domain/types';
 
 interface DeliveredChartProps {
   roundAggregates: RoundAggregate[];
   totalRounds: number;
+  /** Menor capacidade média configurada — 3,5 na experiência antiga. */
+  referenceRate?: number;
+  experience?: Experience;
 }
 
 const WIDTH = 360;
 const HEIGHT = 140;
 const PADDING = 28;
 
-export function DeliveredChart({ roundAggregates, totalRounds }: DeliveredChartProps) {
+export function DeliveredChart({
+  roundAggregates,
+  totalRounds,
+  referenceRate = REFERENCE_CAPACITY_PER_ROUND,
+  experience = 'dependency-variability',
+}: DeliveredChartProps) {
   if (roundAggregates.length === 0) {
     return (
       <p className="text-xs text-muted-foreground">Aguardando a primeira rodada concluir para desenhar o gráfico.</p>
@@ -27,14 +35,14 @@ export function DeliveredChart({ roundAggregates, totalRounds }: DeliveredChartP
 
   const maxDelivered = Math.max(
     ...roundAggregates.map((r) => r.deliveredCumulative),
-    REFERENCE_CAPACITY_PER_ROUND * totalRounds,
+    referenceRate * totalRounds,
   ) * 1.1 || 1;
 
   const x = (roundNumber: number) => PADDING + (roundNumber / totalRounds) * (WIDTH - PADDING * 2);
   const y = (delivered: number) => HEIGHT - PADDING - (delivered / maxDelivered) * (HEIGHT - PADDING * 2);
 
   const deliveredPoints = [`${x(0)},${y(0)}`, ...roundAggregates.map((r) => `${x(r.roundIndex + 1)},${y(r.deliveredCumulative)}`)].join(' ');
-  const referencePoints = `${x(0)},${y(0)} ${x(totalRounds)},${y(REFERENCE_CAPACITY_PER_ROUND * totalRounds)}`;
+  const referencePoints = `${x(0)},${y(0)} ${x(totalRounds)},${y(referenceRate * totalRounds)}`;
 
   return (
     <div>
@@ -64,7 +72,9 @@ export function DeliveredChart({ roundAggregates, totalRounds }: DeliveredChartP
         </span>
         <span className="inline-flex items-center gap-1.5">
           <span className="inline-block h-0.5 w-3 border-t-2 border-dashed border-slate-400" aria-hidden="true" />
-          Referência pela capacidade média (3,5 × rodada)
+          {experience === 'constraint-flow'
+            ? `Referência pela menor capacidade média (${referenceRate.toLocaleString('pt-BR')}/dia) — não é garantia de entrega`
+            : 'Referência pela capacidade média (3,5 × rodada)'}
         </span>
         <span className="ml-auto">lotes · {totalRounds} dias simulados</span>
       </div>

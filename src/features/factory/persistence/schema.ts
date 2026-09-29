@@ -16,20 +16,22 @@ import { runToEnd, stepTurn, createInitialState } from '../domain/engine';
 import { summarize } from '../domain/metrics';
 import { ENGINE_VERSION, MAX_STAGE_COUNT, MIN_STAGE_COUNT } from '../domain/types';
 import { validateConfig } from '../domain/validation';
+import { migrateV1ToV2 } from './migrations';
 
 /**
- * Versão do formato do payload. Mudar exige uma rotina de migração explícita
- * — este MVP não migra automaticamente entre formatos; uma sessão de versão
- * diferente é rejeitada com mensagem clara em vez de aplicada quebrada ou
- * apagada (mesma política adotada pela trilha).
+ * Versão do formato do payload.
+ * v2 (evolução "Restrição e fluxo"): experiência, perfis de capacidade,
+ * intervenção, `availableCapacity` por evento e hipótese do grupo sobre a
+ * restrição. A v1 é migrada explicitamente (`migrations.ts`) e depois
+ * validada por replay; qualquer outra versão é rejeitada com mensagem clara,
+ * sem apagar o que está salvo.
  */
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
-function oldFormatIssue(foundVersion: number): string {
+function unsupportedFormatIssue(foundVersion: number): string {
   return (
-    `Esta sessão foi salva num formato anterior (schemaVersion ${foundVersion}) — este MVP não migra ` +
-    'automaticamente entre formatos. Exporte-a antes de atualizar, se quiser guardá-la; ela continua no ' +
-    'navegador, intacta, até você decidir descartá-la.'
+    `Esta sessão foi salva num formato não suportado (schemaVersion ${foundVersion}). ` +
+    'Ela continua no navegador, intacta, até você decidir descartá-la.'
   );
 }
 
@@ -49,6 +51,19 @@ const StageDefinitionSchema = z.object({
 
 const HorizonSchema = z.union([z.literal(10), z.literal(20), z.literal(30)]);
 
+const CapacityProfileSchema = z.object({
+  stageId: StageIdSchema,
+  baseBonus: z.number().int().min(0),
+  upgrade: z.number().int().min(0),
+});
+
+const InterventionSchema = z.object({
+  baselineRunId: z.string().min(1),
+  targetStageId: StageIdSchema,
+  addedCapacity: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+  prediction: z.string(),
+});
+
 export const ProductionLineConfigSchema = z.object({
   engineVersion: z.string(),
   rngVersion: z.string(),
@@ -58,6 +73,12 @@ export const ProductionLineConfigSchema = z.object({
   hypothesis: z.string(),
   initialInventory: z.literal('empty'),
   capacityModel: z.literal('fair-d6'),
+  experience: z.enum(['dependency-variability', 'constraint-flow']),
+  capacityModelVersion: z.string(),
+  capacityProfiles: z.array(CapacityProfileSchema),
+  originalConstraintStageId: StageIdSchema.nullable(),
+  experimentId: z.string().min(1).nullable(),
+  intervention: InterventionSchema.nullable(),
 });
 
 const TurnEventSchema = z.object({
@@ -65,6 +86,7 @@ const TurnEventSchema = z.object({
   stageIndex: z.number().int().min(0),
   stageId: StageIdSchema,
   die: z.number().int().min(1).max(6),
+  availableCapacity: z.number().int().min(1),
   availableBefore: z.number().nullable(),
   transferred: z.number(),
   unusedCapacity: z.number(),
@@ -101,14 +123,25 @@ const RunSummarySchema = z.object({
   inventoryRemaining: z.number(),
   inventoryByStage: z.record(StageIdSchema, z.number()),
   completedRounds: z.number(),
+  referenceRatePerRound: z.number(),
   referenceAccumulated: z.number(),
   deviationDelivered: z.number(),
   meanOutputPerRound: z.number().nullable(),
+  nominalMeanByStage: z.record(StageIdSchema, z.number()),
   capacitySampledByStage: z.record(StageIdSchema, z.number()),
   transferredByStage: z.record(StageIdSchema, z.number()),
   unusedCapacityByStage: z.record(StageIdSchema, z.number()),
+  insufficientMaterialTurnsByStage: z.record(StageIdSchema, z.number()),
+  utilizationByStage: z.record(StageIdSchema, z.number().nullable()),
   deviationByStageFinal: z.record(StageIdSchema, z.number()),
   roundAggregates: z.array(RoundAggregateSchema),
+});
+
+/** Resposta do grupo a "Qual setor você considera a restrição?" — `stageId` nulo é "Ainda não sei". */
+const ConstraintGuessSchema = z.object({
+  stageId: StageIdSchema.nullable(),
+  justification: z.string().max(500),
+  answeredAt: z.string(),
 });
 
 const RunResultSchema = z.object({
@@ -117,6 +150,8 @@ const RunResultSchema = z.object({
   config: ProductionLineConfigSchema,
   finalState: ProductionLineStateSchema,
   summary: RunSummarySchema,
+  /** Só em linhas de base de "Restrição e fluxo", depois que o grupo responde (§6.1). */
+  constraintGuess: ConstraintGuessSchema.nullable(),
 });
 
 const PreparationSnapshotSchema = z.object({
@@ -148,6 +183,7 @@ export const SessionPayloadSchema = z.object({
 });
 
 export type ProductionLineConfigPayload = z.infer<typeof ProductionLineConfigSchema>;
+export type ConstraintGuess = z.infer<typeof ConstraintGuessSchema>;
 export type RunResult = z.infer<typeof RunResultSchema>;
 export type PreparationSnapshot = z.infer<typeof PreparationSnapshotSchema>;
 export type ActiveRun = z.infer<typeof ActiveRunSchema>;
@@ -245,15 +281,15 @@ function activeRunIssues(active: z.infer<typeof ActiveRunSchema>): string[] {
   return [];
 }
 
-export function validateSessionPayload(raw: unknown): PayloadValidation {
-  if (
-    typeof raw === 'object' &&
-    raw !== null &&
-    'schemaVersion' in raw &&
-    typeof (raw as { schemaVersion?: unknown }).schemaVersion === 'number' &&
-    (raw as { schemaVersion: number }).schemaVersion !== SCHEMA_VERSION
-  ) {
-    return { ok: false, payload: null, issues: [oldFormatIssue((raw as { schemaVersion: number }).schemaVersion)] };
+export function validateSessionPayload(input: unknown): PayloadValidation {
+  let raw = input;
+  if (typeof raw === 'object' && raw !== null && !Array.isArray(raw) && 'schemaVersion' in raw) {
+    const version = (raw as { schemaVersion?: unknown }).schemaVersion;
+    if (version === 1) {
+      raw = migrateV1ToV2(raw as Record<string, unknown>);
+    } else if (typeof version === 'number' && version !== SCHEMA_VERSION) {
+      return { ok: false, payload: null, issues: [unsupportedFormatIssue(version)] };
+    }
   }
 
   const parsed = SessionPayloadSchema.safeParse(raw);

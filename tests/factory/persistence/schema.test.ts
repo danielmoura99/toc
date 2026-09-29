@@ -16,6 +16,7 @@ function makeRun(seed: string): RunResult {
     config,
     finalState,
     summary: summarize(config, finalState),
+    constraintGuess: null,
   };
 }
 
@@ -57,7 +58,7 @@ describe('validateSessionPayload — rejeição de formato antigo', () => {
     const payload = { ...validPayload(), schemaVersion: 0 };
     const result = validateSessionPayload(payload);
     expect(result.ok).toBe(false);
-    expect(result.issues[0]).toMatch(/formato anterior/);
+    expect(result.issues[0]).toMatch(/formato não suportado/);
   });
 });
 
@@ -138,7 +139,7 @@ describe('validateSessionPayload — limites e formas inválidas', () => {
 });
 
 describe('SCHEMA_VERSION', () => {
-  it('começa em 1, módulo novo sem histórico de formatos anteriores', () => {
-    expect(SCHEMA_VERSION).toBe(1);
+  it('é 2 desde a evolução "Restrição e fluxo" (v1 é migrada explicitamente)', () => {
+    expect(SCHEMA_VERSION).toBe(2);
   });
 });

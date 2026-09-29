@@ -15,6 +15,7 @@
 import type { ProductionLineConfig, ProductionLineState, RunStatus, StageId, TurnEvent } from './types';
 import { DIE_MAX, DIE_MIN } from './types';
 import { rollDie } from './random';
+import { availableCapacity } from './capacity';
 
 /** Sorteia a face de um turno a partir da configuração — a via de produção, nunca chamada em fixtures de teste. */
 function productionRollFace(config: ProductionLineConfig): (stageId: StageId, roundIndex: number) => number {
@@ -94,6 +95,10 @@ export function stepTurn(
     throw new Error(`Face de dado inválida para a etapa "${stage.id}" na rodada ${roundIndex}: ${die}.`);
   }
 
+  // Única mudança física da evolução "Restrição e fluxo": a capacidade do dia
+  // soma bônus e melhoria ao dado. Na experiência antiga os dois são zero.
+  const capacity = availableCapacity(config, stage.id, die);
+
   const inventoryByStage = { ...state.inventoryByStage };
   let availableBefore: number | null;
   let transferred: number;
@@ -103,11 +108,11 @@ export function stepTurn(
   if (isFirstStage) {
     // Fonte irrestrita: sem estoque finito, sorteia inclusive assim (§4.1, §4.3).
     availableBefore = null;
-    transferred = die;
+    transferred = capacity;
     introduced += transferred;
   } else {
     availableBefore = inventoryByStage[stage.id] ?? 0;
-    transferred = Math.min(die, availableBefore);
+    transferred = Math.min(capacity, availableBefore);
     inventoryByStage[stage.id] = availableBefore - transferred;
   }
 
@@ -118,13 +123,14 @@ export function stepTurn(
     delivered += transferred;
   }
 
-  const unusedCapacity = die - transferred;
+  const unusedCapacity = capacity - transferred;
 
   const event: TurnEvent = {
     roundIndex,
     stageIndex,
     stageId: stage.id,
     die,
+    availableCapacity: capacity,
     availableBefore,
     transferred,
     unusedCapacity,

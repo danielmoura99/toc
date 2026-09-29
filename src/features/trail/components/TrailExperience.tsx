@@ -18,7 +18,7 @@
  * é recuperada com sucesso ao montar.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { Factory, History, Home, ListChecks } from 'lucide-react';
 
@@ -80,7 +80,19 @@ function initialViewFromStorage(): View {
   return restoreSessionFromStorage().ok ? 'preparation' : 'setup';
 }
 
+const subscribeToHydration = () => () => {};
+const clientSnapshot = () => true;
+const serverSnapshot = () => false;
+
 export function TrailExperience() {
+  const hydrated = useSyncExternalStore(subscribeToHydration, clientSnapshot, serverSnapshot);
+  // A sessão salva só existe no navegador: o HTML do servidor e o primeiro
+  // render do cliente precisam coincidir antes de escolher a tela por ela.
+  if (!hydrated) return <p role="status" className="p-6">Carregando trilha…</p>;
+  return <RestoredTrailExperience />;
+}
+
+function RestoredTrailExperience() {
   const [view, setView] = useState<View>(initialViewFromStorage);
   const [attempt, setAttempt] = useState<AttemptConfig | null>(null);
   // Cada tentativa remonta o componente de execução, garantindo estado limpo.

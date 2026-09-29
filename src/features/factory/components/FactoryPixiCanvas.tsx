@@ -15,11 +15,13 @@ import { AlertTriangle, RotateCcw } from 'lucide-react';
 
 import { usePrefersReducedMotion } from '@/features/trail/components/usePrefersReducedMotion';
 
-import type { ProductionLineState, StageDefinition } from '../domain/types';
+import type { CapacityProfile, Experience, ProductionLineState, StageDefinition } from '../domain/types';
 import { FactoryScene } from '../rendering/factoryScene';
 
 interface FactoryPixiCanvasProps {
   stages: StageDefinition[];
+  experience: Experience;
+  capacityProfiles: CapacityProfile[];
   state: ProductionLineState;
   activeStageIndex: number | null;
   running: boolean;
@@ -27,7 +29,16 @@ interface FactoryPixiCanvasProps {
   onAnimatingChange: (busy: boolean) => void;
 }
 
-export function FactoryPixiCanvas({ stages, state, activeStageIndex, running, tempoMs, onAnimatingChange }: FactoryPixiCanvasProps) {
+export function FactoryPixiCanvas({
+  stages,
+  experience,
+  capacityProfiles,
+  state,
+  activeStageIndex,
+  running,
+  tempoMs,
+  onAnimatingChange,
+}: FactoryPixiCanvasProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
@@ -55,7 +66,7 @@ export function FactoryPixiCanvas({ stages, state, activeStageIndex, running, te
     let scene: FactoryScene | null = null;
     let resizeObserver: ResizeObserver | null = null;
 
-    FactoryScene.create({ stages, reducedMotion, onPresentation: (busy, index) => {
+    FactoryScene.create({ stages, experience, capacityProfiles, reducedMotion, onPresentation: (busy, index) => {
       if (cancelled) return;
       host.dataset.animating = String(busy);
       latest.current.onAnimatingChange(busy);
@@ -97,7 +108,7 @@ export function FactoryPixiCanvas({ stages, state, activeStageIndex, running, te
       sceneRef.current = null;
       scene?.destroy();
     };
-  }, [attempt, stages, reducedMotion]);
+  }, [attempt, stages, experience, capacityProfiles, reducedMotion]);
 
   if (error) {
     return (

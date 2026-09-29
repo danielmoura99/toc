@@ -12,8 +12,11 @@ import { DeliveredChart } from './DeliveredChart';
 import { RunObservations } from './RunObservations';
 
 import { useHistoryStore } from '../application/historyStore';
+import { diagnoseConstraint } from '../domain/capacity';
+import { EXPERIENCE_LABEL } from '../domain/config';
 import { classifyRunRelationship, type RunRelationship } from '../domain/metrics';
 import { formatDateTime } from '@/features/trail/components/format';
+import { formatLots, formatNumber, formatPercent, formatSigned, interventionLabel, sectorName } from './capacityText';
 
 interface ComparisonPanelProps {
   onBack: () => void;
@@ -21,6 +24,7 @@ interface ComparisonPanelProps {
 
 const RELATIONSHIP_LABEL: Record<RunRelationship, string> = {
   reproduction: 'Reprodução — mesma configuração e seed',
+  controlled_intervention: 'Intervenção controlada — mesmos sorteios, só a capacidade mudou',
   same_conditions_new_seed: 'Outra realização aleatória — mesma configuração, seed diferente',
   different_conditions: 'Condições diferentes — etapas ou horizonte mudaram',
 };
@@ -35,6 +39,7 @@ export function ComparisonPanel({ onBack }: ComparisonPanelProps) {
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 
   const reference = runs[0] ?? null;
+  const anyConstraintFlow = runs.some((run) => run.config.experience === 'constraint-flow');
 
   return (
     <div className="flex flex-col gap-4">
@@ -66,22 +71,56 @@ export function ComparisonPanel({ onBack }: ComparisonPanelProps) {
               </tr>
             </thead>
             <tbody>
+              <Row label="Experiência" values={runs.map((run) => EXPERIENCE_LABEL[run.config.experience])} small />
+              {anyConstraintFlow && <Row label="Configuração testada" values={runs.map((run) => interventionLabel(run.config))} />}
               <Row label="Data/hora" values={runs.map((run) => formatDateTime(run.createdAt))} />
               <Row label="Setores" values={runs.map((run) => String(run.config.stages.length))} />
               <Row label="Horizonte" values={runs.map((run) => `${run.config.rounds} dias`)} />
               <Row label="Seed" values={runs.map((run) => run.config.seed.slice(0, 8))} mono />
-              <Row label="Entrega" values={runs.map((run) => `${run.summary.delivered} lotes`)} />
-              <Row label="Estoque restante" values={runs.map((run) => `${run.summary.inventoryRemaining} lotes`)} />
-              <Row label="Referência (3,5 × rodada)" values={runs.map((run) => `${run.summary.referenceAccumulated} lotes`)} />
+              <Row label="Entrega" values={runs.map((run) => formatLots(run.summary.delivered))} />
+              <Row label="Estoque restante" values={runs.map((run) => formatLots(run.summary.inventoryRemaining))} />
               <Row
-                label="Desvio da entrega"
-                values={runs.map((run) => `${run.summary.deviationDelivered >= 0 ? '+' : ''}${run.summary.deviationDelivered.toFixed(1)}`)}
+                label="Taxa de entrega"
+                values={runs.map((run) => (run.summary.meanOutputPerRound === null ? '—' : `${formatNumber(run.summary.meanOutputPerRound, 2)} lotes/dia`))}
               />
+              <Row
+                label="Referência pela menor capacidade média"
+                values={runs.map((run) => `${formatLots(run.summary.referenceAccumulated)} (${formatNumber(run.summary.referenceRatePerRound)}/dia)`)}
+              />
+              <Row label="Desvio da entrega" values={runs.map((run) => formatSigned(run.summary.deviationDelivered))} />
+              {anyConstraintFlow && (
+                <>
+                  <Row
+                    label="Menor capacidade média"
+                    values={runs.map((run) => {
+                      if (run.config.experience !== 'constraint-flow') return '—';
+                      const d = diagnoseConstraint(run.config);
+                      const names = d.constrainedStageIds.map((id) => sectorName(run.config, id));
+                      return d.isTie ? `Empate: ${names.join(', ')}` : names[0];
+                    })}
+                    small
+                  />
+                  <Row
+                    label="Restrição original: não utilizada por falta de material"
+                    values={runs.map((run) => {
+                      const id = run.config.originalConstraintStageId;
+                      return id ? `${formatLots(run.summary.unusedCapacityByStage[id])} (${sectorName(run.config, id)})` : '—';
+                    })}
+                  />
+                  <Row
+                    label="Restrição original: aproveitamento"
+                    values={runs.map((run) => {
+                      const id = run.config.originalConstraintStageId;
+                      return id ? formatPercent(run.summary.utilizationByStage[id]) : '—';
+                    })}
+                  />
+                </>
+              )}
               {reference && (
                 <Row
                   label="Relação com a referência"
                   values={runs.map((run, index) =>
-                    index === 0 ? '—' : RELATIONSHIP_LABEL[classifyRunRelationship(reference.config, run.config)],
+                    index === 0 ? '—' : RELATIONSHIP_LABEL[classifyRunRelationship(reference, run)],
                   )}
                   small
                 />
@@ -91,14 +130,25 @@ export function ComparisonPanel({ onBack }: ComparisonPanelProps) {
                   label="Diferença de entrega (partida − referência)"
                   values={runs.map((run, index) => {
                     if (index === 0) return '—';
-                    const relationship = classifyRunRelationship(reference.config, run.config);
-                    const delta = run.summary.delivered - reference.summary.delivered;
-                    const sign = delta >= 0 ? '+' : '';
+                    const relationship = classifyRunRelationship(reference, run);
+                    const delta = formatSigned(run.summary.delivered - reference.summary.delivered);
                     if (relationship === 'different_conditions') {
-                      return `${sign}${delta} lotes (condições diferentes — sem percentual de melhoria)`;
+                      return `${delta} lotes (condições diferentes — sem percentual de melhoria)`;
                     }
-                    return `${sign}${delta} lotes`;
+                    if (relationship === 'same_conditions_new_seed') {
+                      return `${delta} lotes (outra seed: diferença aleatória, não efeito de intervenção)`;
+                    }
+                    return `${delta} lotes`;
                   })}
+                  small
+                />
+              )}
+              {reference && (
+                <Row
+                  label="Diferença de estoque (partida − referência)"
+                  values={runs.map((run, index) =>
+                    index === 0 ? '—' : `${formatSigned(run.summary.inventoryRemaining - reference.summary.inventoryRemaining)} lotes`,
+                  )}
                   small
                 />
               )}
@@ -109,16 +159,23 @@ export function ComparisonPanel({ onBack }: ComparisonPanelProps) {
 
       <div className="rounded-lg border bg-card p-4 text-sm">
         <p>
-          Nenhuma diferença aqui é atribuída a aprendizado ou estratégia: este exercício não permite ajustes
-          durante a partida — a diferença entre realizações da mesma configuração é variação estatística do
-          próprio dado, não um resultado melhor ou pior.
+          Nenhuma diferença aqui é atribuída a aprendizado ou estratégia. Entre realizações com outra seed, a
+          diferença é variação estatística do próprio dado. Só uma intervenção controlada — mesmos sorteios, só a
+          capacidade de um setor mudou — isola o efeito da melhoria; ainda assim, julgue-a pela entrega e pelo
+          estoque, não só pelo desvio contra referências diferentes.
         </p>
       </div>
       {runs.length >= 2 && <section aria-label="Curvas das partidas" className="grid gap-4 lg:grid-cols-3">
         {runs.map(run => <article key={run.id} className="min-w-0 rounded-lg border bg-card p-4">
           <h2 className="font-semibold">Partida #{history.findIndex(r => r.id === run.id) + 1}</h2>
           <p className="text-sm text-muted-foreground">{run.config.rounds} dias · {run.config.stages.length} setores</p>
-          <DeliveredChart roundAggregates={run.summary.roundAggregates} totalRounds={run.config.rounds} />
+          <p className="text-sm font-medium">{interventionLabel(run.config)}</p>
+          <DeliveredChart
+            roundAggregates={run.summary.roundAggregates}
+            totalRounds={run.config.rounds}
+            referenceRate={run.summary.referenceRatePerRound}
+            experience={run.config.experience}
+          />
           <p className="text-xs text-muted-foreground">Escala correspondente ao horizonte desta partida.</p>
           <p className="text-xs">Participantes: {run.config.stages.map((s, i) => `${i + 1}. ${s.participantName || s.sectorName}`).join(' · ')}</p>
         </article>)}

@@ -84,10 +84,22 @@ describe('hydrateHistory', () => {
     if (!recorded.ok) throw new Error('setup falhou');
 
     const { config: c2, finalState: f2 } = run('hydrate-2');
-    const pending = { id: 'pending-1', createdAt: new Date().toISOString(), config: c2, finalState: f2, summary: store.getState().history[0].summary };
+    const pending = { id: 'pending-1', createdAt: new Date().toISOString(), config: c2, finalState: f2, summary: store.getState().history[0].summary, constraintGuess: null };
 
     store.getState().hydrateHistory([recorded.run], pending);
     expect(store.getState().history.map((r) => r.id)).toEqual([recorded.run.id, 'pending-1']);
     expect(store.getState().pendingRun).toBeNull();
+  });
+});
+
+describe('setConstraintGuess (evolução Restrição e fluxo §6.1)', () => {
+  it('registra a hipótese do grupo na linha de base, inclusive "Ainda não sei"', () => {
+    const config = createProductionLineConfig({ experience: 'constraint-flow', seed: 'guess' });
+    const outcome = store.getState().recordRun(config, runToEnd(config));
+    store.getState().setConstraintGuess(outcome.run.id, { stageId: 'stage-2', justification: 'menor média' });
+    expect(store.getState().history[0].constraintGuess).toMatchObject({ stageId: 'stage-2', justification: 'menor média' });
+
+    store.getState().setConstraintGuess(outcome.run.id, { stageId: null, justification: '' });
+    expect(store.getState().history[0].constraintGuess?.stageId).toBeNull();
   });
 });

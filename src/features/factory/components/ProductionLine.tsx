@@ -17,13 +17,16 @@ import { useHistoryStore } from '../application/historyStore';
 import { usePreparationStore } from '../application/preparationStore';
 import { useRunStore, type PlaybackSpeed } from '../application/runStore';
 import { nextTurnDescriptor } from '../domain/engine';
-import { summarize } from '../domain/metrics';
+import { summarize, hadInsufficientMaterial } from '../domain/metrics';
+import { withNewSeed } from '../domain/config';
 import type { ProductionLineConfig } from '../domain/types';
 import { ConfirmDialog } from '@/features/trail/components/ConfirmDialog';
 import { StageTable } from './StageTable';
 import { RunObservations } from './RunObservations';
 import { PendingRunNotice } from './PendingRunNotice';
 import { stageLabel } from './stageLabel';
+import { ConstraintFlowPanel } from './ConstraintFlowPanel';
+import { capacityBreakdown, formatLots, interventionLabel } from './capacityText';
 
 const FactoryPixiCanvas = dynamic(() => import('./FactoryPixiCanvas').then((m) => m.FactoryPixiCanvas), {
   ssr: false,
@@ -38,9 +41,18 @@ interface ProductionLineProps {
   onBackToPreparation: () => void;
   onViewHistory: () => void;
   onCompare: (runId: string) => void;
+  onCompareRuns: (runIds: string[]) => void;
+  onStartIntervention: (config: ProductionLineConfig) => void;
 }
 
-export function ProductionLine({ config, onBackToPreparation, onViewHistory, onCompare }: ProductionLineProps) {
+export function ProductionLine({
+  config,
+  onBackToPreparation,
+  onViewHistory,
+  onCompare,
+  onCompareRuns,
+  onStartIntervention,
+}: ProductionLineProps) {
   const storeConfig = useRunStore((s) => s.config);
   const state = useRunStore((s) => s.state);
   const uiStatus = useRunStore((s) => s.uiStatus);
@@ -55,7 +67,6 @@ export function ProductionLine({ config, onBackToPreparation, onViewHistory, onC
   const clearRun = useRunStore((s) => s.clearRun);
 
   const prediction = usePreparationStore((s) => s.prediction);
-  const rerollSeed = usePreparationStore((s) => s.rerollSeed);
   const pendingRun = useHistoryStore((s) => s.pendingRun);
 
   const [confirmingAbandon, setConfirmingAbandon] = useState(false);
@@ -99,6 +110,7 @@ export function ProductionLine({ config, onBackToPreparation, onViewHistory, onC
   const summary = useMemo(() => (state ? summarize(activeConfig, state) : null), [activeConfig, state]);
   const lastEvent = state && state.events.length > 0 ? state.events[state.events.length - 1] : null;
   const isCompleted = state?.status === 'completed';
+  const isConstraintFlow = activeConfig.experience === 'constraint-flow';
 
   const canManualAct = !pendingRun && !animating && (uiStatus === 'ready' || uiStatus === 'paused');
   const hasProgress = (state?.events.length ?? 0) > 0;
@@ -125,9 +137,7 @@ export function ProductionLine({ config, onBackToPreparation, onViewHistory, onC
 
   const handleNewSequence = () => {
     if (pendingRun) return;
-    rerollSeed();
-    const fresh = usePreparationStore.getState().draft;
-    startRun(fresh);
+    startRun(withNewSeed(activeConfig));
   };
 
   if (!state) {
@@ -163,27 +173,50 @@ export function ProductionLine({ config, onBackToPreparation, onViewHistory, onC
             : ''}
       </div>
 
+      {isConstraintFlow && (
+        <p className="rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
+          <span className="font-semibold">Restrição e melhoria do fluxo</span> · {interventionLabel(activeConfig)}
+          {activeConfig.intervention && ' — mesmos sorteios da linha de base, recomeçando do dia 1'}
+        </p>
+      )}
+
       {lastEvent && (
         <div aria-live={uiStatus === 'running' ? 'off' : 'polite'} aria-atomic="true" className="rounded-lg border bg-card p-3 text-sm">
-          <div className="mb-3 flex items-center gap-3">
-            <span className="flex size-14 shrink-0 items-center justify-center rounded-xl border-2 border-amber-500 bg-amber-50 text-4xl font-bold tabular-nums text-amber-950">{lastEvent.die}</span>
-            <div><p className="font-semibold">Dado sorteado · {stageLabel(activeConfig.stages[lastEvent.stageIndex])}</p>
-              <p className="text-muted-foreground">Capacidade de {lastEvent.die} lotes · transferidos: {lastEvent.transferred} lotes</p></div>
-          </div>
+          {isConstraintFlow ? (
+            <div className="mb-3 flex flex-wrap items-center gap-4">
+              <DieBox value={lastEvent.die} label="Dado — componente variável" tone="die" />
+              <span className="text-2xl text-muted-foreground" aria-hidden="true">→</span>
+              <DieBox value={lastEvent.availableCapacity} label="Capacidade disponível hoje" tone="capacity" />
+              <div className="min-w-60 flex-1">
+                <p className="font-semibold">{stageLabel(activeConfig.stages[lastEvent.stageIndex])}</p>
+                <p>{capacityBreakdown(activeConfig, lastEvent)}</p>
+                <p className="text-xs text-muted-foreground">
+                  Capacidade média do setor: {summary?.nominalMeanByStage[lastEvent.stageId].toLocaleString('pt-BR')} lotes/dia
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-3 flex items-center gap-3">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-xl border-2 border-amber-500 bg-amber-50 text-4xl font-bold tabular-nums text-amber-950">{lastEvent.die}</span>
+              <div><p className="font-semibold">Dado sorteado · {stageLabel(activeConfig.stages[lastEvent.stageIndex])}</p>
+                <p className="text-muted-foreground">Capacidade de {lastEvent.die} lotes · transferidos: {lastEvent.transferred} lotes</p></div>
+            </div>
+          )}
           <p className="font-medium">
-            {stageLabel(activeConfig.stages[lastEvent.stageIndex])} · capacidade: {lastEvent.die} lotes ·{' '}
+            {stageLabel(activeConfig.stages[lastEvent.stageIndex])} · capacidade: {formatLots(lastEvent.availableCapacity)} ·{' '}
             {lastEvent.availableBefore === null
               ? 'entrada disponível'
-              : `material disponível: ${lastEvent.availableBefore} lotes`}{' '}
-            · processados e transferidos: {lastEvent.transferred} lotes · capacidade não utilizada:{' '}
-            {lastEvent.unusedCapacity} lotes
+              : `material disponível: ${formatLots(lastEvent.availableBefore)}`}{' '}
+            · processados e transferidos: {formatLots(lastEvent.transferred)} · capacidade não utilizada:{' '}
+            {formatLots(lastEvent.unusedCapacity)}
           </p>
-          {lastEvent.transferred === 0 && lastEvent.die > 0 && (
+          {lastEvent.transferred === 0 && (
             <p className="mt-1 text-xs text-muted-foreground">Sem material para processar.</p>
           )}
-          {lastEvent.availableBefore !== null && lastEvent.transferred < lastEvent.die && lastEvent.transferred > 0 && (
-            <p className="mt-1 text-xs text-muted-foreground">
-              Havia apenas {lastEvent.availableBefore} {lastEvent.availableBefore === 1 ? 'lote' : 'lotes'} disponível.
+          {hadInsufficientMaterial(lastEvent) && lastEvent.transferred > 0 && (
+            <p className="mt-1 rounded bg-amber-50 px-2 py-1 text-xs text-amber-950 dark:bg-amber-950/30 dark:text-amber-50">
+              Material insuficiente para aproveitar toda a capacidade: havia {formatLots(lastEvent.availableBefore!)} para uma
+              capacidade de {formatLots(lastEvent.availableCapacity)} — {formatLots(lastEvent.unusedCapacity)} de capacidade não utilizada.
             </p>
           )}
         </div>
@@ -246,10 +279,16 @@ export function ProductionLine({ config, onBackToPreparation, onViewHistory, onC
         </div>
       )}
 
-      <p className="text-sm text-muted-foreground">Dado: capacidade disponível hoje, de 1 a 6 lotes. As filas mostram os lotes aguardando o próximo processamento.</p>
+      <p className="text-sm text-muted-foreground">
+        {isConstraintFlow
+          ? 'Cada setor mostra o dado (1 a 6) somado à sua capacidade adicional: essa soma é a capacidade disponível hoje. As filas mostram os lotes aguardando o próximo processamento.'
+          : 'Dado: capacidade disponível hoje, de 1 a 6 lotes. As filas mostram os lotes aguardando o próximo processamento.'}
+      </p>
       <FactoryPixiCanvas
         onAnimatingChange={setAnimating}
         stages={activeConfig.stages}
+        experience={activeConfig.experience}
+        capacityProfiles={activeConfig.capacityProfiles}
         running={uiStatus === 'running'}
         tempoMs={SPEED_INTERVAL_MS[playbackSpeed]}
         state={state}
@@ -275,21 +314,25 @@ export function ProductionLine({ config, onBackToPreparation, onViewHistory, onC
           <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-4">
             <div>
               <dt className="text-xs text-muted-foreground">Entregue</dt>
-              <dd className="font-medium tabular-nums">{summary.delivered} lotes</dd>
+              <dd className="font-medium tabular-nums">{formatLots(summary.delivered)}</dd>
             </div>
             <div>
               <dt className="text-xs text-muted-foreground">Estoque restante</dt>
-              <dd className="font-medium tabular-nums">{summary.inventoryRemaining} lotes</dd>
+              <dd className="font-medium tabular-nums">{formatLots(summary.inventoryRemaining)}</dd>
             </div>
             <div>
-              <dt className="text-xs text-muted-foreground">Referência (3,5 × rodada)</dt>
-              <dd className="font-medium tabular-nums">{summary.referenceAccumulated} lotes</dd>
+              <dt className="text-xs text-muted-foreground">
+                {isConstraintFlow
+                  ? `Referência pela menor capacidade média (${summary.referenceRatePerRound.toLocaleString('pt-BR')} × dias)`
+                  : 'Referência (3,5 × rodada)'}
+              </dt>
+              <dd className="font-medium tabular-nums">{formatLots(summary.referenceAccumulated)}</dd>
             </div>
             <div>
               <dt className="text-xs text-muted-foreground">Desvio da entrega</dt>
               <dd className={`font-medium tabular-nums ${summary.deviationDelivered < 0 ? 'text-destructive' : ''}`}>
                 {summary.deviationDelivered >= 0 ? '+' : ''}
-                {summary.deviationDelivered.toFixed(1)} lotes
+                {formatLots(summary.deviationDelivered)}
               </dd>
             </div>
           </dl>
@@ -309,9 +352,21 @@ export function ProductionLine({ config, onBackToPreparation, onViewHistory, onC
           )}
 
           <p className="text-xs text-muted-foreground">
-            Um estoque intermediário não é uma entrega ao cliente — {summary.inventoryRemaining} lotes seguem em
+            Um estoque intermediário não é uma entrega ao cliente — {formatLots(summary.inventoryRemaining)} seguem em
             processo, não expedidos.
           </p>
+
+          {isConstraintFlow && (
+            <ConstraintFlowPanel
+              config={activeConfig}
+              state={state}
+              summary={summary}
+              runId={recordedId}
+              disabled={!!pendingRun}
+              onStartIntervention={onStartIntervention}
+              onCompareRuns={onCompareRuns}
+            />
+          )}
 
           <div className="flex flex-wrap gap-2">
             <button type="button" className="rounded-md border px-3 py-2 text-sm font-medium hover:bg-accent" disabled={!!pendingRun} onClick={handleRepeatSameRolls}>
@@ -352,6 +407,21 @@ export function ProductionLine({ config, onBackToPreparation, onViewHistory, onC
           onCancel={() => setConfirmingAbandon(false)}
         />
       )}
+    </div>
+  );
+}
+
+function DieBox({ value, label, tone }: { value: number; label: string; tone: 'die' | 'capacity' }) {
+  const toneClass =
+    tone === 'die'
+      ? 'border-amber-500 bg-amber-50 text-amber-950'
+      : 'border-primary bg-primary/10 text-primary';
+  return (
+    <div className="flex w-24 flex-col items-center gap-1 text-center">
+      <span className={`flex size-14 items-center justify-center rounded-xl border-2 text-4xl font-bold tabular-nums ${toneClass}`}>
+        {value}
+      </span>
+      <span className="text-xs leading-tight text-muted-foreground">{label}</span>
     </div>
   );
 }

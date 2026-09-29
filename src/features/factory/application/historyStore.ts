@@ -12,7 +12,7 @@ import { create } from 'zustand';
 
 import { summarize } from '../domain/metrics';
 import type { ProductionLineConfig, ProductionLineState } from '../domain/types';
-import type { RunResult } from '../persistence/schema';
+import type { ConstraintGuess, RunResult } from '../persistence/schema';
 
 export const MAX_HISTORY_SIZE = 20;
 export const MAX_COMPARISON_SELECTION = 3;
@@ -41,6 +41,8 @@ interface HistoryState {
   clearComparisonSelection: () => void;
   discardPendingRun: () => void;
   hydrateHistory: (history: RunResult[], pendingRun?: RunResult | null) => void;
+  /** Hipótese do grupo sobre a restrição (§6.1), registrada na linha de base — no histórico ou pendente. */
+  setConstraintGuess: (runId: string, guess: Omit<ConstraintGuess, 'answeredAt'>) => void;
 }
 
 function appendToHistory(history: RunResult[], run: RunResult): RunResult[] {
@@ -61,6 +63,7 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
       config: structuredClone(config),
       finalState: structuredClone(finalState),
       summary: summarize(config, finalState),
+      constraintGuess: null,
     };
 
     if (history.length >= MAX_HISTORY_SIZE) {
@@ -111,4 +114,18 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
     }
     set({ history, selectedForComparison: [], pendingRun: pendingRun ?? null });
   },
+
+  setConstraintGuess: (runId, guess) =>
+    set((state) => {
+      const answered: ConstraintGuess = {
+        stageId: guess.stageId,
+        justification: guess.justification.slice(0, 500),
+        answeredAt: new Date().toISOString(),
+      };
+      const apply = (run: RunResult): RunResult => (run.id === runId ? { ...run, constraintGuess: answered } : run);
+      return {
+        history: state.history.map(apply),
+        pendingRun: state.pendingRun ? apply(state.pendingRun) : null,
+      };
+    }),
 }));

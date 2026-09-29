@@ -4,7 +4,8 @@
  */
 
 import type { ProductionLineConfig, StageId, ValidationIssue, ValidationResult } from './types';
-import { ENGINE_VERSION, MAX_STAGE_COUNT, MIN_STAGE_COUNT } from './types';
+import { CAPACITY_MODEL_VERSION, ENGINE_VERSION, MAX_STAGE_COUNT, MIN_STAGE_COUNT, NON_CONSTRAINT_BONUS } from './types';
+import { constraintIndex } from './capacity';
 
 export const HYPOTHESIS_MAX_LENGTH = 500;
 
@@ -73,5 +74,111 @@ export function validateConfig(config: ProductionLineConfig): ValidationResult {
     }
   }
 
+  capacityIssues(config).forEach((issue) => issues.push(issue));
+
   return { valid: issues.length === 0, issues };
+}
+
+const VALID_UPGRADES = new Set([1, 2, 3]);
+
+/**
+ * Invariantes dos perfis de capacidade (evolução "Restrição e fluxo", §9):
+ *  - experiência antiga: bônus e melhoria zero, sem restrição, experimento ou intervenção;
+ *  - linha de base: bônus 0 exatamente no setor central, 2 nos demais, nenhuma melhoria;
+ *  - tentativa: mesmos bônus e exatamente um setor com melhoria 1, 2 ou 3, o da intervenção.
+ */
+function capacityIssues(config: ProductionLineConfig): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  const add = (code: string, message: string, path?: string) => issues.push({ code, message, path });
+
+  if (config.experience !== 'dependency-variability' && config.experience !== 'constraint-flow') {
+    add('invalid_experience', 'Experiência desconhecida.', 'experience');
+    return issues;
+  }
+
+  if (config.capacityModelVersion !== CAPACITY_MODEL_VERSION) {
+    add(
+      'capacity_model_version_mismatch',
+      `Modelo de capacidade incompatível: esperado ${CAPACITY_MODEL_VERSION}, recebido ${config.capacityModelVersion}.`,
+      'capacityModelVersion',
+    );
+  }
+
+  const profiles = config.capacityProfiles;
+  if (!Array.isArray(profiles) || profiles.length !== config.stages.length) {
+    add('invalid_capacity_profiles', 'Deve haver exatamente um perfil de capacidade por setor.', 'capacityProfiles');
+    return issues;
+  }
+
+  const outOfOrder = profiles.some((profile, index) => profile.stageId !== config.stages[index]?.id);
+  if (outOfOrder) {
+    add('capacity_profile_stage_mismatch', 'Os perfis de capacidade devem seguir os mesmos setores, na mesma ordem.', 'capacityProfiles');
+  }
+
+  const nonInteger = profiles.some(
+    (profile) => !Number.isInteger(profile.baseBonus) || !Number.isInteger(profile.upgrade) || profile.baseBonus < 0 || profile.upgrade < 0,
+  );
+  if (nonInteger) {
+    add('invalid_capacity_values', 'Bônus e melhoria devem ser inteiros não negativos.', 'capacityProfiles');
+  }
+
+  if (config.experience === 'dependency-variability') {
+    if (profiles.some((profile) => profile.baseBonus !== 0 || profile.upgrade !== 0)) {
+      add('legacy_mode_with_bonus', 'Em "Dependência e variabilidade" a capacidade é só o dado — bônus e melhoria devem ser zero.', 'capacityProfiles');
+    }
+    if (config.originalConstraintStageId !== null || config.experimentId !== null || config.intervention !== null) {
+      add('legacy_mode_with_experiment', 'Em "Dependência e variabilidade" não há restrição configurada, experimento nem intervenção.', 'experience');
+    }
+    return issues;
+  }
+
+  const central = constraintIndex(config.stages.length);
+  const bonusMismatch = profiles.some((profile, index) => profile.baseBonus !== (index === central ? 0 : NON_CONSTRAINT_BONUS));
+  if (bonusMismatch) {
+    add(
+      'invalid_base_bonus',
+      `A linha de base deve ter bônus 0 no setor central e ${NON_CONSTRAINT_BONUS} nos demais.`,
+      'capacityProfiles',
+    );
+  }
+
+  if (config.originalConstraintStageId !== config.stages[central]?.id) {
+    add('invalid_original_constraint', 'A restrição original deve ser o setor central.', 'originalConstraintStageId');
+  }
+
+  if (typeof config.experimentId !== 'string' || config.experimentId.length === 0) {
+    add('invalid_experiment_id', 'Uma partida de "Restrição e fluxo" precisa de um experimento.', 'experimentId');
+  }
+
+  const upgraded = profiles.filter((profile) => profile.upgrade !== 0);
+  const intervention = config.intervention;
+  if (intervention === null) {
+    if (upgraded.length > 0) {
+      add('baseline_with_upgrade', 'A linha de base não pode ter melhoria de capacidade.', 'capacityProfiles');
+    }
+    return issues;
+  }
+
+  if (!VALID_UPGRADES.has(intervention.addedCapacity)) {
+    add('invalid_added_capacity', 'O acréscimo deve ser +1, +2 ou +3 lotes por dia.', 'intervention.addedCapacity');
+  }
+  if (!config.stages.some((stage) => stage.id === intervention.targetStageId)) {
+    add('unknown_intervention_target', `Setor da melhoria desconhecido: ${intervention.targetStageId}.`, 'intervention.targetStageId');
+  }
+  if (typeof intervention.baselineRunId !== 'string' || intervention.baselineRunId.length === 0) {
+    add('missing_baseline_link', 'A tentativa precisa identificar a linha de base.', 'intervention.baselineRunId');
+  }
+  if (
+    upgraded.length !== 1 ||
+    upgraded[0].stageId !== intervention.targetStageId ||
+    upgraded[0].upgrade !== intervention.addedCapacity
+  ) {
+    add(
+      'invalid_upgrade_profile',
+      'Exatamente um setor — o da intervenção — deve receber a melhoria declarada; os demais ficam sem melhoria.',
+      'capacityProfiles',
+    );
+  }
+
+  return issues;
 }

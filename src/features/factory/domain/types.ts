@@ -7,8 +7,37 @@
  * contínuo da caminhada para processar rodadas").
  */
 
-/** Versão do motor. Mudar ao alterar regras de transferência ou semântica de métricas. */
-export const ENGINE_VERSION = '1.0.0';
+/**
+ * Versão do motor. Mudar ao alterar regras de transferência ou semântica de métricas.
+ * 1.1.0: capacidade disponível = dado + bônus + melhoria (evolução "Restrição e
+ * fluxo"). Com bônus e melhoria zero, a física é idêntica à 1.0.0.
+ */
+export const ENGINE_VERSION = '1.1.0';
+
+/** Versão do modelo de perfis de capacidade (bônus estrutural + melhoria). */
+export const CAPACITY_MODEL_VERSION = 'capacity-profile-1';
+
+/** Bônus estrutural dos setores que não são a restrição original na experiência "Restrição e fluxo". */
+export const NON_CONSTRAINT_BONUS = 2;
+
+export type Experience = 'dependency-variability' | 'constraint-flow';
+
+export type AddedCapacity = 1 | 2 | 3;
+
+/** Capacidade estrutural de um setor além do dado — não é sorteio e não participa da chave do RNG. */
+export interface CapacityProfile {
+  stageId: StageId;
+  baseBonus: number;
+  upgrade: number;
+}
+
+/** Melhoria de capacidade testada a partir de uma linha de base. */
+export interface Intervention {
+  baselineRunId: string;
+  targetStageId: StageId;
+  addedCapacity: AddedCapacity;
+  prediction: string;
+}
 
 /** Média de capacidade de um dado justo de seis faces — a "referência", nunca uma promessa de entrega (§1). */
 export const REFERENCE_CAPACITY_PER_ROUND = 3.5;
@@ -43,14 +72,26 @@ export interface ProductionLineConfig {
   hypothesis: string;
   initialInventory: 'empty';
   capacityModel: 'fair-d6';
+  experience: Experience;
+  capacityModelVersion: string;
+  /** Um perfil por setor, na mesma ordem de `stages`. Tudo zero em "Dependência e variabilidade". */
+  capacityProfiles: CapacityProfile[];
+  /** Setor central em "Restrição e fluxo"; nulo na experiência antiga. */
+  originalConstraintStageId: StageId | null;
+  /** Agrupa linha de base e intervenções derivadas dela; nulo na experiência antiga. */
+  experimentId: string | null;
+  /** Nula na linha de base e na experiência antiga. */
+  intervention: Intervention | null;
 }
 
 export interface TurnEvent {
   roundIndex: number;
   stageIndex: number;
   stageId: StageId;
-  /** Inteiro 1..6, validado em runtime. */
+  /** Face do dado, inteiro 1..6 — só o componente variável, nunca a capacidade total. */
   die: number;
+  /** `die + baseBonus + upgrade`; igual a `die` na experiência antiga. */
+  availableCapacity: number;
   /** Nulo apenas na primeira etapa (fonte irrestrita, sem estoque finito). */
   availableBefore: number | null;
   transferred: number;

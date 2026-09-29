@@ -12,8 +12,18 @@ import { usePreparationStore } from '../application/preparationStore';
 import { useHistoryStore } from '../application/historyStore';
 import { useRunStore } from '../application/runStore';
 import { HYPOTHESIS_MAX_LENGTH, validateConfig } from '../domain/validation';
-import { MAX_STAGE_COUNT, MIN_STAGE_COUNT, REFERENCE_CAPACITY_PER_ROUND, type Horizon } from '../domain/types';
+import { MAX_STAGE_COUNT, MIN_STAGE_COUNT, REFERENCE_CAPACITY_PER_ROUND, type Experience, type Horizon } from '../domain/types';
 import type { ProductionLineConfig } from '../domain/types';
+import { EXPERIENCE_LABEL } from '../domain/config';
+import { nominalMeanCapacity, profileFor } from '../domain/capacity';
+import { formatNumber } from './capacityText';
+
+const EXPERIENCE_DESCRIPTION: Record<Experience, string> = {
+  'dependency-variability':
+    'Todos os setores com o mesmo dado de seis faces. Observe como dependência e variação afetam a entrega.',
+  'constraint-flow':
+    'Um setor com menor capacidade média. Identifique a restrição, teste uma melhoria com os mesmos sorteios e compare a entrega.',
+};
 
 const HORIZON_OPTIONS: Horizon[] = [10, 20, 30];
 
@@ -31,6 +41,8 @@ export function Preparation({ onStart, onViewHistory }: PreparationProps) {
   const setHypothesis = usePreparationStore((s) => s.setHypothesis);
   const setPrediction = usePreparationStore((s) => s.setPrediction);
   const newRunConfig = usePreparationStore((s) => s.newRunConfig);
+  const setExperience = usePreparationStore((s) => s.setExperience);
+  const isConstraintFlow = draft.experience === 'constraint-flow';
 
   const historyCount = useHistoryStore((s) => s.history.length);
   const pendingRun = useHistoryStore((s) => s.pendingRun);
@@ -62,11 +74,68 @@ export function Preparation({ onStart, onViewHistory }: PreparationProps) {
         )}
       </div>
 
+      <fieldset className="grid gap-3 sm:grid-cols-2">
+        <legend className="mb-2 text-sm font-semibold">Experiência</legend>
+        {(['dependency-variability', 'constraint-flow'] as Experience[]).map((experience) => (
+          <label
+            key={experience}
+            className={`flex cursor-pointer flex-col gap-1 rounded-lg border p-4 ${
+              draft.experience === experience ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'bg-card hover:bg-accent'
+            }`}
+          >
+            <input
+              type="radio"
+              name="factory-experience"
+              className="sr-only"
+              value={experience}
+              checked={draft.experience === experience}
+              onChange={() => setExperience(experience)}
+            />
+            <span className="font-semibold">{EXPERIENCE_LABEL[experience]}</span>
+            <span className="text-sm text-muted-foreground">{EXPERIENCE_DESCRIPTION[experience]}</span>
+          </label>
+        ))}
+      </fieldset>
+
       <p className="rounded-lg border bg-card p-4 text-sm">
         Cada dia, os setores atuam em sequência. A simulação representa fluxo e capacidade,
         não prazos reais de fabricação. Um lote pode passar por vários setores no mesmo dia.
-        Todos usam o mesmo dado de seis faces; o nome do setor não muda as regras.
+        {isConstraintFlow
+          ? ' Todos os setores variam com o mesmo dado de seis faces; alguns têm capacidade adicional estrutural, que não é sorteio.'
+          : ' Todos usam o mesmo dado de seis faces; o nome do setor não muda as regras.'}
       </p>
+
+      {isConstraintFlow && (
+        <div className="overflow-x-auto rounded-lg border bg-card p-4">
+          <h3 className="text-sm font-semibold">Capacidades dos setores</h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Capacidade disponível hoje = dado (1 a 6) + capacidade adicional do setor. Consultável desde o início.
+          </p>
+          <table className="mt-3 w-full text-sm">
+            <thead>
+              <tr className="border-b text-left text-xs text-muted-foreground">
+                <th scope="col" className="p-2 font-medium">Setor</th>
+                <th scope="col" className="p-2 font-medium">Capacidade adicional</th>
+                <th scope="col" className="p-2 font-medium">Capacidade diária</th>
+                <th scope="col" className="p-2 font-medium">Capacidade média do setor</th>
+              </tr>
+            </thead>
+            <tbody>
+              {draft.stages.map((stage, index) => {
+                const bonus = profileFor(draft, stage.id).baseBonus;
+                return (
+                  <tr key={stage.id} className="border-b last:border-0">
+                    <th scope="row" className="p-2 text-left font-medium">{index + 1}. {stage.sectorName}</th>
+                    <td className="p-2 tabular-nums">+{bonus}</td>
+                    <td className="p-2 tabular-nums">{1 + bonus} a {6 + bonus} lotes</td>
+                    <td className="p-2 tabular-nums">{formatNumber(nominalMeanCapacity(draft, stage.id))} lotes/dia</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {hasActiveRun && (
         <div role="status" className="rounded-lg border border-amber-400/50 bg-amber-50 p-3 text-sm dark:bg-amber-950/30">
@@ -121,7 +190,9 @@ export function Preparation({ onStart, onViewHistory }: PreparationProps) {
       </div>
 
       <div className="rounded-lg border bg-card p-4">
-        <h3 className="text-sm font-semibold">Horizonte</h3>
+        <h3 className="text-sm font-semibold">
+          Horizonte{isConstraintFlow && <span className="font-normal text-muted-foreground"> — recomendado: 20 dias</span>}
+        </h3>
         <div className="mt-3 flex gap-2">
           {HORIZON_OPTIONS.map((h) => (
             <button
@@ -141,8 +212,9 @@ export function Preparation({ onStart, onViewHistory }: PreparationProps) {
       <div className="rounded-lg border bg-card p-4">
         <h3 className="text-sm font-semibold">Previsão</h3>
         <p className="mt-1 text-sm">
-          Se cada setor pode processar em média {REFERENCE_CAPACITY_PER_ROUND} lotes por dia, quantos lotes
-          esperamos expedir em {draft.rounds} dias?
+          {isConstraintFlow
+            ? `Com as capacidades médias da tabela acima, quantos lotes esperamos expedir em ${draft.rounds} dias?`
+            : `Se cada setor pode processar em média ${REFERENCE_CAPACITY_PER_ROUND} lotes por dia, quantos lotes esperamos expedir em ${draft.rounds} dias?`}
         </p>
         <input
           type="number"

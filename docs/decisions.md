@@ -1587,3 +1587,104 @@ resultado, reaproveita a seed — de propósito. O botão "Nova sequência de
 dados" da preparação foi removido (iniciar já sempre sorteia dados novos); o
 da tela de resultado continua. Testes novos em `preparationStore.test.ts`
 confirmam seeds diferentes e sequências de dados diferentes em 5 partidas.
+
+## 2026-09-28 — Fábrica: experiência "Restrição e melhoria do fluxo" (`EVOLUCAO_FABRICA_RESTRICAO_E_FLUXO.md`)
+
+A experiência atual passa a se chamar "Dependência e variabilidade"; a nova é
+uma segunda experiência do MESMO módulo, com o mesmo motor, preparação,
+execução, histórico e comparação. Seletor de experiência no topo da preparação.
+
+### D71 — Uma única mudança física: capacidade = dado + bônus + melhoria
+
+`domain/capacity.ts` (novo) concentra perfis, média nominal e diagnóstico
+estrutural. `stepTurn` troca `die` por `availableCapacity(config, stageId, die)`
+na transferência e em `unusedCapacity`; o evento guarda `die` (componente
+variável, sempre 1–6) e `availableCapacity` (total) separados — `die` nunca é
+reaproveitado para a capacidade total (§9). O bônus e a melhoria não entram na
+chave do RNG: a chave continua `[versão, seed, stageId, roundIndex]`, então base
+e intervenções têm faces idênticas por construção. Com perfis zero, a física é
+a da 1.0.0 — os 104 testes antigos (vetores do RNG, referência manual do §11,
+conservação) passaram sem alteração, e a calibração antiga reproduziu os mesmos
+números (5 setores × 10 dias: média 23,03). `ENGINE_VERSION` 1.1.0.
+
+### D72 — Configuração guarda experiência, perfis, restrição original, experimento e intervenção
+
+Invariantes validados em runtime e na importação (`validation.ts`): experiência
+antiga só com zeros; linha de base com bônus 0 exatamente no setor central
+(`floor(n/2)`) e 2 nos demais; tentativa com exatamente um setor melhorado, o
+da intervenção, com +1/+2/+3. `buildInterventionConfig` deriva SEMPRE da base
+(`baselineConfigOf` zera melhorias) — nunca acumula tentativas. A tentativa
+conserva seed, perfis e o vínculo `intervention.baselineRunId`; a base é
+recalculável da própria tentativa, então a comparação antes/depois continua
+funcionando mesmo se a base for excluída (§9). "Nova sequência de dados" gera
+seed nova E experimento novo (`withNewSeed`): outra seed nunca vira tentativa do
+experimento anterior.
+
+### D73 — Diagnóstico estrutural separado das evidências; hipótese antes da resposta
+
+`diagnoseConstraint` usa só as médias configuradas e trata empate explicitamente
+(+2 na restrição: todos em 5,5; +3: os outros quatro empatam em 5,5). As
+evidências (capacidade disponível, processado, não utilizada por falta de
+material, dias com material insuficiente, fila no fim de cada dia) aparecem ao
+lado, com o aviso de que nenhuma delas identifica a restrição sozinha. O
+diagnóstico só aparece depois que o grupo registra a hipótese (setor ou "Ainda
+não sei", justificativa opcional), gravada na linha de base
+(`RunResult.constraintGuess`) — sem pontuação e sem bloqueio. A tabela de
+capacidades médias fica visível desde a preparação, sem destacar a restrição (§4.1).
+
+### D74 — Métricas: referência pela menor média; taxa pelos dias encerrados
+
+`summarize` passou a somar `availableCapacity` (não o dado) e ganhou taxa de
+entrega calculada do último fechamento, aproveitamento, dias com material
+insuficiente e médias por setor. A referência é `menor média × dias encerrados`
+e o desvio de cada setor usa a própria média — na experiência antiga isso
+continua dando 3,5, sem mudar números. `classifyRunRelationship` ganhou
+"intervenção controlada": mesma base e seed, só a melhoria muda, e as faces
+correspondentes conferidas uma a uma; recebe as partidas (config + estado), não
+só a config.
+
+### D75 — Schema v2 com migração explícita da v1, conferida por replay
+
+`SCHEMA_VERSION` 2. `persistence/migrations.ts` converte sessões v1 para
+"Dependência e variabilidade" com perfis zero e `availableCapacity = die`, nunca
+reinterpretando partidas antigas com bônus. As métricas antigas são conferidas
+campo a campo contra o recálculo antes de serem substituídas — uma métrica
+adulterada num arquivo v1 é rejeitada, não "corrigida". Depois, a validação
+normal refaz cada partida. Outras versões continuam rejeitadas sem apagar nada.
+A chave do localStorage não mudou (mudá-la faria sessões existentes sumirem).
+
+### D76 — Calibração da nova experiência (§11)
+
+`npm run calibrate:factory`, 100 seeds × 5 setores × 20 dias, 800 execuções em
+100 grupos pareados (`docs/calibration/calibration-factory-1.1.0.json`):
+
+| Variante | Entrega média | Δ entrega pareada (média; mín–máx) | Δ estoque médio | Seeds com ganho |
+| --- | ---: | --- | ---: | ---: |
+| Linha de base | 67,33 | — | — | — |
+| +1 setor 1 | 67,73 | +0,40 (0–4) | +19,60 | 29 |
+| +1 setor 2 | 67,66 | +0,33 (0–4) | −0,33 | 23 |
+| +1 restrição (setor 3) | 83,43 | +16,10 (6–20) | −16,10 | 100 |
+| +1 setor 4 | 67,54 | +0,21 (0–2) | −0,21 | 19 |
+| +1 setor 5 | 67,56 | +0,23 (0–4) | −0,23 | 15 |
+| +2 restrição | 91,60 | +24,27 (7–38) | −24,27 | 100 |
+| +3 restrição | 93,96 | +26,63 (7–46) | −26,63 | 100 |
+
+Nenhuma perda de entrega em nenhuma variante (propriedade de regressão: só
+aumentar capacidade com os mesmos dados não reduz a entrega) e nenhuma face
+divergente da base. Melhorar um não gargalo ajuda pouco e às vezes (15–29% das
+seeds, até +4 lotes) — preservado, não escondido; +1 no primeiro setor quase só
+acumula estoque (+19,6). A diferença entre melhoria local e entrega do sistema
+ficou claramente observável, então os parâmetros do documento não foram
+revisados. Fronteira (4 e 12 setores, 10 e 30 dias, 20 seeds, 880 execuções):
+zero violações de conservação, de limite de capacidade, de faces e do
+diagnóstico de empate.
+
+### Verificações desta entrega
+
+Ver o resumo entregue ao usuário: `tsc`, `eslint`, `vitest` (fábrica: 143
+testes, 39 novos — `constraintFlow.test.ts` com exemplos A/B do §10,
+`migration.test.ts`, stores), `build`, Playwright com o novo
+`flow-j-constraint-flow.spec.ts` (base → hipótese → diagnóstico → +1 em não
+gargalo com reload no meio → +1 na restrição → comparação controlada) e a
+calibração acima. Inspeção visual com 5 e 12 setores. Não há validação
+pedagógica com pessoas: o piloto desta experiência continua pendente.

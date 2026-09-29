@@ -111,3 +111,32 @@ describe('restoreDraft', () => {
     expect(store.getState().prediction).toBe(42);
   });
 });
+
+describe('setExperience (evolução Restrição e fluxo)', () => {
+  it('troca para "Restrição e fluxo" com perfis da linha de base, 20 dias e participantes preservados', () => {
+    store.getState().setParticipantName('stage-0', 'Ana');
+    store.getState().setExperience('constraint-flow');
+    const draft = store.getState().draft;
+    expect(draft.experience).toBe('constraint-flow');
+    expect(draft.rounds).toBe(20);
+    expect(draft.capacityProfiles.map((p) => p.baseBonus)).toEqual([2, 2, 0, 2, 2]);
+    expect(draft.stages[0].participantName).toBe('Ana');
+  });
+
+  it('volta para a experiência antiga sem bônus e com 10 dias', () => {
+    store.getState().setExperience('constraint-flow');
+    store.getState().setExperience('dependency-variability');
+    const draft = store.getState().draft;
+    expect(draft.capacityProfiles.every((p) => p.baseBonus === 0)).toBe(true);
+    expect(draft.rounds).toBe(10);
+    expect(draft.experimentId).toBeNull();
+  });
+
+  it('cada partida nova da experiência nova é um experimento novo', () => {
+    store.getState().setExperience('constraint-flow');
+    const first = store.getState().newRunConfig();
+    const second = store.getState().newRunConfig();
+    expect(first.experimentId).not.toBe(second.experimentId);
+    expect(first.experience).toBe('constraint-flow');
+  });
+});

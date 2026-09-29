@@ -36,7 +36,7 @@ export function StageDeviationChart({ config, deviationByStage }: StageDeviation
         <line x1={centerX} y1={0} x2={centerX} y2={height} stroke="currentColor" strokeOpacity={0.25} />
         {config.stages.map((stage, index) => {
           const value = deviationByStage[stage.id] ?? 0;
-          const barWidth = (Math.abs(value) / maxAbs) * (barAreaWidth / 2);
+          const barWidth = (Math.abs(value) / maxAbs) * (barAreaWidth / 2 - 30);
           const y = index * ROW_HEIGHT + 4;
           const barX = value >= 0 ? centerX : centerX - barWidth;
 
@@ -61,7 +61,7 @@ export function StageDeviationChart({ config, deviationByStage }: StageDeviation
                 textAnchor={value >= 0 ? 'start' : 'end'}
               >
                 {value >= 0 ? '+' : ''}
-                {value.toFixed(1)}
+                {value.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
               </text>
             </g>
           );

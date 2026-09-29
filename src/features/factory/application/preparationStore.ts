@@ -11,9 +11,13 @@
 
 import { create } from 'zustand';
 
-import { createProductionLineConfig, type CreateProductionLineConfigOptions } from '../domain/config';
+import {
+  createProductionLineConfig,
+  DEFAULT_HORIZON_BY_EXPERIENCE,
+  type CreateProductionLineConfigOptions,
+} from '../domain/config';
 import { HYPOTHESIS_MAX_LENGTH } from '../domain/validation';
-import type { Horizon, ProductionLineConfig, StageId } from '../domain/types';
+import type { Experience, Horizon, ProductionLineConfig, StageId } from '../domain/types';
 
 export interface RestoreDraftSnapshot {
   config: ProductionLineConfig;
@@ -25,6 +29,8 @@ interface PreparationState {
   /** Previsão do grupo de lotes expedidos, registrada antes de iniciar (§7). Nula até responderem. */
   prediction: number | null;
 
+  /** Troca a experiência (§8.2) — aplica o horizonte recomendado dela e preserva participantes. */
+  setExperience: (experience: Experience) => void;
   setStageCount: (stageCount: number) => void;
   setRounds: (rounds: Horizon) => void;
   setParticipantName: (stageId: StageId, name: string) => void;
@@ -41,7 +47,7 @@ interface PreparationState {
 
 function rebuildPreservingParticipants(
   current: ProductionLineConfig,
-  changes: Partial<Pick<CreateProductionLineConfigOptions, 'stageCount' | 'rounds' | 'hypothesis'>>,
+  changes: Partial<Pick<CreateProductionLineConfigOptions, 'stageCount' | 'rounds' | 'hypothesis' | 'experience' | 'seed'>>,
 ): ProductionLineConfig {
   const stageCount = changes.stageCount ?? current.stages.length;
   const participantNameByStage: Partial<Record<StageId, string>> = {};
@@ -54,7 +60,8 @@ function rebuildPreservingParticipants(
     stageCount,
     rounds: changes.rounds ?? current.rounds,
     hypothesis: changes.hypothesis ?? current.hypothesis,
-    seed: current.seed,
+    seed: 'seed' in changes ? changes.seed : current.seed,
+    experience: changes.experience ?? current.experience,
     participantNameByStage,
   });
 }
@@ -62,6 +69,18 @@ function rebuildPreservingParticipants(
 export const usePreparationStore = create<PreparationState>((set, get) => ({
   draft: createProductionLineConfig(),
   prediction: null,
+
+  setExperience: (experience) =>
+    set((state) =>
+      state.draft.experience === experience
+        ? state
+        : {
+            draft: rebuildPreservingParticipants(state.draft, {
+              experience,
+              rounds: DEFAULT_HORIZON_BY_EXPERIENCE[experience],
+            }),
+          },
+    ),
 
   setStageCount: (stageCount) =>
     set((state) => ({ draft: rebuildPreservingParticipants(state.draft, { stageCount }) })),
@@ -83,17 +102,9 @@ export const usePreparationStore = create<PreparationState>((set, get) => ({
 
   setPrediction: (prediction) => set({ prediction }),
 
-  rerollSeed: () =>
-    set((state) => ({
-      draft: createProductionLineConfig({
-        stageCount: state.draft.stages.length,
-        rounds: state.draft.rounds,
-        hypothesis: state.draft.hypothesis,
-        participantNameByStage: Object.fromEntries(
-          state.draft.stages.map((stage) => [stage.id, stage.participantName]),
-        ),
-      }),
-    })),
+  // Seed nova e, em "Restrição e fluxo", um experimento novo: outra seed é
+  // outro experimento, nunca misturado às tentativas da base anterior (§5).
+  rerollSeed: () => set((state) => ({ draft: rebuildPreservingParticipants(state.draft, { seed: undefined }) })),
 
   newRunConfig: () => {
     get().rerollSeed();

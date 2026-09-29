@@ -15,11 +15,15 @@
 
 import { Application, Container, Graphics, Text, type Ticker } from 'pixi.js';
 
-import type { ProductionLineState, StageDefinition, StageId, TurnEvent } from '../domain/types';
+import type { CapacityProfile, Experience, ProductionLineState, StageDefinition, StageId, TurnEvent } from '../domain/types';
+import { REFERENCE_CAPACITY_PER_ROUND } from '../domain/types';
 
 export interface CreateFactorySceneOptions {
   stages: StageDefinition[];
   reducedMotion: boolean;
+  /** "Restrição e fluxo": o dado é só o componente variável — a cena mostra a soma (§4.3). */
+  experience?: Experience;
+  capacityProfiles?: CapacityProfile[];
   onPresentation?: (busy: boolean, stageIndex: number | null) => void;
 }
 
@@ -267,6 +271,7 @@ interface StationTexts {
   overflow: Text;
   bubble: Text;
   dieValue: Text;
+  meanLabel: Text | null;
 }
 
 interface PlayingEvent {
@@ -319,6 +324,8 @@ export class FactoryScene {
   private timeMs = 0;
   private disposed = false;
   private readonly onPresentation: CreateFactorySceneOptions['onPresentation'];
+  private readonly isConstraintFlow: boolean;
+  private readonly profiles: CapacityProfile[];
 
   private constructor(app: Application, options: CreateFactorySceneOptions) {
     this.app = app;
@@ -326,6 +333,10 @@ export class FactoryScene {
     this.canvas.style.display = 'block';
     this.stages = options.stages;
     this.onPresentation = options.onPresentation;
+    this.isConstraintFlow = options.experience === 'constraint-flow';
+    this.profiles = this.stages.map(
+      (stage) => options.capacityProfiles?.find((profile) => profile.stageId === stage.id) ?? { stageId: stage.id, baseBonus: 0, upgrade: 0 },
+    );
     this.reducedMotion = options.reducedMotion;
     this.palette = prefersDarkTheme() ? DARK : LIGHT;
     this.lastDie = this.stages.map(() => null);
@@ -368,11 +379,27 @@ export class FactoryScene {
       bubble.anchor.set(0.5);
       bubble.visible = false;
 
-      const dieValue = new Text({ text: 'Dado: —', style: { fontFamily: FONT, fontSize: 17, fontWeight: '800', fill: p.text } });
+      const dieValue = new Text({
+        text: 'Dado: —',
+        style: { fontFamily: FONT, fontSize: this.isConstraintFlow ? 13 : 17, fontWeight: '800', fill: p.text },
+      });
       dieValue.position.set(x + 10, y + 52);
+
+      const profile = this.profiles[i];
+      const meanLabel = this.isConstraintFlow
+        ? new Text({
+            text: `Média ${(REFERENCE_CAPACITY_PER_ROUND + profile.baseBonus + profile.upgrade).toLocaleString('pt-BR')} lotes/dia${
+              profile.upgrade ? ` · melhoria +${profile.upgrade}` : ''
+            }`,
+            style: { fontFamily: FONT, fontSize: 9.5, fontWeight: '600', fill: profile.upgrade ? p.headerActive : p.muted },
+          })
+        : null;
+      meanLabel?.position.set(x + 7, y + FLOOR_Y + 25);
+
       this.world.addChild(header, count, overflow, bubble, dieValue);
       if (name) this.world.addChild(name);
-      this.stationTexts.push({ header, name, count, overflow, bubble, dieValue });
+      if (meanLabel) this.world.addChild(meanLabel);
+      this.stationTexts.push({ header, name, count, overflow, bubble, dieValue, meanLabel });
     });
 
     const dx = this.dockX();
@@ -540,7 +567,7 @@ export class FactoryScene {
     const bubbleText =
       event.transferred === 0
         ? 'sem material'
-        : event.availableBefore !== null && event.transferred < event.die
+        : event.availableBefore !== null && event.transferred < event.availableCapacity
           ? `havia só ${event.availableBefore}`
           : null;
     this.bubbles[event.stageIndex] = bubbleText ? { text: bubbleText, untilMs: this.timeMs + duration + 700 } : null;
@@ -574,6 +601,18 @@ export class FactoryScene {
     }
 
     this.drawDynamic();
+  }
+
+  /** "Dado: 4" na experiência antiga; "Dado 4 + 2 + 1 = 7" quando há capacidade adicional (§4.3). */
+  private dieText(index: number, face: number | null): string {
+    if (!this.isConstraintFlow) return `Dado: ${face ?? '-'}`;
+    const { baseBonus, upgrade } = this.profiles[index];
+    const extra = baseBonus + upgrade;
+    if (face === null) return extra ? `Capacidade ${1 + extra}–${6 + extra}` : 'Capacidade 1–6';
+    const parts = [`Dado ${face}`];
+    if (baseBonus) parts.push(String(baseBonus));
+    if (upgrade) parts.push(String(upgrade));
+    return extra ? `${parts.join(' + ')} = ${face + extra}` : `Dado ${face} = ${face}`;
   }
 
   private setHighlight(index: number | null): void {
@@ -809,7 +848,7 @@ export class FactoryScene {
       const value = this.stationTexts[i].dieValue;
       const rolling = isCurrent && progress < ROLL_FRACTION;
       const face = isCurrent && event ? event.die : this.lastDie[i];
-      value.text = rolling ? 'Sorteando...' : `Dado: ${face ?? '-'}`;
+      value.text = rolling ? 'Sorteando...' : this.dieText(i, face);
       value.style.fill = isCurrent ? p.headerActive : p.text;
 
       const bubble = this.bubbles[i];

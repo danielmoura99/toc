@@ -238,6 +238,13 @@ function RestoredFactoryExperience() {
             // pelo menos uma segunda partida para comparar com esta.
             goToHistory();
           }}
+          onCompareRuns={(runIds) => {
+            const history = useHistoryStore.getState();
+            history.clearComparisonSelection();
+            runIds.forEach((id) => history.toggleComparisonSelection(id));
+            goToComparison();
+          }}
+          onStartIntervention={requestStart}
         />
       )}
 
